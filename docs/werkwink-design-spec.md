@@ -145,8 +145,8 @@ Suggested contents, top to bottom:
 - **The hill** — the original Basecamp illustration (or a clean Vue/SVG recreation) showing uphill = figuring it out, downhill = execution.
 - **Forces** — a small explainer: each dot has up forces (the assignee, helpers, alternative approaches) and down forces (blockers, obstacles). The goal during the daily is to keep up > down on the uphill.
 - **The daily ritual** — three short steps: open the app → walk through projects with the team, drag dots and capture blockers → click "End daily" to commit today's snapshot.
-- **Primary CTA** — a single button: **"Open the chart →"** linking to `/projects`.
-- **Secondary CTA** — small "Import JSON" link for first-time setup from a tracker-import skill export.
+- **Primary CTA** — a single button: **"Try it live →"** linking to `/projects`.
+- **Secondary CTA** — *deferred*; Import JSON remains on the overview empty state and header (not on the landing page in v1).
 
 Visual style matches the rest of the app: cream background, Fraunces headings, Inter body, generous whitespace, the warm palette. No nav chrome on this page beyond the app name in the header.
 
