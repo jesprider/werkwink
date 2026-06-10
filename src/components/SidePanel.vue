@@ -110,6 +110,9 @@ const stalenessLabel = computed(() => {
 const sourceUrl = computed(() => trackable.value?.source?.url)
 const sourceSystem = computed(() => trackable.value?.source?.system)
 const sourceAria = computed(() => sourceOpenLabel(sourceSystem.value))
+const deleteAriaLabel = computed(() =>
+  kind.value === 'project' ? 'Delete project' : 'Delete task',
+)
 
 function cancelHeaderEdit() {
   editingHeader.value = false
@@ -248,7 +251,7 @@ function onDelete() {
 <template>
   <aside
     v-if="trackable"
-    class="w-80 shrink-0 rounded-2xl bg-cream p-5 shadow-sm ring-1 ring-hill-sand/60"
+    class="relative w-80 shrink-0 rounded-2xl bg-cream p-5 pb-12 shadow-sm ring-1 ring-hill-sand/60"
     aria-label="Work item details"
   >
     <div class="mb-6 flex items-start justify-between gap-3">
@@ -311,7 +314,7 @@ function onDelete() {
       </div>
       <button
         type="button"
-        class="rounded-full px-2 py-1 text-sm text-text-warm/60 hover:bg-hill-sand hover:text-text-warm"
+        class="shrink-0 rounded-full px-2 py-1 text-sm text-text-warm/60 hover:bg-hill-sand hover:text-text-warm"
         aria-label="Close panel"
         @click="$emit('close')"
       >
@@ -450,16 +453,25 @@ function onDelete() {
       </ul>
     </details>
 
-    <details class="mt-6 border-t border-hill-sand/60 pt-4">
-      <summary class="cursor-pointer text-sm font-medium text-text-warm/70">Danger zone</summary>
-      <button
-        type="button"
-        class="mt-3 rounded-lg border border-rust/30 px-3 py-2 text-sm text-rust hover:bg-rust/5"
-        :aria-label="kind === 'project' ? 'Delete project' : 'Delete task'"
-        @click="onDelete"
+    <button
+      type="button"
+      class="absolute right-5 bottom-5 rounded-full p-1.5 text-text-warm/60 hover:bg-rust/10 hover:text-rust"
+      :aria-label="deleteAriaLabel"
+      @click="onDelete"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        class="size-4"
+        aria-hidden="true"
       >
-        {{ kind === 'project' ? 'Delete project' : 'Delete task' }}
-      </button>
-    </details>
+        <path
+          fill-rule="evenodd"
+          d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.508 0 .94.093 1.25.25V3.75c0-.69-.56-1.25-1.25-1.25S8.75 3.06 8.75 3.75v.5c.31-.157.742-.25 1.25-.25ZM7.5 6.75a.75.75 0 0 0-1.5 0v7.5a.75.75 0 0 0 1.5 0v-7.5Zm4.25.75a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-1.5 0v-7.5a.75.75 0 0 1 .75-.75Zm1.25 9.5a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
   </aside>
 </template>

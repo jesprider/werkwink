@@ -183,7 +183,7 @@ Opens to the right when you click a dot. Component state (not in the URL). Secti
 4. **Active down forces** — same shape. `+ Down force` button.
 5. **Past boosters** — collapsible, resolved up forces, most recent first.
 6. **Past blockers** — collapsible, resolved down forces, most recent first.
-7. **Danger zone** — collapsed by default; "Delete project" or "Delete task" with confirm.
+7. **Delete** — trash icon at the bottom-right of the panel; confirm before removing project or task.
 
 ### 4.5 Force add UX
 
@@ -492,7 +492,7 @@ Captured during the design interview so future-you can see the reasoning:
 20. Skill input: flexible (JQL / keys / NL / + optional existing JSON).
 21. Tracker mapping (uniform across all systems): parent unit (epic / initiative / milestone / etc.) → Project, child unit (story / task / issue / card / etc.) → Task, assignee → primary up force.
 22. Visual: cream background, terracotta/olive palette, Fraunces + Inter.
-23. Side panel sections: Header / Position / Active forces / Past / Danger zone.
+23. Side panel sections: Header / Position / Active forces / Past; delete icon bottom-right.
 24. Skill output: `.json` file in the workspace.
 25. Routing: `/` (landing page), `/projects` (overview), `/projects/:id` (project detail); side panel is component state.
 26. "End daily" replaces today's snapshot; skipped days are gaps.
