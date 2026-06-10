@@ -20,8 +20,7 @@ import LandingHillIllustration from '../components/LandingHillIllustration.vue'
       <h2 class="font-heading text-2xl">The hill</h2>
       <LandingHillIllustration />
       <p class="text-text-warm/90">
-        Position on the curve is uncertainty — left is still figuring it out; right is execution
-        once you know how.
+        Uphill is figuring it out; downhill is execution — work you already know how to do.
       </p>
     </section>
 
