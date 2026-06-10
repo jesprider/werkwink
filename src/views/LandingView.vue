@@ -39,8 +39,8 @@ import LandingHillIllustration from '../components/LandingHillIllustration.vue'
         conversation.
       </p>
       <p class="text-text-warm/90">
-        During the daily, the conversation aims to keep up &gt; down while you're still on the
-        uphill.
+        While you're still on the uphill, the standup is about clearing blockers and finding ways
+        forward — not just moving the dot.
       </p>
     </section>
 
