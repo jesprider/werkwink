@@ -183,8 +183,7 @@ Opens to the right when you click a dot. Component state (not in the URL). Secti
 4. **Active down forces** — same shape. `+ Down force` button.
 5. **Past boosters** — collapsible, resolved up forces, most recent first.
 6. **Past blockers** — collapsible, resolved down forces, most recent first.
-7. **Position trail** — small sparkline showing the full snapshot history for this dot (more than the 10 shown on the main chart).
-8. **Danger zone** — collapsed by default; "Delete this dot" with confirm.
+7. **Danger zone** — collapsed by default; "Delete project" or "Delete task" with confirm.
 
 ### 4.5 Force add UX
 
@@ -238,7 +237,7 @@ The workflow for "I want to add more from my tracker after first import": Export
 
 - Last **10 snapshots** rendered behind the current dot.
 - Oldest at ~10% opacity, newest (still historical) at ~70%, current dot at 100%.
-- Older snapshots stay in storage and surface in the side panel sparkline.
+- Older snapshots remain in storage (export / history) but are not rendered in the side panel.
 
 ### 5.8 Staleness satellites
 
@@ -476,7 +475,7 @@ Captured during the design interview so future-you can see the reasoning:
 3. No connection between project dot and its task dots — all independent.
 4. Forces persist until resolved; resolved go to "Past blockers / Past boosters."
 5. Assignee is a permanent up force per dot (`isPrimary`), can't be resolved.
-6. Snapshot per daily, faint trail (last 10) on chart; older still in side-panel sparkline.
+6. Snapshot per daily, faint trail (last 10) on chart; older snapshots kept in storage only.
 7. Project dots have their own forces (not just task forces).
 8. Force schema = direction + label + optional owner + status (+ auto timestamps).
 9. Stack: Vue 3 + Pinia + Vue Router + Tailwind + Vite.
@@ -493,13 +492,13 @@ Captured during the design interview so future-you can see the reasoning:
 20. Skill input: flexible (JQL / keys / NL / + optional existing JSON).
 21. Tracker mapping (uniform across all systems): parent unit (epic / initiative / milestone / etc.) → Project, child unit (story / task / issue / card / etc.) → Task, assignee → primary up force.
 22. Visual: cream background, terracotta/olive palette, Fraunces + Inter.
-23. Side panel sections: Header / Position / Active forces / Past / Trail / Danger zone.
+23. Side panel sections: Header / Position / Active forces / Past / Danger zone.
 24. Skill output: `.json` file in the workspace.
 25. Routing: `/` (landing page), `/projects` (overview), `/projects/:id` (project detail); side panel is component state.
 26. "End daily" replaces today's snapshot; skipped days are gaps.
 27. Dots draggable on both overview and project view.
 28. Assignee optional at manual creation; placeholder primary force is set automatically.
-29. Trail length on chart = last 10; full history in side panel.
+29. Trail length on chart = last 10; no side-panel history chart in v1.
 30. Staleness satellites: one red dot per day without movement from day 2, max 4; panel shows days without movement; skipped at position 100.
 31. Done dots stack into a column with "+ N more" badge.
 32. Display during daily = ordinary screen-share; no dedicated presentation mode in v1.

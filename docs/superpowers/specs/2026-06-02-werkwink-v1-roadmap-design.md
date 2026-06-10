@@ -70,7 +70,7 @@ whose status is `pending`** and work only that scope.
 | 16 | peak-crossing | **done** | M6 |
 | 17 | staleness-satellites | **done** | M6 |
 | 18 | done-stack | **done** | M6 |
-| 19 | panel-sparkline-delete | **pending** | M6 |
+| 19 | panel-delete | **pending** | M6 |
 | 20 | landing-page | **pending** | M6 |
 
 Update the **Status** column to `done` when an iteration ships (and link its
@@ -87,7 +87,7 @@ design doc in a new “Completed iteration docs” subsection at the bottom).
 | **M3 — Run the conversation** | Add/resolve forces; rename; slider position; overview panel + drill | 9 |
 | **M4 — Own your data** | Create projects/tasks; import JSON; export/clean round-trip | 13 |
 | **M5 — Close the daily** | End daily → snapshots; ghost trail on chart | 15 |
-| **M6 — Full v1 polish** | Peak rule, staleness, done stack, sparkline, delete, landing | 20 |
+| **M6 — Full v1 polish** | Peak rule, staleness, done stack, delete, landing | 20 |
 
 **First team dry-run target:** end of **M5** (iteration 15). Iterations 16–20
 improve the pilot but are not blocking for a first standup.
@@ -233,7 +233,7 @@ edit (iteration 8).
 - Position slider 0–100 → calls existing `setPosition`.
 - Display/edit external `source` link when present (parent spec §4.4 header).
 
-**Out of scope:** Delete dot (iteration 19); trail sparkline (iteration 19).
+**Out of scope:** Delete dot (iteration 19).
 
 ---
 
@@ -334,7 +334,7 @@ edit (iteration 8).
   ~70%; current dot 100%); parent spec §5.7.
 - No connecting line between ghosts (parent spec open question #4).
 
-**Out of scope:** Side panel sparkline (iteration 19).
+**Out of scope:** Side-panel snapshot history chart (removed from v1).
 
 ---
 
@@ -392,15 +392,20 @@ in the panel.
 
 ---
 
-### Iteration 19 — Panel sparkline + delete
+### Iteration 19 — Panel delete
 
-**Goal:** Full side panel completeness.
+**Goal:** Remove mistaken projects and tasks from the side panel.
 
 **Deliverables:**
 
-- Position trail sparkline (full snapshot history) in panel §4.4 #7.
-- Danger zone: delete with confirm; store `removeProject` / `removeTask` (by
-  `trackableId` / kind).
+- Danger zone: collapsed `<details>` with **Delete project** / **Delete task**;
+  `window.confirm` before removal.
+- Store `removeProject` / `removeTask` (project delete cascades tasks).
+- Update parent spec to drop side-panel sparkline (chart ghost trail unchanged).
+
+**Out of scope:** Side-panel position sparkline; force delete; undo.
+
+**Design doc:** `docs/superpowers/specs/2026-06-10-werkwink-iteration-19-panel-delete-design.md`
 
 ---
 
