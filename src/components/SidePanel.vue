@@ -226,15 +226,12 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
 function deleteConfirmMessage(): string {
   if (!trackable.value) return ''
   const name = trackable.value.name
-  if (kind.value === 'task') {
-    return `Delete "${name}"? This cannot be undone.`
-  }
   const taskCount = props.project.tasks.length
-  if (taskCount === 0) {
-    return `Delete "${name}"? This cannot be undone.`
+  if (kind.value === 'project' && taskCount > 0) {
+    const label = taskCount === 1 ? '1 task' : `${taskCount} tasks`
+    return `Delete "${name}" and its ${label}? This cannot be undone.`
   }
-  const label = taskCount === 1 ? '1 task' : `${taskCount} tasks`
-  return `Delete "${name}" and its ${label}? This cannot be undone.`
+  return `Delete "${name}"? This cannot be undone.`
 }
 
 function onDelete() {
