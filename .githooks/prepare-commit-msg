@@ -1,0 +1,20 @@
+#!/bin/sh
+# Strip Cursor attribution trailers injected by the agent runtime.
+# Enable with: git config core.hooksPath .githooks (once per clone)
+
+if [ ! -f "$1" ]; then
+  exit 0
+fi
+
+case "$(uname -s)" in
+  Darwin)
+    sed -i '' '/[Cc]o-authored-by:.*[Cc]ursor/d' "$1"
+    sed -i '' '/cursoragent@cursor\.com/d' "$1"
+    sed -i '' '/^Made with \[Cursor\]/d' "$1"
+    ;;
+  *)
+    sed -i '/[Cc]o-authored-by:.*[Cc]ursor/d' "$1"
+    sed -i '/cursoragent@cursor\.com/d' "$1"
+    sed -i '/^Made with \[Cursor\]/d' "$1"
+    ;;
+esac

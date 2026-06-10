@@ -1,0 +1,10 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+node_modules/.tmp
+npm-debug.log*
+
+# Implementation plans are kept local / internal only
+docs/superpowers/plans/
