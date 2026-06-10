@@ -586,4 +586,72 @@ describe('hillChart store', () => {
       expect(store.demo).toBe(true)
     })
   })
+
+  describe('removeProject', () => {
+    it('removes the project from the store', () => {
+      const store = useHillChartStore()
+      const id = store.projects[0].id
+      const before = store.projects.length
+
+      store.removeProject(id)
+
+      expect(store.projects.length).toBe(before - 1)
+      expect(store.projects.some((p) => p.id === id)).toBe(false)
+    })
+
+    it('removes nested tasks with the project', () => {
+      const store = useHillChartStore()
+      const project = store.projects.find((p) => p.tasks.length > 0)!
+      const taskId = project.tasks[0].id
+
+      store.removeProject(project.id)
+
+      expect(store.projects.some((p) => p.id === project.id)).toBe(false)
+      expect(store.projects.some((p) => p.tasks.some((t) => t.id === taskId))).toBe(false)
+    })
+
+    it('no-ops for unknown project id', () => {
+      const store = useHillChartStore()
+      const before = store.projects.length
+
+      store.removeProject('missing')
+
+      expect(store.projects.length).toBe(before)
+    })
+  })
+
+  describe('removeTask', () => {
+    it('removes the task from its project', () => {
+      const store = useHillChartStore()
+      const project = store.projects.find((p) => p.tasks.length > 0)!
+      const taskId = project.tasks[0].id
+      const before = project.tasks.length
+
+      store.removeTask(project.id, taskId)
+
+      expect(project.tasks.length).toBe(before - 1)
+      expect(project.tasks.some((t) => t.id === taskId)).toBe(false)
+    })
+
+    it('no-ops for unknown project id', () => {
+      const store = useHillChartStore()
+      const counts = store.projects.map((p) => p.tasks.length)
+
+      store.removeTask('missing', 'task_1')
+
+      store.projects.forEach((p, i) => {
+        expect(p.tasks.length).toBe(counts[i])
+      })
+    })
+
+    it('no-ops for unknown task id', () => {
+      const store = useHillChartStore()
+      const project = store.projects[0]
+      const before = project.tasks.length
+
+      store.removeTask(project.id, 'missing')
+
+      expect(project.tasks.length).toBe(before)
+    })
+  })
 })

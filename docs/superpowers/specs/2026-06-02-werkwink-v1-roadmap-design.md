@@ -32,7 +32,7 @@ whose status is `pending`** and work only that scope.
 9. Do **not** open a PR unless the user asks; commits authored as Roman only (no
    Co-Authored-By / Claude mentions), per prior iteration delivery notes.
 
-**Current codebase snapshot (after iteration 18):**
+**Current codebase snapshot (after iteration 19):**
 
 - Live: `/projects` overview, `/projects/:id` project view, draggable dots,
   `↑/↓` badges, double-click overview → drill-in, side panel, import/export,
@@ -44,7 +44,8 @@ whose status is `pending`** and work only that scope.
   position 100. Ghost trails keep project color.
 - Peak: drag/slider clamp at 50 with active blockers; panel hint at peak.
 - Done stack: bottom-right column for dots at position 100; collapsed chips + "+ N more" when N≥2; drag back onto hill to un-done.
-- Store: persist plugin; force mutations.
+- Side panel: danger zone delete for projects (cascades tasks) and tasks with confirm.
+- Store: persist plugin; force mutations; remove project/task.
 
 ---
 
@@ -70,7 +71,7 @@ whose status is `pending`** and work only that scope.
 | 16 | peak-crossing | **done** | M6 |
 | 17 | staleness-satellites | **done** | M6 |
 | 18 | done-stack | **done** | M6 |
-| 19 | panel-delete | **pending** | M6 |
+| 19 | panel-delete | **done** | M6 |
 | 20 | landing-page | **pending** | M6 |
 
 Update the **Status** column to `done` when an iteration ships (and link its
@@ -455,6 +456,7 @@ in the panel.
 | 16 | `docs/superpowers/specs/2026-06-07-werkwink-iteration-16-peak-crossing-design.md` |
 | 17 | `docs/superpowers/specs/2026-06-07-werkwink-iteration-17-staleness-design.md` |
 | 18 | `docs/superpowers/specs/2026-06-07-werkwink-iteration-18-done-stack-design.md` |
+| 19 | `docs/superpowers/specs/2026-06-10-werkwink-iteration-19-panel-delete-design.md` |
 
 ---
 

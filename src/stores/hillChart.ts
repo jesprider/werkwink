@@ -144,6 +144,20 @@ export const useHillChartStore = defineStore('hillChart', {
       return id
     },
 
+    removeProject(projectId: string): void {
+      const index = this.projects.findIndex((p) => p.id === projectId)
+      if (index === -1) return
+      this.projects.splice(index, 1)
+    },
+
+    removeTask(projectId: string, taskId: string): void {
+      const project = this.projects.find((p) => p.id === projectId)
+      if (!project) return
+      const index = project.tasks.findIndex((t) => t.id === taskId)
+      if (index === -1) return
+      project.tasks.splice(index, 1)
+    },
+
     setPosition(id: string, position: number) {
       const trackable = findTrackableById(this.projects, id)
       if (!trackable) return

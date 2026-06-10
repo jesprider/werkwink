@@ -219,6 +219,30 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
   store.addForce(props.trackableId, direction, payload.label, payload.owner)
   addingDirection.value = null
 }
+
+function deleteConfirmMessage(): string {
+  if (!trackable.value) return ''
+  const name = trackable.value.name
+  if (kind.value === 'task') {
+    return `Delete "${name}"? This cannot be undone.`
+  }
+  const taskCount = props.project.tasks.length
+  if (taskCount === 0) {
+    return `Delete "${name}"? This cannot be undone.`
+  }
+  const label = taskCount === 1 ? '1 task' : `${taskCount} tasks`
+  return `Delete "${name}" and its ${label}? This cannot be undone.`
+}
+
+function onDelete() {
+  if (!trackable.value) return
+  if (!window.confirm(deleteConfirmMessage())) return
+  if (kind.value === 'project') {
+    store.removeProject(props.project.id)
+  } else {
+    store.removeTask(props.project.id, props.trackableId)
+  }
+}
 </script>
 
 <template>
@@ -424,6 +448,18 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
           @unresolve="onUnresolve(force.id)"
         />
       </ul>
+    </details>
+
+    <details class="mt-6 border-t border-hill-sand/60 pt-4">
+      <summary class="cursor-pointer text-sm font-medium text-text-warm/70">Danger zone</summary>
+      <button
+        type="button"
+        class="mt-3 rounded-lg border border-rust/30 px-3 py-2 text-sm text-rust hover:bg-rust/5"
+        :aria-label="kind === 'project' ? 'Delete project' : 'Delete task'"
+        @click="onDelete"
+      >
+        {{ kind === 'project' ? 'Delete project' : 'Delete task' }}
+      </button>
     </details>
   </aside>
 </template>
