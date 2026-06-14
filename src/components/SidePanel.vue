@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import type { ForceDirection, Project } from '../schema/types'
 import { forcesByStatus, lookupInProject } from '../domain/trackableLookup'
 import { useHillChartStore } from '../stores/hillChart'
-import PanelDangerZone from './PanelDangerZone.vue'
+import PanelFooter from './PanelFooter.vue'
 import PanelForces from './PanelForces.vue'
 import PanelHeader from './PanelHeader.vue'
 import PanelPosition from './PanelPosition.vue'
@@ -152,7 +152,7 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
       @add-cancel="cancelAdd"
     />
 
-    <PanelDangerZone
+    <PanelFooter
       :trackable="trackable"
       :kind="kind"
       :project="project"
