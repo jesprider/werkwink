@@ -78,11 +78,13 @@ migration (no active users).
 
 ### PR 3 — Import extraction (`chore/import-composable`)
 
-**Status:** This PR
+**Status:** Done (merged)
 
 - `useJsonImport(store)` from `OverviewView` — file read, validate, demo confirm, errors, drag-drop
 
 ### PR 4 — Chart workspace (`chore/chart-workspace`)
+
+**Status:** This PR
 
 - `useChartSelection()` — selection, stale-id cleanup, nudge + `onMove`
 - `ChartWorkspace.vue` — banner, `HillChart`, `DoneStack`, conditional `SidePanel`
