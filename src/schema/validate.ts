@@ -322,7 +322,7 @@ function validateUniqueIds(projects: Project[], errors: string[]) {
   }
 }
 
-export function validateHillChartObject(data: unknown): ValidateResult {
+function validateHillChartObject(data: unknown): ValidateResult {
   const errors: string[] = []
 
   if (!isRecord(data)) {

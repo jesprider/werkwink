@@ -75,3 +75,23 @@ describe('readStoredStateRaw', () => {
     expect(() => readStoredStateRaw(storage)).toThrow(StorageLoadError)
   })
 })
+
+describe('persist round-trip', () => {
+  it('validates JSON written to storage and parses back to state', () => {
+    const backing = new Map<string, string>()
+    backing.set(WERKWINK_STORAGE_KEY, MINIMAL_IMPORT_JSON)
+    const storage = {
+      getItem: (key: string) => backing.get(key) ?? null,
+      setItem: (key: string, value: string) => {
+        backing.set(key, value)
+      },
+    } as Storage
+
+    const raw = readStoredStateRaw(storage)
+    expect(raw).toBe(MINIMAL_IMPORT_JSON)
+
+    const state = parseStoredState(raw!)
+    expect(state.projects).toHaveLength(1)
+    expect(state.projects[0]?.id).toBe('proj_import_1')
+  })
+})

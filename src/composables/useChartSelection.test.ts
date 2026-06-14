@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { computed, nextTick } from 'vue'
 import { setActivePinia, createPinia } from 'pinia'
+import { PEAK_CROSSING_BLOCKED_MESSAGE } from '../domain/forceRules'
 import { useHillChartStore } from '../stores/hillChart'
 import { useChartSelection } from './useChartSelection'
 
@@ -66,5 +67,25 @@ describe('useChartSelection', () => {
     onTrackableClick('proj_1')
     clearSelection()
     expect(selectedTrackableId.value).toBeNull()
+  })
+
+  it('surfaces chart block message when move is blocked', () => {
+    const store = useHillChartStore()
+    const projectId = store.addProject()
+    store.setPosition(projectId, 45)
+    store.addForce(projectId, 'down', 'Blocker')
+
+    const { chartBlockMessage, onMove } = useChartSelection({
+      validIds: [projectId],
+      applyPosition: (id, position) => store.setPosition(id, position),
+      nudgeContextForMove: (id) => ({
+        trackable: store.projects.find((p) => p.id === id),
+        project: store.projects.find((p) => p.id === id),
+      }),
+    })
+
+    onMove(projectId, 55)
+
+    expect(chartBlockMessage.value).toBe(PEAK_CROSSING_BLOCKED_MESSAGE)
   })
 })

@@ -92,13 +92,15 @@ migration (no active users).
 
 ### PR 5 — Side panel split (`chore/side-panel-split`)
 
-**Status:** This PR
+**Status:** Done (merged)
 
 - `PanelHeader.vue`, `PanelPosition.vue`, `PanelForces.vue`, `PanelFooter.vue`
 - `SidePanel.vue` → thin orchestrator (~80 lines)
 - `PEAK_POSITION` everywhere; `validateForceDraft()` if save pattern still repeats
 
 ### PR 6 — Tests + low hygiene (`chore/component-tests`)
+
+**Status:** This PR
 
 - `@vue/test-utils` + Vitest SFC config
 - Unit: `useChartBlockNudge`, `useChartSelection`, persist round-trip
