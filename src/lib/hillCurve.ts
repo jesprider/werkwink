@@ -3,7 +3,13 @@ export const CHART = {
   height: 420,
   topPad: 60,
   bottomPad: 60,
+  sidePad: 36,
 } as const
+
+export function chartViewBox(): string {
+  const { width, height, sidePad } = CHART
+  return `-${sidePad} 0 ${width + 2 * sidePad} ${height}`
+}
 
 // Raised cosine: 0 at x=0 and x=100, 1 at the peak (x=50).
 export function yNorm(x: number): number {
@@ -36,4 +42,15 @@ export function curvePath(step = 1): string {
 export function positionFromRatio(ratio: number): number {
   const clamped = Math.min(1, Math.max(0, ratio))
   return Math.round(clamped * 100)
+}
+
+export function positionFromClientX(clientX: number, svg: SVGSVGElement | null): number | null {
+  if (!svg) return null
+  const rect = svg.getBoundingClientRect()
+  if (rect.width === 0) return null
+  const { width, sidePad } = CHART
+  const viewBoxWidth = width + 2 * sidePad
+  const ratio = (clientX - rect.left) / rect.width
+  const svgX = ratio * viewBoxWidth - sidePad
+  return positionFromRatio(svgX / width)
 }

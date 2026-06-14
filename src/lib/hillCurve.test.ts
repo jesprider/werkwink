@@ -1,5 +1,21 @@
 import { describe, it, expect } from 'vitest'
-import { yNorm, curveX, curveY, positionFromRatio, CHART } from './hillCurve'
+import {
+  yNorm,
+  curveX,
+  curveY,
+  positionFromRatio,
+  chartViewBox,
+  positionFromClientX,
+  CHART,
+} from './hillCurve'
+
+describe('chartViewBox includes horizontal padding for marker overflow', () => {
+  it('extends viewBox left and right by sidePad', () => {
+    expect(chartViewBox()).toBe(
+      `-${CHART.sidePad} 0 ${CHART.width + 2 * CHART.sidePad} ${CHART.height}`,
+    )
+  })
+})
 
 describe('yNorm (raised cosine, 0 at ends, 1 at peak)', () => {
   it('is 0 at the left end', () => {
@@ -53,5 +69,34 @@ describe('positionFromRatio maps a 0..1 ratio to an integer 0..100', () => {
   })
   it('clamps above 100', () => {
     expect(positionFromRatio(1.5)).toBe(100)
+  })
+})
+
+describe('positionFromClientX maps pointer across padded viewBox', () => {
+  const svg = {
+    getBoundingClientRect: () => ({ left: 100, width: 200 }),
+  } as SVGSVGElement
+
+  it('maps left drawable edge to position 0', () => {
+    expect(positionFromClientX(107, svg)).toBe(0)
+  })
+
+  it('maps horizontal center to position 50', () => {
+    expect(positionFromClientX(200, svg)).toBe(50)
+  })
+
+  it('maps right drawable edge to position 100', () => {
+    expect(positionFromClientX(293, svg)).toBe(100)
+  })
+
+  it('returns null when svg is null', () => {
+    expect(positionFromClientX(200, null)).toBeNull()
+  })
+
+  it('returns null when svg rect width is zero', () => {
+    const zero = {
+      getBoundingClientRect: () => ({ left: 0, width: 0 }),
+    } as SVGSVGElement
+    expect(positionFromClientX(50, zero)).toBeNull()
   })
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CHART, curvePath, curveX, curveY } from '../lib/hillCurve'
+import { CHART, chartViewBox, curvePath, curveX, curveY } from '../lib/hillCurve'
 import { PALETTE } from '../schema/palette'
 
 const DEMO_POSITION = 28
@@ -50,7 +50,7 @@ const downhillLabel = labelAboveCurve(DOWNHILL_LABEL_POS, DOWNHILL_TEXT)
 
 <template>
   <svg
-    :viewBox="`0 0 ${CHART.width} ${CHART.height}`"
+    :viewBox="chartViewBox()"
     class="mx-auto h-auto w-full max-w-2xl select-none"
     role="img"
     aria-label="Hill curve: figuring it out on the uphill, making it happen on the downhill"
