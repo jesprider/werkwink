@@ -66,7 +66,7 @@ migration (no active users).
 
 ### PR 2 — Domain layout (`chore/domain-layout`)
 
-**Status:** This PR
+**Status:** Done (merged)
 
 - `findTrackableInProjects()` — shared by store and `lookupInProject`
 - Move `chartMarkers.ts` → `domain/chartMarkers.ts`
@@ -77,6 +77,8 @@ migration (no active users).
 - Consolidate active down-force check
 
 ### PR 3 — Import extraction (`chore/import-composable`)
+
+**Status:** This PR
 
 - `useJsonImport(store)` from `OverviewView` — file read, validate, demo confirm, errors, drag-drop
 

@@ -10,22 +10,31 @@ import HillChart from '../components/HillChart.vue'
 import ImportButton from '../components/ImportButton.vue'
 import SidePanel from '../components/SidePanel.vue'
 import { downloadJson } from '../lib/downloadJson'
-import { validateHillChartJson } from '../schema/validate'
 import { useChartBlockNudge } from '../composables/useChartBlockNudge'
+import { useJsonImport } from '../composables/useJsonImport'
 
 const store = useHillChartStore()
 const router = useRouter()
-const {
-  projects,
-  demo,
-  canImport: importEnabled,
-  canEndDaily: endDailyEnabled,
-} = storeToRefs(store)
+const { projects, demo, canEndDaily: endDailyEnabled } = storeToRefs(store)
 const selectedTrackableId = ref<string | null>(null)
 const hillChartRef = ref<InstanceType<typeof HillChart> | null>(null)
-const importButtonRef = ref<InstanceType<typeof ImportButton> | null>(null)
-const importErrors = ref<string[]>([])
-const isDraggingFile = ref(false)
+
+const {
+  importEnabled,
+  importErrors,
+  isDraggingFile,
+  importButtonRef,
+  clearErrors,
+  onImportClick,
+  handleImportFile,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+} = useJsonImport(store, {
+  onImported: () => {
+    selectedTrackableId.value = null
+  },
+})
 
 const chartMarkers = computed(() => overviewMarkers(projects.value))
 const activeMarkers = computed(() => partitionMarkers(chartMarkers.value).active)
@@ -72,10 +81,6 @@ function onAddProject() {
   selectedTrackableId.value = id
 }
 
-function onImportClick() {
-  importButtonRef.value?.openPicker()
-}
-
 function onExportClick() {
   if (!exportEnabled.value) return
   const state = store.exportState()
@@ -89,7 +94,7 @@ function onCleanClick() {
   if (!ok) return
   store.cleanState()
   selectedTrackableId.value = null
-  importErrors.value = []
+  clearErrors()
 }
 
 function onEndDailyClick() {
@@ -98,56 +103,6 @@ function onEndDailyClick() {
   setTimeout(() => {
     endDailyLabel.value = 'End daily'
   }, 2000)
-}
-
-async function handleImportFile(file: File) {
-  importErrors.value = []
-  if (!importEnabled.value) return
-
-  let text: string
-  try {
-    text = await file.text()
-  } catch {
-    importErrors.value = ['Could not read the selected file.']
-    return
-  }
-
-  const result = validateHillChartJson(text)
-  if (!result.ok) {
-    importErrors.value = result.errors
-    return
-  }
-
-  if (demo.value) {
-    const ok = window.confirm('Replace demo data with your imported projects?')
-    if (!ok) return
-  }
-
-  store.importState(result.state)
-  selectedTrackableId.value = null
-}
-
-function onDragOver(ev: DragEvent) {
-  if (!importEnabled.value) return
-  ev.preventDefault()
-  isDraggingFile.value = true
-}
-
-function onDragLeave() {
-  isDraggingFile.value = false
-}
-
-async function onDrop(ev: DragEvent) {
-  isDraggingFile.value = false
-  if (!importEnabled.value) return
-  ev.preventDefault()
-  const file = ev.dataTransfer?.files?.[0]
-  if (!file) return
-  if (!file.name.endsWith('.json') && file.type !== 'application/json') {
-    importErrors.value = ['Please drop a .json file.']
-    return
-  }
-  await handleImportFile(file)
 }
 </script>
 
