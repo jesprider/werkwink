@@ -21,7 +21,6 @@ const props = defineProps<{
   trackable: HillTrackable
   kind: TrackableKind
   project: Project
-  trackableId: string
 }>()
 
 const store = useHillChartStore()
@@ -29,7 +28,7 @@ const peakCrossingAttempted = ref(false)
 const projectDoneAttempted = ref(false)
 
 watch(
-  () => props.trackableId,
+  () => props.trackable.id,
   () => {
     peakCrossingAttempted.value = false
     projectDoneAttempted.value = false
@@ -68,7 +67,7 @@ function onSliderInput(event: Event) {
   if (props.kind === 'project' && isProjectDoneBlocked(props.project, value)) {
     projectDoneAttempted.value = true
   }
-  store.setPosition(props.trackableId, value)
+  store.setPosition(props.trackable.id, value)
 }
 </script>
 
