@@ -44,7 +44,7 @@ migration (no active users).
 | Persist validation | Full `validateHillChartObject` on hydrate → `StorageErrorView` |
 | `canEndDaily` | Store getter using `isSameLocalDay` |
 | Folder moves | `chartMarkers` + `trackableLookup` → `domain/`; curve math → `lib/hillCurve.ts` |
-| `SidePanel` split | `PanelHeader`, `PanelPosition`, `PanelForces`, `PanelDangerZone` |
+| `SidePanel` split | `PanelHeader`, `PanelPosition`, `PanelForces`, `PanelFooter` |
 | Chart workspace | `useChartSelection` composable + `ChartWorkspace.vue` |
 | Component tests | `PanelPosition` (slider clamp) + `DoneStack` (expand/drag) with `@vue/test-utils` |
 | Local `plans/` | Out of scope — not committed |
@@ -94,7 +94,7 @@ migration (no active users).
 
 **Status:** This PR
 
-- `PanelHeader.vue`, `PanelPosition.vue`, `PanelForces.vue`, `PanelDangerZone.vue`
+- `PanelHeader.vue`, `PanelPosition.vue`, `PanelForces.vue`, `PanelFooter.vue`
 - `SidePanel.vue` → thin orchestrator (~80 lines)
 - `PEAK_POSITION` everywhere; `validateForceDraft()` if save pattern still repeats
 
