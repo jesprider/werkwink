@@ -60,7 +60,7 @@ const addAria = props.direction === 'up' ? 'Add up force' : 'Add down force'
   </section>
 
   <details v-if="pastForces.length" :class="direction === 'up' ? 'mb-4' : ''">
-    <summary class="cursor-pointer text-sm font-medium">{{ pastTitle }}</summary>
+    <summary class="text-sm font-medium">{{ pastTitle }}</summary>
     <ul class="mt-2 space-y-2">
       <ForceChip
         v-for="force in pastForces"

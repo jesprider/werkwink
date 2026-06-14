@@ -77,7 +77,7 @@ function onResolveClick(event: MouseEvent) {
 <template>
   <li
     v-if="variant === 'past'"
-    class="cursor-pointer rounded-full bg-hill-sand/40 px-3 py-1.5 text-sm text-text-warm/70 transition-colors hover:bg-hill-sand/60"
+    class="rounded-full bg-hill-sand/40 px-3 py-1.5 text-sm text-text-warm/70 transition-colors hover:bg-hill-sand/60"
     role="button"
     tabindex="0"
     :aria-label="`Restore ${force.label} to active`"
