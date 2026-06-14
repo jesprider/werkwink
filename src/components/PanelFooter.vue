@@ -7,7 +7,6 @@ const props = defineProps<{
   trackable: HillTrackable
   kind: TrackableKind
   project: Project
-  trackableId: string
 }>()
 
 const store = useHillChartStore()
@@ -29,7 +28,7 @@ function onDelete() {
   if (props.kind === 'project') {
     store.removeProject(props.project.id)
   } else {
-    store.removeTask(props.project.id, props.trackableId)
+    store.removeTask(props.project.id, props.trackable.id)
   }
 }
 </script>

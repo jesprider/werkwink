@@ -10,7 +10,6 @@ import SourceSystemIcon from './SourceSystemIcon.vue'
 const props = defineProps<{
   trackable: HillTrackable
   kind: TrackableKind
-  trackableId: string
   projectId: string
   showOpenProject?: boolean
 }>()
@@ -61,7 +60,7 @@ function trySave() {
   const trimmedLink = draftLink.value.trim()
   if (!trimmedLink) {
     linkInvalid.value = false
-    store.updateTrackable(props.trackableId, { name: trimmedName, source: null })
+    store.updateTrackable(props.trackable.id, { name: trimmedName, source: null })
     editing.value = false
     return
   }
@@ -73,7 +72,7 @@ function trySave() {
     return
   }
   linkInvalid.value = false
-  store.updateTrackable(props.trackableId, { name: trimmedName, source: parsed })
+  store.updateTrackable(props.trackable.id, { name: trimmedName, source: parsed })
   editing.value = false
 }
 

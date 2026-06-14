@@ -99,7 +99,6 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
         ref="headerRef"
         :trackable="trackable"
         :kind="kind"
-        :trackable-id="trackableId"
         :project-id="project.id"
         :show-open-project="showOpenProject"
       />
@@ -113,12 +112,7 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
       </button>
     </div>
 
-    <PanelPosition
-      :trackable="trackable"
-      :kind="kind"
-      :project="project"
-      :trackable-id="trackableId"
-    />
+    <PanelPosition :trackable="trackable" :kind="kind" :project="project" />
 
     <PanelForces
       direction="up"
@@ -156,7 +150,6 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
       :trackable="trackable"
       :kind="kind"
       :project="project"
-      :trackable-id="trackableId"
     />
   </aside>
 </template>
