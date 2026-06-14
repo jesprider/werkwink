@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useHillCurve } from '../composables/useHillCurve'
+import { curveX, curveY } from '../lib/hillCurve'
 import type { TrailGhost } from '../domain/chartMarkers'
 
 defineProps<{
@@ -7,8 +7,6 @@ defineProps<{
   radius: number
   color: string
 }>()
-
-const { curveX, curveY } = useHillCurve()
 </script>
 
 <template>
