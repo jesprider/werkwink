@@ -390,6 +390,41 @@ describe('hillChart store', () => {
     })
   })
 
+  describe('canEndDaily getter', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date(2026, 5, 6, 12, 0, 0))
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('returns false when projects is empty', () => {
+      const store = useHillChartStore()
+      store.projects = []
+      expect(store.canEndDaily).toBe(false)
+    })
+
+    it('returns true when projects exist and lastDailyDate is null', () => {
+      const store = useHillChartStore()
+      store.lastDailyDate = null
+      expect(store.canEndDaily).toBe(true)
+    })
+
+    it('returns true when lastDailyDate is a prior day', () => {
+      const store = useHillChartStore()
+      store.lastDailyDate = '2026-06-05'
+      expect(store.canEndDaily).toBe(true)
+    })
+
+    it('returns false when lastDailyDate is today', () => {
+      const store = useHillChartStore()
+      store.lastDailyDate = localDateString()
+      expect(store.canEndDaily).toBe(false)
+    })
+  })
+
   describe('demo flag', () => {
     it('setPosition does not clear demo', () => {
       const store = useHillChartStore()

@@ -39,7 +39,7 @@ uncertainty instead.
 
 **Done.** Position 100 = done. Done dots remain on the chart at 100 (no archival). They can be dragged back if a problem surfaces. To keep the right side readable, done dots **stack into a collapsed column** at the bottom-right with a "+ N more" badge; click to expand into a list.
 
-**Staleness.** If a dot's position doesn't change for too long, it tints red. Linear interpolation from project color → fully red over **5 calendar days** since the last position change.
+**Staleness.** Dots that have not moved recently show small **staleness satellites** — red circles on the upper arc of the main marker. One satellite per day without movement from day 2, max 4; the main dot keeps its project color. See §5.8.
 
 ### Terms in code
 
@@ -278,7 +278,7 @@ Dots that have not moved recently show small **staleness satellites** — red ci
 
 - **Framework:** Vue 3 (Composition API + `<script setup>`).
 - **Build:** Vite.
-- **Store:** Pinia, with `pinia-plugin-persistedstate` syncing to `localStorage` under a single key (`hill-chart-state`).
+- **Store:** Pinia, with `pinia-plugin-persistedstate` syncing to `localStorage` under a single key (`werkwink-state`).
 - **Router:** Vue Router with three routes: `/` (landing page), `/projects` (overview), and `/projects/:id` (project detail).
 - **Styling:** Tailwind CSS v4 with the warm palette as design tokens declared via the `@theme` block in `src/styles/main.css` (no `tailwind.config.ts` in v4).
 - **Chart rendering:** SVG (native drag, crisp at any zoom). No charting library needed.

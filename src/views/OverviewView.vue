@@ -10,13 +10,17 @@ import HillChart from '../components/HillChart.vue'
 import ImportButton from '../components/ImportButton.vue'
 import SidePanel from '../components/SidePanel.vue'
 import { downloadJson } from '../lib/downloadJson'
-import { localDateString } from '../lib/localDate'
 import { validateHillChartJson } from '../schema/validate'
 import { useChartBlockNudge } from '../composables/useChartBlockNudge'
 
 const store = useHillChartStore()
 const router = useRouter()
-const { projects, demo, canImport: importEnabled } = storeToRefs(store)
+const {
+  projects,
+  demo,
+  canImport: importEnabled,
+  canEndDaily: endDailyEnabled,
+} = storeToRefs(store)
 const selectedTrackableId = ref<string | null>(null)
 const hillChartRef = ref<InstanceType<typeof HillChart> | null>(null)
 const importButtonRef = ref<InstanceType<typeof ImportButton> | null>(null)
@@ -35,10 +39,6 @@ const exportEnabled = computed(() => projects.value.length > 0)
 const cleanEnabled = computed(() => projects.value.length > 0)
 
 const endDailyLabel = ref<'End daily' | 'Saved'>('End daily')
-
-const endDailyEnabled = computed(
-  () => projects.value.length > 0 && store.lastDailyDate !== localDateString(),
-)
 
 const selectedProject = computed(() =>
   selectedTrackableId.value
@@ -80,7 +80,7 @@ function onExportClick() {
   if (!exportEnabled.value) return
   const state = store.exportState()
   const ts = state.exportedAt!.replace(/[:.]/g, '')
-  downloadJson(`hill-chart-${ts}.json`, state)
+  downloadJson(`werkwink-${ts}.json`, state)
 }
 
 function onCleanClick() {
