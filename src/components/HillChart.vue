@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { CHART, curvePath, curveX, curveY } from '../lib/hillCurve'
+import { CHART, chartViewBox, curvePath, curveX, curveY } from '../lib/hillCurve'
 import { useHillDrag } from '../composables/useHillDrag'
 import type { ChartMarker as ChartMarkerModel } from '../domain/chartMarkers'
 import MarkerChart from './MarkerChart.vue'
@@ -35,7 +35,7 @@ defineExpose({ svgRef })
 <template>
   <svg
     ref="svgRef"
-    :viewBox="`0 0 ${CHART.width} ${CHART.height}`"
+    :viewBox="chartViewBox()"
     class="h-auto w-full select-none"
     role="img"
     aria-label="Hill chart"

@@ -1,15 +1,8 @@
 import { onBeforeUnmount } from 'vue'
-import { positionFromRatio } from '../lib/hillCurve'
+import { positionFromClientX } from '../lib/hillCurve'
 
+export { positionFromClientX }
 export const DRAG_THRESHOLD_PX = 4
-
-export function positionFromClientX(clientX: number, svg: SVGSVGElement | null): number | null {
-  if (!svg) return null
-  const rect = svg.getBoundingClientRect()
-  if (rect.width === 0) return null
-  const ratio = (clientX - rect.left) / rect.width
-  return positionFromRatio(ratio)
-}
 
 export function useHillDrag(options: {
   getSvg: () => SVGSVGElement | null
