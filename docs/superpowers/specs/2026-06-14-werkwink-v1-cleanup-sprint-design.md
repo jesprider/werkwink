@@ -71,7 +71,7 @@ migration (no active users).
 - `findTrackableInProjects()` — shared by store and `lookupInProject`
 - Move `chartMarkers.ts` → `domain/chartMarkers.ts`
 - Move `trackableLookup.ts` → `domain/trackableLookup.ts`
-- Move curve math → `lib/hillCurve.ts`; thin `useHillCurve` wrapper
+- Move curve math → `lib/hillCurve.ts`; components import directly
 - `buildChartMarker()` — dedupe `overviewMarkers` / `markersForProject`
 - `createPrimaryOwnerForce()` — shared by `addProject` / `addTask`
 - Consolidate active down-force check
@@ -97,7 +97,7 @@ migration (no active users).
 - `@vue/test-utils` + Vitest SFC config
 - Unit: `useChartBlockNudge`, `useChartSelection`, persist round-trip
 - Component: `PanelPosition`, `DoneStack`
-- Dead export cleanup; align `useHillCurve` consumption
+- Dead export cleanup
 
 ---
 

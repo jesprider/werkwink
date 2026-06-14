@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useHillCurve } from '../composables/useHillCurve'
+import { CHART, curvePath, curveX, curveY } from '../lib/hillCurve'
 import { useHillDrag } from '../composables/useHillDrag'
 import type { ChartMarker as ChartMarkerModel } from '../domain/chartMarkers'
 import MarkerChart from './MarkerChart.vue'
@@ -16,8 +16,6 @@ const emit = defineEmits<{
   (e: 'open', id: string): void
   (e: 'click', id: string): void
 }>()
-
-const { CHART, curvePath, curveX, curveY } = useHillCurve()
 
 const path = curvePath()
 const baseline = CHART.height - CHART.bottomPad

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useHillCurve } from '../composables/useHillCurve'
+import { CHART, curvePath, curveX, curveY } from '../lib/hillCurve'
 import { PALETTE } from '../schema/palette'
 
 const DEMO_POSITION = 28
@@ -12,8 +12,6 @@ const CHAR_WIDTH = 11
 
 const UPHILL_TEXT = 'Figuring it out'
 const DOWNHILL_TEXT = 'Making it happen'
-
-const { CHART, curvePath, curveX, curveY } = useHillCurve()
 
 const path = curvePath()
 const baseline = CHART.height - CHART.bottomPad
