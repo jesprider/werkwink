@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HILL_CHART_STORAGE_KEY } from '../storage/loadState'
+import { WERKWINK_STORAGE_KEY } from '../storage/loadState'
 
 defineProps<{
   message: string
@@ -13,7 +13,7 @@ defineProps<{
       <p class="mb-2 text-sm">
         Storage key:
         <code class="rounded bg-hill-sand px-1.5 py-0.5 font-mono text-sm">{{
-          HILL_CHART_STORAGE_KEY
+          WERKWINK_STORAGE_KEY
         }}</code>
       </p>
       <pre class="mb-6 overflow-x-auto rounded-lg bg-hill-sand p-4 text-sm whitespace-pre-wrap">{{

@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest'
+import { MINIMAL_IMPORT_JSON } from '../schema/testFixtures'
 import {
   parseStoredState,
   readStoredStateRaw,
   StorageLoadError,
-  HILL_CHART_STORAGE_KEY,
+  WERKWINK_STORAGE_KEY,
 } from './loadState'
 
 describe('parseStoredState', () => {
@@ -13,14 +14,10 @@ describe('parseStoredState', () => {
     expect(result.projects).toEqual([])
   })
 
-  it('accepts sample-shaped JSON with nested projects', () => {
-    const raw = JSON.stringify({
-      version: 1,
-      exportedAt: null,
-      projects: [{ id: 'p1', name: 'Test', position: 10 }],
-    })
-    const result = parseStoredState(raw)
+  it('accepts fully valid import-shaped JSON', () => {
+    const result = parseStoredState(MINIMAL_IMPORT_JSON)
     expect(result.projects).toHaveLength(1)
+    expect(result.projects[0]?.name).toBe('Imported Project')
   })
 
   it('throws StorageLoadError on malformed JSON', () => {
@@ -38,27 +35,27 @@ describe('parseStoredState', () => {
     expect(() => parseStoredState('[]')).toThrow(/JSON object/)
   })
 
-  it('throws when version is missing', () => {
-    expect(() => parseStoredState('{"projects":[]}')).toThrow(/version/)
-  })
-
-  it('throws when version is not a number', () => {
-    expect(() => parseStoredState('{"version":"1","projects":[]}')).toThrow(/version/)
-  })
-
-  it('throws when projects is missing', () => {
-    expect(() => parseStoredState('{"version":1}')).toThrow(/projects/)
+  it('throws when version is not 1', () => {
+    expect(() => parseStoredState('{"version":2,"projects":[]}')).toThrow(/version/)
   })
 
   it('throws when projects is not an array', () => {
     expect(() => parseStoredState('{"version":1,"projects":{}}')).toThrow(/projects/)
+  })
+
+  it('throws when a project is missing required fields', () => {
+    const raw = JSON.stringify({
+      version: 1,
+      projects: [{ id: 'p1', name: 'Test', position: 10 }],
+    })
+    expect(() => parseStoredState(raw)).toThrow(StorageLoadError)
   })
 })
 
 describe('readStoredStateRaw', () => {
   it('returns null when the key is absent', () => {
     const storage = {
-      getItem: (key: string) => (key === HILL_CHART_STORAGE_KEY ? null : null),
+      getItem: (key: string) => (key === WERKWINK_STORAGE_KEY ? null : null),
     } as Storage
     expect(readStoredStateRaw(storage)).toBeNull()
   })
@@ -66,14 +63,14 @@ describe('readStoredStateRaw', () => {
   it('returns raw string when data is valid', () => {
     const raw = JSON.stringify({ version: 1, projects: [] })
     const storage = {
-      getItem: (key: string) => (key === HILL_CHART_STORAGE_KEY ? raw : null),
+      getItem: (key: string) => (key === WERKWINK_STORAGE_KEY ? raw : null),
     } as Storage
     expect(readStoredStateRaw(storage)).toBe(raw)
   })
 
   it('throws when stored data is invalid', () => {
     const storage = {
-      getItem: (key: string) => (key === HILL_CHART_STORAGE_KEY ? '{bad' : null),
+      getItem: (key: string) => (key === WERKWINK_STORAGE_KEY ? '{bad' : null),
     } as Storage
     expect(() => readStoredStateRaw(storage)).toThrow(StorageLoadError)
   })

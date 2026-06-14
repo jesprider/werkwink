@@ -48,7 +48,8 @@ code and implementation docs use the terms below.
 | `TrackableKind` | Application | `'project' \| 'task'`. |
 | `findTrackableById` | Store module (private) | Helper inside `hillChart.ts`; finds `Project` or `Task` by id. Not a Pinia action. |
 | `selectedTrackableId` | UI state | Which trackable the side panel shows (project view). |
-| `resolveForce` / `unresolveForce` | Store (planned) | Force lifecycle only. |
+| `canEndDaily` | Store getter | `projects.length > 0` and `lastDailyDate` is not today (via `isSameLocalDay`). |
+| `resolveForce` / `unresolveForce` | Store actions | Force lifecycle only. |
 | `partitionMarkers` | Composable (`chartMarkers.ts`) | Splits markers into `active` (curve) and `done` (stack). |
 | `DoneStack.vue` | Component | Renders done dots; expand/collapse, click, drag. |
 | `allTasksDone` / `clampProjectDonePosition` | Domain (`doneRules.ts`) | Project cannot reach 100 until all tasks are at 100. |

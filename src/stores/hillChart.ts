@@ -12,9 +12,9 @@ import { sampleState } from '../data/sample'
 import { clampProjectDonePosition } from '../domain/doneRules'
 import { canCrossPeak, PEAK_POSITION, snapIfDownhillWithBlockers } from '../domain/forceRules'
 import { upsertSnapshot } from '../domain/snapshots'
-import { localDateString } from '../lib/localDate'
+import { isSameLocalDay, localDateString } from '../lib/localDate'
 import { PALETTE_ORDER } from '../schema/palette'
-import { HILL_CHART_STORAGE_KEY } from '../storage/loadState'
+import { WERKWINK_STORAGE_KEY } from '../storage/loadState'
 
 function findTrackableById(projects: Project[], id: string): HillTrackable | undefined {
   for (const project of projects) {
@@ -33,11 +33,17 @@ function findForce(trackable: HillTrackable, forceId: string): Force | undefined
 export const useHillChartStore = defineStore('hillChart', {
   state: (): HillChartState => structuredClone(sampleState),
   persist: {
-    key: HILL_CHART_STORAGE_KEY,
+    key: WERKWINK_STORAGE_KEY,
   },
   getters: {
     canImport(state): boolean {
       return state.demo === true || state.projects.length === 0
+    },
+    canEndDaily(state): boolean {
+      return (
+        state.projects.length > 0 &&
+        (state.lastDailyDate === null || !isSameLocalDay(state.lastDailyDate))
+      )
     },
   },
   actions: {
