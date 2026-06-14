@@ -24,4 +24,14 @@
   body {
     @apply bg-cream text-text-warm font-body;
   }
+
+  a[href],
+  button:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
 }

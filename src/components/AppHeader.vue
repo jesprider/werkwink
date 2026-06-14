@@ -27,7 +27,7 @@ defineEmits<{
         :class="
           importEnabled
             ? 'rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm transition-opacity hover:opacity-90'
-            : 'cursor-not-allowed rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm/50'
+            : 'rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm/50'
         "
         @click="importEnabled && $emit('import-click')"
       >
@@ -39,7 +39,7 @@ defineEmits<{
         :class="
           exportEnabled
             ? 'rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm transition-opacity hover:opacity-90'
-            : 'cursor-not-allowed rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm/50'
+            : 'rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm/50'
         "
         @click="exportEnabled && $emit('export-click')"
       >
@@ -51,7 +51,7 @@ defineEmits<{
         :class="
           cleanEnabled
             ? 'rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm transition-opacity hover:opacity-90'
-            : 'cursor-not-allowed rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm/50'
+            : 'rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm/50'
         "
         @click="cleanEnabled && $emit('clean-click')"
       >
@@ -70,7 +70,7 @@ defineEmits<{
         :class="
           endDailyEnabled
             ? 'rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm transition-opacity hover:opacity-90'
-            : 'cursor-not-allowed rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm/50'
+            : 'rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm/50'
         "
         @click="endDailyEnabled && $emit('end-daily-click')"
       >
