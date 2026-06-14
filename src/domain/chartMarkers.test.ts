@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { Project } from '../schema/types'
 import {
-  activeCount,
   overviewMarkers,
   markersForProject,
   partitionMarkers,
@@ -21,51 +20,6 @@ function project(overrides: Partial<Project> = {}): Project {
     ...overrides,
   }
 }
-
-describe('activeCount', () => {
-  it('counts only active forces in the given direction', () => {
-    expect(
-      activeCount(
-        [
-          {
-            id: 'f1',
-            direction: 'up',
-            label: 'A',
-            owner: null,
-            isPrimary: false,
-            status: 'active',
-            createdAt: '',
-            resolvedAt: null,
-            resolutionReason: null,
-          },
-          {
-            id: 'f2',
-            direction: 'up',
-            label: 'B',
-            owner: null,
-            isPrimary: false,
-            status: 'resolved',
-            createdAt: '',
-            resolvedAt: '',
-            resolutionReason: null,
-          },
-          {
-            id: 'f3',
-            direction: 'down',
-            label: 'C',
-            owner: null,
-            isPrimary: false,
-            status: 'active',
-            createdAt: '',
-            resolvedAt: null,
-            resolutionReason: null,
-          },
-        ],
-        'up',
-      ),
-    ).toBe(1)
-  })
-})
 
 describe('overviewMarkers', () => {
   it('maps each project to a radius-16 marker in its palette color with active counts', () => {

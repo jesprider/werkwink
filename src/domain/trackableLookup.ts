@@ -7,6 +7,19 @@ export interface InProjectLookup {
   trackable: HillTrackable
 }
 
+export function findTrackableInProjects(
+  projects: Project[],
+  id: string,
+): HillTrackable | undefined {
+  for (const project of projects) {
+    if (project.id === id) return project
+    for (const task of project.tasks) {
+      if (task.id === id) return task
+    }
+  }
+  return undefined
+}
+
 export function lookupInProject(project: Project, id: string): InProjectLookup | null {
   if (project.id === id) return { kind: 'project', trackable: project }
   const task = project.tasks.find((t) => t.id === id)

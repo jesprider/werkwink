@@ -37,20 +37,20 @@ code and implementation docs use the terms below.
 | `HillTrackable` | Domain | Shared shape: id, name, position, forces, snapshots, optional `source`. Implemented by `Project` and `Task`. |
 | `HillChartState` | Domain | Root store document: `projects[]`. |
 | `ChartMarker` | Presentation | Read model for one SVG marker (position, color, radius, force counts, `stalenessSatellites`). |
-| `overviewMarkers` / `markersForProject` | Presentation | Build `ChartMarker[]` for a view. |
+| `overviewMarkers` / `markersForProject` | Presentation | Build `ChartMarker[]` for a view (`domain/chartMarkers.ts`). |
 | `MarkerChart.vue` | UI | Renders one marker on the hill (main dot + staleness satellites). |
 | `MarkerTrail.vue` | UI | Renders snapshot ghost trail for the selected marker. |
 | `stalenessSatelliteCount` | Domain (`domain/staleness.ts`) | How many red satellites to draw (0–4); skipped at `DONE_POSITION` (100). |
 | `daysWithoutMovement` | Domain | Calendar days since last move; powers side-panel copy. |
 | `daysSinceLastMove` | Domain | Raw calendar-day diff from `lastMovedAt` to today. |
-| `lookupInProject` | Application | Given a `Project` + id → `InProjectLookup` or null. |
-| `InProjectLookup` | Application | `{ kind: TrackableKind, trackable: HillTrackable }`. |
-| `TrackableKind` | Application | `'project' \| 'task'`. |
-| `findTrackableById` | Store module (private) | Helper inside `hillChart.ts`; finds `Project` or `Task` by id. Not a Pinia action. |
+| `findTrackableInProjects` | Domain (`domain/trackableLookup.ts`) | Given `projects[]` + id → `HillTrackable` or undefined. |
+| `lookupInProject` | Domain (`domain/trackableLookup.ts`) | Given a `Project` + id → `InProjectLookup` or null. |
+| `InProjectLookup` | Domain | `{ kind: TrackableKind, trackable: HillTrackable }`. |
+| `TrackableKind` | Domain | `'project' \| 'task'`. |
 | `selectedTrackableId` | UI state | Which trackable the side panel shows (project view). |
 | `canEndDaily` | Store getter | `projects.length > 0` and `lastDailyDate` is not today (via `isSameLocalDay`). |
 | `resolveForce` / `unresolveForce` | Store actions | Force lifecycle only. |
-| `partitionMarkers` | Composable (`chartMarkers.ts`) | Splits markers into `active` (curve) and `done` (stack). |
+| `partitionMarkers` | Domain (`domain/chartMarkers.ts`) | Splits markers into `active` (curve) and `done` (stack). |
 | `DoneStack.vue` | Component | Renders done dots; expand/collapse, click, drag. |
 | `allTasksDone` / `clampProjectDonePosition` | Domain (`doneRules.ts`) | Project cannot reach 100 until all tasks are at 100. |
 
@@ -73,7 +73,7 @@ code and implementation docs use the terms below.
 ## Reserved words
 
 - **`resolve*`** — force lifecycle only (`resolveForce`, `unresolveForce`). Do not use for ID lookup.
-- **`lookup*` / `find*`** — locating entities (`lookupInProject`, `findTrackableById`).
+- **`lookup*` / `find*`** — locating entities (`lookupInProject`, `findTrackableInProjects`).
 - **`Dot` / `dot`** — avoid in `src/` except user-visible strings (aria-label, copy). Prefer `trackable`, `ChartMarker`, `marker`.
 
 ---
@@ -83,8 +83,9 @@ code and implementation docs use the terms below.
 | Area | Path pattern |
 |------|----------------|
 | Domain types | `src/schema/types.ts` |
-| Chart projections | `src/composables/chartMarkers.ts` |
+| Chart projections | `src/domain/chartMarkers.ts` |
 | Staleness rules | `src/domain/staleness.ts` |
-| Panel lookup | `src/composables/trackableLookup.ts` |
+| Panel lookup | `src/domain/trackableLookup.ts` |
+| Hill curve geometry | `src/lib/hillCurve.ts` |
 | Marker component | `src/components/MarkerChart.vue` |
 | Store | `src/stores/hillChart.ts` |

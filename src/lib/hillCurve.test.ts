@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { yNorm, curveX, curveY, positionFromRatio, CHART } from './useHillCurve'
+import { yNorm, curveX, curveY, positionFromRatio, CHART } from './hillCurve'
 
 describe('yNorm (raised cosine, 0 at ends, 1 at peak)', () => {
   it('is 0 at the left end', () => {

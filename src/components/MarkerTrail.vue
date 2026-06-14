@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useHillCurve } from '../composables/useHillCurve'
-import type { TrailGhost } from '../composables/chartMarkers'
+import type { TrailGhost } from '../domain/chartMarkers'
 
 defineProps<{
   ghosts: TrailGhost[]

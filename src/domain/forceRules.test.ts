@@ -3,6 +3,7 @@ import type { Force, HillTrackable } from '../schema/types'
 import {
   BLOCKER_SNAP_POSITION,
   PEAK_POSITION,
+  activeForceCount,
   canCrossPeak,
   hasActiveDownForces,
   isPeakCrossingBlocked,
@@ -34,6 +35,51 @@ function downForce(status: Force['status'] = 'active'): Force {
     resolutionReason: null,
   }
 }
+
+describe('activeForceCount', () => {
+  it('counts only active forces in the given direction', () => {
+    expect(
+      activeForceCount(
+        [
+          {
+            id: 'f1',
+            direction: 'up',
+            label: 'A',
+            owner: null,
+            isPrimary: false,
+            status: 'active',
+            createdAt: '',
+            resolvedAt: null,
+            resolutionReason: null,
+          },
+          {
+            id: 'f2',
+            direction: 'up',
+            label: 'B',
+            owner: null,
+            isPrimary: false,
+            status: 'resolved',
+            createdAt: '',
+            resolvedAt: '',
+            resolutionReason: null,
+          },
+          {
+            id: 'f3',
+            direction: 'down',
+            label: 'C',
+            owner: null,
+            isPrimary: false,
+            status: 'active',
+            createdAt: '',
+            resolvedAt: null,
+            resolutionReason: null,
+          },
+        ],
+        'up',
+      ),
+    ).toBe(1)
+  })
+})
 
 describe('hasActiveDownForces', () => {
   it('is false with no forces', () => {

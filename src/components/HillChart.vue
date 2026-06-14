@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useHillCurve } from '../composables/useHillCurve'
 import { useHillDrag } from '../composables/useHillDrag'
-import type { ChartMarker as ChartMarkerModel } from '../composables/chartMarkers'
+import type { ChartMarker as ChartMarkerModel } from '../domain/chartMarkers'
 import MarkerChart from './MarkerChart.vue'
 import MarkerTrail from './MarkerTrail.vue'
 

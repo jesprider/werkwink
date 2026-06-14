@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { Project } from '../schema/types'
-import { lookupInProject, forcesByStatus } from './trackableLookup'
+import { findTrackableInProjects, lookupInProject, forcesByStatus } from './trackableLookup'
 
 const project: Project = {
   id: 'proj_1',
@@ -44,6 +44,20 @@ const project: Project = {
     },
   ],
 }
+
+describe('findTrackableInProjects', () => {
+  it('finds a project by id', () => {
+    expect(findTrackableInProjects([project], 'proj_1')?.name).toBe('Alpha')
+  })
+
+  it('finds a nested task by id', () => {
+    expect(findTrackableInProjects([project], 'task_1')?.name).toBe('Task one')
+  })
+
+  it('returns undefined for an unknown id', () => {
+    expect(findTrackableInProjects([project], 'missing')).toBeUndefined()
+  })
+})
 
 describe('lookupInProject', () => {
   it('finds the project trackable', () => {
