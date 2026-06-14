@@ -1,26 +1,12 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, ref, watch } from 'vue'
 import type { ForceDirection, Project } from '../schema/types'
 import { forcesByStatus, lookupInProject } from '../domain/trackableLookup'
-import {
-  allTasksDone,
-  isProjectDoneBlocked,
-  PROJECT_DONE_BLOCKED_MESSAGE,
-  PROJECT_DONE_CLAMP,
-} from '../domain/doneRules'
-import {
-  hasActiveDownForces,
-  isPeakCrossingBlocked,
-  PEAK_CROSSING_BLOCKED_MESSAGE,
-  PEAK_POSITION,
-} from '../domain/forceRules'
-import { daysWithoutMovement } from '../domain/staleness'
-import { parseSourceUrl, sourceOpenLabel } from '../domain/parseSourceUrl'
 import { useHillChartStore } from '../stores/hillChart'
-import ForceAddForm from './ForceAddForm.vue'
-import ForceChip from './ForceChip.vue'
-import SourceSystemIcon from './SourceSystemIcon.vue'
+import PanelDangerZone from './PanelDangerZone.vue'
+import PanelForces from './PanelForces.vue'
+import PanelHeader from './PanelHeader.vue'
+import PanelPosition from './PanelPosition.vue'
 
 const props = defineProps<{
   project: Project
@@ -29,26 +15,13 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-  (e: 'close'): void
+  close: []
 }>()
 
-const router = useRouter()
 const store = useHillChartStore()
-
-function openProjectView() {
-  router.push(`/projects/${props.project.id}`)
-}
+const headerRef = ref<InstanceType<typeof PanelHeader> | null>(null)
 const editingForceId = ref<string | null>(null)
 const addingDirection = ref<ForceDirection | null>(null)
-const editingHeader = ref(false)
-const draftName = ref('')
-const draftLink = ref('')
-const nameInvalid = ref(false)
-const linkInvalid = ref(false)
-const nameRef = ref<HTMLInputElement | null>(null)
-const linkRef = ref<HTMLInputElement | null>(null)
-const projectDoneAttempted = ref(false)
-const peakCrossingAttempted = ref(false)
 
 const lookup = computed(() => lookupInProject(props.project, props.trackableId))
 const trackable = computed(() => lookup.value?.trackable ?? null)
@@ -59,17 +32,7 @@ watch(
   () => {
     editingForceId.value = null
     addingDirection.value = null
-    editingHeader.value = false
-    projectDoneAttempted.value = false
-    peakCrossingAttempted.value = false
-  },
-)
-
-watch(
-  () => trackable.value?.position,
-  (position) => {
-    if (position !== PROJECT_DONE_CLAMP) projectDoneAttempted.value = false
-    if (position !== PEAK_POSITION) peakCrossingAttempted.value = false
+    headerRef.value?.cancelEdit()
   },
 )
 
@@ -86,108 +49,9 @@ const pastDown = computed(() =>
   trackable.value ? forcesByStatus(trackable.value.forces, 'down', 'resolved') : [],
 )
 
-const atPeak = computed(() => trackable.value?.position === 50)
-const hasActiveBlockers = computed(() =>
-  trackable.value ? hasActiveDownForces(trackable.value.forces) : false,
-)
-const showBlockerHint = computed(() => {
-  if (!trackable.value || !hasActiveBlockers.value) return false
-  return atPeak.value || peakCrossingAttempted.value
-})
-const showProjectDoneHint = computed(() => {
-  if (kind.value !== 'project' || allTasksDone(props.project) || !trackable.value) return false
-  return trackable.value.position === PROJECT_DONE_CLAMP || projectDoneAttempted.value
-})
-const daysWithoutMovementCount = computed(() =>
-  trackable.value ? daysWithoutMovement(trackable.value.lastMovedAt, trackable.value.position) : 0,
-)
-const stalenessLabel = computed(() => {
-  const days = daysWithoutMovementCount.value
-  if (days === 0) return null
-  return days === 1 ? '1 day without movement' : `${days} days without movement`
-})
-
-const sourceUrl = computed(() => trackable.value?.source?.url)
-const sourceSystem = computed(() => trackable.value?.source?.system)
-const sourceAria = computed(() => sourceOpenLabel(sourceSystem.value))
-const deleteAriaLabel = computed(() =>
-  kind.value === 'project' ? 'Delete project' : 'Delete task',
-)
-
-function cancelHeaderEdit() {
-  editingHeader.value = false
-  nameInvalid.value = false
-  linkInvalid.value = false
-}
-
-function startHeaderEdit() {
-  if (!trackable.value) return
-  editingForceId.value = null
-  addingDirection.value = null
-  draftName.value = trackable.value.name
-  draftLink.value = trackable.value.source?.url ?? ''
-  nameInvalid.value = false
-  linkInvalid.value = false
-  editingHeader.value = true
-  void nextTick(() => nameRef.value?.focus())
-}
-
-function trySaveHeader() {
-  if (!trackable.value) return
-  const trimmedName = draftName.value.trim()
-  if (!trimmedName) {
-    nameInvalid.value = true
-    nameRef.value?.focus()
-    return
-  }
-  nameInvalid.value = false
-
-  const trimmedLink = draftLink.value.trim()
-  if (!trimmedLink) {
-    linkInvalid.value = false
-    store.updateTrackable(props.trackableId, { name: trimmedName, source: null })
-    editingHeader.value = false
-    return
-  }
-
-  const parsed = parseSourceUrl(trimmedLink)
-  if (parsed === 'invalid') {
-    linkInvalid.value = true
-    linkRef.value?.focus()
-    return
-  }
-  linkInvalid.value = false
-  store.updateTrackable(props.trackableId, { name: trimmedName, source: parsed })
-  editingHeader.value = false
-}
-
-function onHeaderKeydown(event: KeyboardEvent) {
-  if (!editingHeader.value) return
-  if (event.key === 'Enter') {
-    event.preventDefault()
-    trySaveHeader()
-  } else if (event.key === 'Escape') {
-    event.preventDefault()
-    cancelHeaderEdit()
-  }
-}
-
-function onSliderInput(event: Event) {
-  const value = Number((event.target as HTMLInputElement).value)
-  if (trackable.value) {
-    if (isPeakCrossingBlocked(trackable.value.forces, value, trackable.value.position)) {
-      peakCrossingAttempted.value = true
-    }
-    if (kind.value === 'project' && isProjectDoneBlocked(props.project, value)) {
-      projectDoneAttempted.value = true
-    }
-  }
-  store.setPosition(props.trackableId, value)
-}
-
 function startEdit(forceId: string) {
   addingDirection.value = null
-  editingHeader.value = false
+  headerRef.value?.cancelEdit()
   editingForceId.value = forceId
 }
 
@@ -210,7 +74,7 @@ function onUnresolve(forceId: string) {
 
 function startAdd(direction: ForceDirection) {
   editingForceId.value = null
-  editingHeader.value = false
+  headerRef.value?.cancelEdit()
   addingDirection.value = direction
 }
 
@@ -222,93 +86,23 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
   store.addForce(props.trackableId, direction, payload.label, payload.owner)
   addingDirection.value = null
 }
-
-function deleteConfirmMessage(): string {
-  if (!trackable.value) return ''
-  const name = trackable.value.name
-  const taskCount = props.project.tasks.length
-  if (kind.value === 'project' && taskCount > 0) {
-    const label = taskCount === 1 ? '1 task' : `${taskCount} tasks`
-    return `Delete "${name}" and its ${label}? This cannot be undone.`
-  }
-  return `Delete "${name}"? This cannot be undone.`
-}
-
-function onDelete() {
-  if (!trackable.value) return
-  if (!window.confirm(deleteConfirmMessage())) return
-  if (kind.value === 'project') {
-    store.removeProject(props.project.id)
-  } else {
-    store.removeTask(props.project.id, props.trackableId)
-  }
-}
 </script>
 
 <template>
   <aside
-    v-if="trackable"
+    v-if="trackable && kind"
     class="relative w-80 shrink-0 rounded-2xl bg-cream p-5 pb-12 shadow-sm ring-1 ring-hill-sand/60"
     aria-label="Work item details"
   >
     <div class="mb-6 flex items-start justify-between gap-3">
-      <div class="min-w-0 flex-1">
-        <div v-if="editingHeader" class="space-y-2" @keydown="onHeaderKeydown">
-          <input
-            ref="nameRef"
-            v-model="draftName"
-            type="text"
-            class="w-full rounded-lg border-0 bg-white/80 px-2 py-1 font-heading text-xl outline-none focus:ring-1 focus:ring-terracotta/40"
-            :aria-invalid="nameInvalid"
-            aria-label="Name"
-            @input="nameInvalid = false"
-          />
-          <input
-            ref="linkRef"
-            v-model="draftLink"
-            type="url"
-            placeholder="Paste tracker URL…"
-            class="w-full rounded-lg border-0 bg-white/80 px-2 py-1 text-sm outline-none focus:ring-1 focus:ring-terracotta/40"
-            :aria-invalid="linkInvalid"
-            aria-label="External link"
-            @input="linkInvalid = false"
-            @blur="trySaveHeader"
-          />
-          <p v-if="linkInvalid" class="text-xs text-rust">Enter a valid http or https URL.</p>
-        </div>
-        <div v-else class="flex items-start gap-2">
-          <a
-            v-if="sourceUrl"
-            :href="sourceUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="mt-1 shrink-0 rounded-full p-0.5 text-terracotta hover:bg-hill-sand"
-            :aria-label="sourceAria"
-          >
-            <SourceSystemIcon :system="sourceSystem" />
-          </a>
-          <button
-            type="button"
-            class="min-w-0 cursor-text text-left font-heading text-xl leading-tight hover:underline hover:decoration-terracotta/40"
-            title="Click to edit name and link"
-            @click="startHeaderEdit"
-          >
-            {{ trackable.name }}
-          </button>
-        </div>
-        <span class="mt-2 inline-block rounded-full bg-hill-sand px-2.5 py-0.5 text-xs capitalize">
-          {{ kind }}
-        </span>
-        <button
-          v-if="showOpenProject && kind === 'project'"
-          type="button"
-          class="mt-3 text-sm font-medium text-terracotta hover:underline"
-          aria-label="Open project view"
-          @click="openProjectView"
-        >
-          Open project →
-        </button>
-      </div>
+      <PanelHeader
+        ref="headerRef"
+        :trackable="trackable"
+        :kind="kind"
+        :trackable-id="trackableId"
+        :project-id="project.id"
+        :show-open-project="showOpenProject"
+      />
       <button
         type="button"
         class="shrink-0 rounded-full px-2 py-1 text-sm text-text-warm/60 hover:bg-hill-sand hover:text-text-warm"
@@ -319,156 +113,50 @@ function onDelete() {
       </button>
     </div>
 
-    <section class="mb-6">
-      <h3 class="mb-2 text-xs font-medium tracking-wide text-text-warm/60 uppercase">Position</h3>
-      <div class="flex items-center gap-3">
-        <input
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          :value="trackable.position"
-          class="flex-1 accent-terracotta"
-          :aria-valuenow="trackable.position"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          aria-label="Position on hill"
-          @input="onSliderInput"
-        />
-        <span class="w-8 text-right text-lg tabular-nums">{{ trackable.position }}</span>
-      </div>
-      <p v-if="stalenessLabel" class="mt-1 text-sm text-text-warm/70">{{ stalenessLabel }}</p>
-      <p v-if="atPeak" class="mt-1 text-sm text-text-warm/70">At the peak</p>
-      <p v-if="showBlockerHint" class="mt-1 text-sm text-text-warm/70">
-        {{ PEAK_CROSSING_BLOCKED_MESSAGE }}
-      </p>
-      <p v-if="showProjectDoneHint" class="mt-1 text-sm text-text-warm/70">
-        {{ PROJECT_DONE_BLOCKED_MESSAGE }}
-      </p>
-    </section>
+    <PanelPosition
+      :trackable="trackable"
+      :kind="kind"
+      :project="project"
+      :trackable-id="trackableId"
+    />
 
-    <section class="mb-6">
-      <h3 class="mb-2 text-xs font-medium tracking-wide text-text-warm/60 uppercase">
-        Active up forces
-      </h3>
-      <ul class="space-y-2">
-        <ForceChip
-          v-for="force in activeUp"
-          :key="force.id"
-          :force="force"
-          variant="active"
-          :is-editing="editingForceId === force.id"
-          @edit-start="startEdit(force.id)"
-          @save="onSaveEdit(force.id, $event)"
-          @cancel="cancelEdit"
-          @resolve="onResolve(force.id)"
-        />
-        <ForceAddForm
-          v-if="addingDirection === 'up'"
-          @save="onAddSave('up', $event)"
-          @cancel="cancelAdd"
-        />
-      </ul>
-      <p v-if="!activeUp.length && addingDirection !== 'up'" class="mb-2 text-sm text-text-warm/50">
-        None
-      </p>
-      <button
-        v-if="addingDirection !== 'up'"
-        type="button"
-        class="mt-2 text-sm text-terracotta hover:underline"
-        aria-label="Add up force"
-        @click="startAdd('up')"
-      >
-        + Up force
-      </button>
-    </section>
+    <PanelForces
+      direction="up"
+      :active-forces="activeUp"
+      :past-forces="pastUp"
+      :editing-force-id="editingForceId"
+      :is-adding="addingDirection === 'up'"
+      @edit-start="startEdit"
+      @save-edit="onSaveEdit"
+      @cancel-edit="cancelEdit"
+      @resolve="onResolve"
+      @unresolve="onUnresolve"
+      @add-start="startAdd('up')"
+      @add-save="onAddSave('up', $event)"
+      @add-cancel="cancelAdd"
+    />
 
-    <section class="mb-6">
-      <h3 class="mb-2 text-xs font-medium tracking-wide text-text-warm/60 uppercase">
-        Active down forces
-      </h3>
-      <ul class="space-y-2">
-        <ForceChip
-          v-for="force in activeDown"
-          :key="force.id"
-          :force="force"
-          variant="active"
-          :is-editing="editingForceId === force.id"
-          @edit-start="startEdit(force.id)"
-          @save="onSaveEdit(force.id, $event)"
-          @cancel="cancelEdit"
-          @resolve="onResolve(force.id)"
-        />
-        <ForceAddForm
-          v-if="addingDirection === 'down'"
-          @save="onAddSave('down', $event)"
-          @cancel="cancelAdd"
-        />
-      </ul>
-      <p
-        v-if="!activeDown.length && addingDirection !== 'down'"
-        class="mb-2 text-sm text-text-warm/50"
-      >
-        None
-      </p>
-      <button
-        v-if="addingDirection !== 'down'"
-        type="button"
-        class="mt-2 text-sm text-terracotta hover:underline"
-        aria-label="Add down force"
-        @click="startAdd('down')"
-      >
-        + Down force
-      </button>
-    </section>
+    <PanelForces
+      direction="down"
+      :active-forces="activeDown"
+      :past-forces="pastDown"
+      :editing-force-id="editingForceId"
+      :is-adding="addingDirection === 'down'"
+      @edit-start="startEdit"
+      @save-edit="onSaveEdit"
+      @cancel-edit="cancelEdit"
+      @resolve="onResolve"
+      @unresolve="onUnresolve"
+      @add-start="startAdd('down')"
+      @add-save="onAddSave('down', $event)"
+      @add-cancel="cancelAdd"
+    />
 
-    <details v-if="pastUp.length" class="mb-4">
-      <summary class="cursor-pointer text-sm font-medium">Past boosters</summary>
-      <ul class="mt-2 space-y-2">
-        <ForceChip
-          v-for="force in pastUp"
-          :key="force.id"
-          :force="force"
-          variant="past"
-          :is-editing="false"
-          @unresolve="onUnresolve(force.id)"
-        />
-      </ul>
-    </details>
-
-    <details v-if="pastDown.length">
-      <summary class="cursor-pointer text-sm font-medium">Past blockers</summary>
-      <ul class="mt-2 space-y-2">
-        <ForceChip
-          v-for="force in pastDown"
-          :key="force.id"
-          :force="force"
-          variant="past"
-          :is-editing="false"
-          @unresolve="onUnresolve(force.id)"
-        />
-      </ul>
-    </details>
-
-    <button
-      type="button"
-      class="absolute right-5 bottom-5 rounded-full p-1.5 text-text-warm/60 hover:bg-rust/10 hover:text-rust"
-      :aria-label="deleteAriaLabel"
-      @click="onDelete"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        class="size-4"
-        aria-hidden="true"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.508 0 .94.093 1.25.25V3.75c0-.69-.56-1.25-1.25-1.25S8.75 3.06 8.75 3.75v.5c.31-.157.742-.25 1.25-.25ZM7.5 6.75a.75.75 0 0 0-1.5 0v7.5a.75.75 0 0 0 1.5 0v-7.5Zm4.25.75a.75.75 0 0 1 .75.75v7.5a.75.75 0 0 1-1.5 0v-7.5a.75.75 0 0 1 .75-.75Zm1.25 9.5a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0Z"
-          clip-rule="evenodd"
-        />
-      </svg>
-    </button>
+    <PanelDangerZone
+      :trackable="trackable"
+      :kind="kind"
+      :project="project"
+      :trackable-id="trackableId"
+    />
   </aside>
 </template>

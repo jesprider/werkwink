@@ -84,13 +84,15 @@ migration (no active users).
 
 ### PR 4 — Chart workspace (`chore/chart-workspace`)
 
-**Status:** This PR
+**Status:** Done (merged)
 
 - `useChartSelection()` — selection, stale-id cleanup, nudge + `onMove`
 - `ChartWorkspace.vue` — banner, `HillChart`, `DoneStack`, conditional `SidePanel`
 - Refactor `OverviewView` + `ProjectView`
 
 ### PR 5 — Side panel split (`chore/side-panel-split`)
+
+**Status:** This PR
 
 - `PanelHeader.vue`, `PanelPosition.vue`, `PanelForces.vue`, `PanelDangerZone.vue`
 - `SidePanel.vue` → thin orchestrator (~80 lines)
