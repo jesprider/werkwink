@@ -1,22 +1,18 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useHillChartStore } from '../stores/hillChart'
 import { markersForProject, partitionMarkersForProjectView } from '../domain/chartMarkers'
-import DoneStack from '../components/DoneStack.vue'
-import HillChart from '../components/HillChart.vue'
-import SidePanel from '../components/SidePanel.vue'
+import ChartWorkspace from '../components/ChartWorkspace.vue'
 import { lookupInProject } from '../domain/trackableLookup'
-import { useChartBlockNudge } from '../composables/useChartBlockNudge'
+import { useChartSelection } from '../composables/useChartSelection'
 
 const props = defineProps<{ id: string }>()
 
 const store = useHillChartStore()
 const router = useRouter()
 const { projects } = storeToRefs(store)
-const selectedTrackableId = ref<string | null>(null)
-const hillChartRef = ref<InstanceType<typeof HillChart> | null>(null)
 
 const project = computed(() => projects.value.find((p) => p.id === props.id))
 const chartMarkers = computed(() => (project.value ? markersForProject(project.value) : []))
@@ -27,31 +23,22 @@ const partitioned = computed(() =>
 )
 const activeMarkers = computed(() => partitioned.value.active)
 const doneMarkers = computed(() => partitioned.value.done)
-const svgRef = computed(() => hillChartRef.value?.svgRef ?? null)
-const { chartBlockMessage, maybeNudgeOnMove } = useChartBlockNudge()
+const markerIds = computed(() => chartMarkers.value.map((m) => m.id))
+
+const { selectedTrackableId, chartBlockMessage, onMove, onTrackableClick, clearSelection } =
+  useChartSelection({
+    validIds: markerIds,
+    applyPosition: (id, position) => store.setPosition(id, position),
+    nudgeContextForMove: (id) => {
+      if (!project.value) return { trackable: undefined, project: undefined }
+      const lookup = lookupInProject(project.value, id)
+      return { trackable: lookup?.trackable, project: project.value }
+    },
+  })
 
 watchEffect(() => {
   if (!project.value) router.replace('/projects')
 })
-
-watchEffect(() => {
-  if (!project.value || !selectedTrackableId.value) return
-  const ids = chartMarkers.value.map((m) => m.id)
-  if (!ids.includes(selectedTrackableId.value)) {
-    selectedTrackableId.value = null
-  }
-})
-
-function onMove(id: string, position: number) {
-  if (!project.value) return
-  const lookup = lookupInProject(project.value, id)
-  maybeNudgeOnMove(lookup?.trackable, project.value, id, position)
-  store.setPosition(id, position)
-}
-
-function onTrackableClick(id: string) {
-  selectedTrackableId.value = selectedTrackableId.value === id ? null : id
-}
 
 function onAddTask() {
   const id = store.addTask(props.id)
@@ -75,40 +62,16 @@ function onAddTask() {
       + Task
     </button>
   </header>
-  <section class="px-6 pb-6">
-    <div class="mx-auto flex max-w-[1400px] items-start gap-6">
-      <div class="relative min-w-0 flex-1">
-        <p
-          v-if="chartBlockMessage"
-          role="status"
-          class="pointer-events-none absolute top-2 right-2 left-2 z-20 rounded-lg bg-rust/10 px-3 py-2 text-center text-sm text-rust"
-        >
-          {{ chartBlockMessage }}
-        </p>
-        <HillChart
-          v-if="project"
-          ref="hillChartRef"
-          :markers="activeMarkers"
-          :selected-id="selectedTrackableId"
-          clickable
-          @move="onMove"
-          @click="onTrackableClick"
-        />
-        <DoneStack
-          v-if="project"
-          :done-markers="doneMarkers"
-          :selected-id="selectedTrackableId"
-          :svg-ref="svgRef"
-          @move="onMove"
-          @click="onTrackableClick"
-        />
-      </div>
-      <SidePanel
-        v-if="project && selectedTrackableId"
-        :project="project"
-        :trackable-id="selectedTrackableId"
-        @close="selectedTrackableId = null"
-      />
-    </div>
+  <section v-if="project" class="px-6 pb-6">
+    <ChartWorkspace
+      :active-markers="activeMarkers"
+      :done-markers="doneMarkers"
+      :selected-trackable-id="selectedTrackableId"
+      :panel-project="project"
+      :chart-block-message="chartBlockMessage"
+      @move="onMove"
+      @click="onTrackableClick"
+      @close-panel="clearSelection"
+    />
   </section>
 </template>

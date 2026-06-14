@@ -1,23 +1,34 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useHillChartStore } from '../stores/hillChart'
 import { overviewMarkers, partitionMarkers } from '../domain/chartMarkers'
 import AppHeader from '../components/AppHeader.vue'
-import DoneStack from '../components/DoneStack.vue'
-import HillChart from '../components/HillChart.vue'
+import ChartWorkspace from '../components/ChartWorkspace.vue'
 import ImportButton from '../components/ImportButton.vue'
-import SidePanel from '../components/SidePanel.vue'
 import { downloadJson } from '../lib/downloadJson'
-import { useChartBlockNudge } from '../composables/useChartBlockNudge'
+import { useChartSelection } from '../composables/useChartSelection'
 import { useJsonImport } from '../composables/useJsonImport'
 
 const store = useHillChartStore()
 const router = useRouter()
 const { projects, demo, canEndDaily: endDailyEnabled } = storeToRefs(store)
-const selectedTrackableId = ref<string | null>(null)
-const hillChartRef = ref<InstanceType<typeof HillChart> | null>(null)
+
+const chartMarkers = computed(() => overviewMarkers(projects.value))
+const activeMarkers = computed(() => partitionMarkers(chartMarkers.value).active)
+const doneMarkers = computed(() => partitionMarkers(chartMarkers.value).done)
+const overviewProjectIds = computed(() => projects.value.map((p) => p.id))
+
+const { selectedTrackableId, chartBlockMessage, onMove, onTrackableClick, clearSelection } =
+  useChartSelection({
+    validIds: overviewProjectIds,
+    applyPosition: (id, position) => store.setPosition(id, position),
+    nudgeContextForMove: (id) => {
+      const proj = projects.value.find((p) => p.id === id)
+      return { trackable: proj, project: proj }
+    },
+  })
 
 const {
   importEnabled,
@@ -31,16 +42,8 @@ const {
   onDragLeave,
   onDrop,
 } = useJsonImport(store, {
-  onImported: () => {
-    selectedTrackableId.value = null
-  },
+  onImported: clearSelection,
 })
-
-const chartMarkers = computed(() => overviewMarkers(projects.value))
-const activeMarkers = computed(() => partitionMarkers(chartMarkers.value).active)
-const doneMarkers = computed(() => partitionMarkers(chartMarkers.value).done)
-const svgRef = computed(() => hillChartRef.value?.svgRef ?? null)
-const { chartBlockMessage, maybeNudgeOnMove } = useChartBlockNudge()
 
 const showDemoLabel = computed(() => demo.value && projects.value.length > 0)
 const isEmpty = computed(() => projects.value.length === 0)
@@ -55,25 +58,8 @@ const selectedProject = computed(() =>
     : undefined,
 )
 
-watchEffect(() => {
-  if (!selectedTrackableId.value) return
-  if (!projects.value.some((p) => p.id === selectedTrackableId.value)) {
-    selectedTrackableId.value = null
-  }
-})
-
-function onMove(id: string, position: number) {
-  const proj = projects.value.find((p) => p.id === id)
-  maybeNudgeOnMove(proj, proj, id, position)
-  store.setPosition(id, position)
-}
-
 function onOpen(id: string) {
   router.push(`/projects/${id}`)
-}
-
-function onTrackableClick(id: string) {
-  selectedTrackableId.value = selectedTrackableId.value === id ? null : id
 }
 
 function onAddProject() {
@@ -90,10 +76,10 @@ function onExportClick() {
 
 function onCleanClick() {
   if (!cleanEnabled.value) return
-  const ok = window.confirm('This will delete all projects, tasks, and history. Export first?')
+  const ok = globalThis.confirm('This will delete all projects, tasks, and history. Export first?')
   if (!ok) return
   store.cleanState()
-  selectedTrackableId.value = null
+  clearSelection()
   clearErrors()
 }
 
@@ -171,43 +157,22 @@ function onEndDailyClick() {
 
     <div
       v-else
-      class="mx-auto flex max-w-[1400px] items-start gap-6"
       :class="isDraggingFile && 'rounded-2xl ring-2 ring-terracotta/40'"
       @dragover="onDragOver"
       @dragleave="onDragLeave"
       @drop="onDrop"
     >
-      <div class="relative min-w-0 flex-1">
-        <p
-          v-if="chartBlockMessage"
-          role="status"
-          class="pointer-events-none absolute top-2 right-2 left-2 z-20 rounded-lg bg-rust/10 px-3 py-2 text-center text-sm text-rust"
-        >
-          {{ chartBlockMessage }}
-        </p>
-        <HillChart
-          ref="hillChartRef"
-          clickable
-          :markers="activeMarkers"
-          :selected-id="selectedTrackableId"
-          @move="onMove"
-          @open="onOpen"
-          @click="onTrackableClick"
-        />
-        <DoneStack
-          :done-markers="doneMarkers"
-          :selected-id="selectedTrackableId"
-          :svg-ref="svgRef"
-          @move="onMove"
-          @click="onTrackableClick"
-        />
-      </div>
-      <SidePanel
-        v-if="selectedProject && selectedTrackableId"
-        :project="selectedProject"
-        :trackable-id="selectedTrackableId"
+      <ChartWorkspace
+        :active-markers="activeMarkers"
+        :done-markers="doneMarkers"
+        :selected-trackable-id="selectedTrackableId"
+        :panel-project="selectedProject"
+        :chart-block-message="chartBlockMessage"
         show-open-project
-        @close="selectedTrackableId = null"
+        @move="onMove"
+        @click="onTrackableClick"
+        @open="onOpen"
+        @close-panel="clearSelection"
       />
     </div>
   </section>
