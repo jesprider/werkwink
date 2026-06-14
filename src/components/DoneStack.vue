@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import type { ChartMarker } from '../composables/chartMarkers'
+import type { ChartMarker } from '../domain/chartMarkers'
 import { useHillDrag } from '../composables/useHillDrag'
 import { DONE_POSITION } from '../domain/staleness'
 

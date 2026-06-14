@@ -1,8 +1,9 @@
-import type { Force, ForceDirection, Project } from '../schema/types'
+import type { HillTrackable, Project } from '../schema/types'
 import { PALETTE } from '../schema/palette'
 import { localDateString } from '../lib/localDate'
-import { trailGhosts, type TrailGhost } from '../domain/trailGhosts'
-import { stalenessSatelliteCount, DONE_POSITION } from '../domain/staleness'
+import { activeForceCount } from './forceRules'
+import { trailGhosts, type TrailGhost } from './trailGhosts'
+import { stalenessSatelliteCount, DONE_POSITION } from './staleness'
 
 export type { TrailGhost }
 
@@ -22,50 +23,35 @@ const OVERVIEW_RADIUS = 16
 const PROJECT_RADIUS = 22
 const TASK_RADIUS = 11
 
-export function activeCount(forces: Force[], direction: ForceDirection): number {
-  return forces.filter((f) => f.direction === direction && f.status === 'active').length
+function buildChartMarker(
+  trackable: HillTrackable,
+  color: string,
+  radius: number,
+  today: string,
+): ChartMarker {
+  return {
+    id: trackable.id,
+    position: trackable.position,
+    color,
+    radius,
+    name: trackable.name,
+    up: activeForceCount(trackable.forces, 'up'),
+    down: activeForceCount(trackable.forces, 'down'),
+    stalenessSatellites: stalenessSatelliteCount(trackable.lastMovedAt, trackable.position),
+    ghosts: trailGhosts(trackable.snapshots, today),
+  }
 }
 
 export function overviewMarkers(projects: Project[]): ChartMarker[] {
   const today = localDateString()
-  return projects.map((p) => ({
-    id: p.id,
-    position: p.position,
-    color: PALETTE[p.color],
-    radius: OVERVIEW_RADIUS,
-    name: p.name,
-    up: activeCount(p.forces, 'up'),
-    down: activeCount(p.forces, 'down'),
-    stalenessSatellites: stalenessSatelliteCount(p.lastMovedAt, p.position),
-    ghosts: trailGhosts(p.snapshots, today),
-  }))
+  return projects.map((p) => buildChartMarker(p, PALETTE[p.color], OVERVIEW_RADIUS, today))
 }
 
 export function markersForProject(project: Project): ChartMarker[] {
   const today = localDateString()
   const color = PALETTE[project.color]
-  const projectMarker: ChartMarker = {
-    id: project.id,
-    position: project.position,
-    color,
-    radius: PROJECT_RADIUS,
-    name: project.name,
-    up: activeCount(project.forces, 'up'),
-    down: activeCount(project.forces, 'down'),
-    stalenessSatellites: stalenessSatelliteCount(project.lastMovedAt, project.position),
-    ghosts: trailGhosts(project.snapshots, today),
-  }
-  const taskMarkers: ChartMarker[] = project.tasks.map((t) => ({
-    id: t.id,
-    position: t.position,
-    color,
-    radius: TASK_RADIUS,
-    name: t.name,
-    up: activeCount(t.forces, 'up'),
-    down: activeCount(t.forces, 'down'),
-    stalenessSatellites: stalenessSatelliteCount(t.lastMovedAt, t.position),
-    ghosts: trailGhosts(t.snapshots, today),
-  }))
+  const projectMarker = buildChartMarker(project, color, PROJECT_RADIUS, today)
+  const taskMarkers = project.tasks.map((t) => buildChartMarker(t, color, TASK_RADIUS, today))
   return [projectMarker, ...taskMarkers]
 }
 

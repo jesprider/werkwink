@@ -3,11 +3,11 @@ import { computed, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useHillChartStore } from '../stores/hillChart'
-import { markersForProject, partitionMarkersForProjectView } from '../composables/chartMarkers'
+import { markersForProject, partitionMarkersForProjectView } from '../domain/chartMarkers'
 import DoneStack from '../components/DoneStack.vue'
 import HillChart from '../components/HillChart.vue'
 import SidePanel from '../components/SidePanel.vue'
-import { lookupInProject } from '../composables/trackableLookup'
+import { lookupInProject } from '../domain/trackableLookup'
 import { useChartBlockNudge } from '../composables/useChartBlockNudge'
 
 const props = defineProps<{ id: string }>()

@@ -55,7 +55,7 @@ migration (no active users).
 
 ### PR 1 — Foundation: validation, storage, docs (`chore/validation-storage-rename`)
 
-**Status:** This PR
+**Status:** Done (merged)
 
 - Run `validateHillChartJson` in `loadState.ts` before Pinia hydrate
 - Rename `WERKWINK_STORAGE_KEY` = `werkwink-state` (hard cut)
@@ -65,6 +65,8 @@ migration (no active users).
 - Tests: `loadState.test.ts`, `canEndDaily` getter tests
 
 ### PR 2 — Domain layout (`chore/domain-layout`)
+
+**Status:** This PR
 
 - `findTrackableInProjects()` — shared by store and `lookupInProject`
 - Move `chartMarkers.ts` → `domain/chartMarkers.ts`

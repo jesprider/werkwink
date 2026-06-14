@@ -1,5 +1,5 @@
 import { onBeforeUnmount } from 'vue'
-import { positionFromRatio } from './useHillCurve'
+import { positionFromRatio } from '../lib/hillCurve'
 
 export const DRAG_THRESHOLD_PX = 4
 

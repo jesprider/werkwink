@@ -2,7 +2,7 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { ForceDirection, Project } from '../schema/types'
-import { forcesByStatus, lookupInProject } from '../composables/trackableLookup'
+import { forcesByStatus, lookupInProject } from '../domain/trackableLookup'
 import {
   allTasksDone,
   isProjectDoneBlocked,

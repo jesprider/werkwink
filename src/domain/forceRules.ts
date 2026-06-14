@@ -1,4 +1,4 @@
-import type { Force, HillTrackable } from '../schema/types'
+import type { Force, ForceDirection, HillTrackable } from '../schema/types'
 
 export const PEAK_POSITION = 50
 export const BLOCKER_SNAP_POSITION = 45
@@ -6,8 +6,12 @@ export const BLOCKER_SNAP_POSITION = 45
 export const PEAK_CROSSING_BLOCKED_MESSAGE =
   'Active blockers must be resolved before moving downhill.'
 
+export function activeForceCount(forces: Force[], direction: ForceDirection): number {
+  return forces.filter((f) => f.direction === direction && f.status === 'active').length
+}
+
 export function hasActiveDownForces(forces: Force[]): boolean {
-  return forces.some((f) => f.direction === 'down' && f.status === 'active')
+  return activeForceCount(forces, 'down') > 0
 }
 
 export function snapIfDownhillWithBlockers(trackable: HillTrackable): void {

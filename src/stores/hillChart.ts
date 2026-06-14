@@ -11,20 +11,12 @@ import type {
 import { sampleState } from '../data/sample'
 import { clampProjectDonePosition } from '../domain/doneRules'
 import { canCrossPeak, PEAK_POSITION, snapIfDownhillWithBlockers } from '../domain/forceRules'
+import { createPrimaryOwnerForce } from '../domain/primaryOwnerForce'
+import { findTrackableInProjects } from '../domain/trackableLookup'
 import { upsertSnapshot } from '../domain/snapshots'
 import { isSameLocalDay, localDateString } from '../lib/localDate'
 import { PALETTE_ORDER } from '../schema/palette'
 import { WERKWINK_STORAGE_KEY } from '../storage/loadState'
-
-function findTrackableById(projects: Project[], id: string): HillTrackable | undefined {
-  for (const project of projects) {
-    if (project.id === id) return project
-    for (const task of project.tasks) {
-      if (task.id === id) return task
-    }
-  }
-  return undefined
-}
 
 function findForce(trackable: HillTrackable, forceId: string): Force | undefined {
   return trackable.forces.find((f) => f.id === forceId)
@@ -97,19 +89,7 @@ export const useHillChartStore = defineStore('hillChart', {
         color: PALETTE_ORDER[this.projects.length % PALETTE_ORDER.length],
         position: 0,
         lastMovedAt: now,
-        forces: [
-          {
-            id: `f_${crypto.randomUUID()}`,
-            direction: 'up',
-            label: 'Owner',
-            owner: null,
-            isPrimary: true,
-            status: 'active',
-            createdAt: now,
-            resolvedAt: null,
-            resolutionReason: null,
-          },
-        ],
+        forces: [createPrimaryOwnerForce(null, now)],
         snapshots: [],
         tasks: [],
       }
@@ -131,19 +111,7 @@ export const useHillChartStore = defineStore('hillChart', {
         name: 'New task',
         position: 0,
         lastMovedAt: now,
-        forces: [
-          {
-            id: `f_${crypto.randomUUID()}`,
-            direction: 'up',
-            label: 'Owner',
-            owner: projectPrimaryOwner,
-            isPrimary: true,
-            status: 'active',
-            createdAt: now,
-            resolvedAt: null,
-            resolutionReason: null,
-          },
-        ],
+        forces: [createPrimaryOwnerForce(projectPrimaryOwner, now)],
         snapshots: [],
       }
       project.tasks.push(task)
@@ -165,7 +133,7 @@ export const useHillChartStore = defineStore('hillChart', {
     },
 
     setPosition(id: string, position: number) {
-      const trackable = findTrackableById(this.projects, id)
+      const trackable = findTrackableInProjects(this.projects, id)
       if (!trackable) return
       const current = trackable.position
       let next = Math.min(100, Math.max(0, Math.round(position)))
@@ -182,7 +150,7 @@ export const useHillChartStore = defineStore('hillChart', {
     },
 
     updateTrackable(trackableId: string, patch: { name?: string; source?: Source | null }) {
-      const trackable = findTrackableById(this.projects, trackableId)
+      const trackable = findTrackableInProjects(this.projects, trackableId)
       if (!trackable) return
 
       if (patch.name !== undefined) {
@@ -201,7 +169,7 @@ export const useHillChartStore = defineStore('hillChart', {
     },
 
     addForce(trackableId: string, direction: ForceDirection, label: string, owner?: string | null) {
-      const trackable = findTrackableById(this.projects, trackableId)
+      const trackable = findTrackableInProjects(this.projects, trackableId)
       if (!trackable) return
 
       trackable.forces.push({
@@ -226,7 +194,7 @@ export const useHillChartStore = defineStore('hillChart', {
       forceId: string,
       patch: { label?: string; owner?: string | null },
     ) {
-      const trackable = findTrackableById(this.projects, trackableId)
+      const trackable = findTrackableInProjects(this.projects, trackableId)
       if (!trackable) return
       const force = findForce(trackable, forceId)
       if (!force) return
@@ -237,7 +205,7 @@ export const useHillChartStore = defineStore('hillChart', {
     },
 
     resolveForce(trackableId: string, forceId: string, reason?: string) {
-      const trackable = findTrackableById(this.projects, trackableId)
+      const trackable = findTrackableInProjects(this.projects, trackableId)
       if (!trackable) return
       const force = findForce(trackable, forceId)
       if (!force || force.isPrimary || force.status === 'resolved') return
@@ -248,7 +216,7 @@ export const useHillChartStore = defineStore('hillChart', {
     },
 
     unresolveForce(trackableId: string, forceId: string) {
-      const trackable = findTrackableById(this.projects, trackableId)
+      const trackable = findTrackableInProjects(this.projects, trackableId)
       if (!trackable) return
       const force = findForce(trackable, forceId)
       if (!force || force.status !== 'resolved') return
