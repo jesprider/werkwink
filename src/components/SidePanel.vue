@@ -146,10 +146,6 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
       @add-cancel="cancelAdd"
     />
 
-    <PanelFooter
-      :trackable="trackable"
-      :kind="kind"
-      :project="project"
-    />
+    <PanelFooter :trackable="trackable" :kind="kind" :project="project" />
   </aside>
 </template>
