@@ -31,8 +31,8 @@ function onOpen(id: string) {
 </script>
 
 <template>
-  <div class="mx-auto flex max-w-[1400px] items-start gap-6">
-    <div class="relative min-w-0 flex-1">
+  <div class="grid w-full grid-cols-[minmax(0,1fr)_20rem] items-start gap-6">
+    <div class="relative min-w-0">
       <p
         v-if="chartBlockMessage"
         role="status"
@@ -57,12 +57,14 @@ function onOpen(id: string) {
         @click="emit('click', $event)"
       />
     </div>
-    <SidePanel
-      v-if="panelProject && selectedTrackableId"
-      :project="panelProject"
-      :trackable-id="selectedTrackableId"
-      :show-open-project="showOpenProject"
-      @close="emit('closePanel')"
-    />
+    <div class="w-80 shrink-0">
+      <SidePanel
+        v-if="panelProject && selectedTrackableId"
+        :project="panelProject"
+        :trackable-id="selectedTrackableId"
+        :show-open-project="showOpenProject"
+        @close="emit('closePanel')"
+      />
+    </div>
   </div>
 </template>
