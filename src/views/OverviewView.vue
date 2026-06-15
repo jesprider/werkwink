@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 import { useHillChartStore } from '../stores/hillChart'
 import { overviewMarkers, partitionMarkers } from '../domain/chartMarkers'
 import AppHeader from '../components/AppHeader.vue'
+import StateControls from '../components/StateControls.vue'
 import ChartWorkspace from '../components/ChartWorkspace.vue'
 import ImportButton from '../components/ImportButton.vue'
 import { downloadJson } from '../lib/downloadJson'
@@ -94,16 +95,18 @@ function onEndDailyClick() {
 
 <template>
   <AppHeader
-    :import-enabled="importEnabled"
-    :export-enabled="exportEnabled"
-    :clean-enabled="cleanEnabled"
     :end-daily-enabled="endDailyEnabled"
     :end-daily-label="endDailyLabel"
     @add-project="onAddProject"
+    @end-daily-click="onEndDailyClick"
+  />
+  <StateControls
+    :import-enabled="importEnabled"
+    :export-enabled="exportEnabled"
+    :clean-enabled="cleanEnabled"
     @import-click="onImportClick"
     @export-click="onExportClick"
     @clean-click="onCleanClick"
-    @end-daily-click="onEndDailyClick"
   />
   <ImportButton ref="importButtonRef" :enabled="importEnabled" @file-selected="handleImportFile" />
 
