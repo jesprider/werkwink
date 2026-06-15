@@ -100,6 +100,7 @@ function onEndDailyClick() {
     @end-daily-click="onEndDailyClick"
   />
   <StateControls
+    class="fixed right-5 bottom-5 z-30"
     :import-enabled="importEnabled"
     :export-enabled="exportEnabled"
     :clean-enabled="cleanEnabled"
