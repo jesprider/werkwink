@@ -97,6 +97,7 @@ function onEndDailyClick() {
   <AppHeader
     :end-daily-enabled="endDailyEnabled"
     :end-daily-label="endDailyLabel"
+    :show-demo-label="showDemoLabel"
     @end-daily-click="onEndDailyClick"
   />
   <StateControls
@@ -109,10 +110,6 @@ function onEndDailyClick() {
     @clean-click="onCleanClick"
   />
   <ImportButton ref="importButtonRef" :enabled="importEnabled" @file-selected="handleImportFile" />
-
-  <p v-if="showDemoLabel" class="px-6 pb-2 text-sm text-text-warm/70">
-    <span class="rounded-full bg-hill-sand px-3 py-1">Demo data</span>
-  </p>
 
   <div
     v-if="importErrors.length"

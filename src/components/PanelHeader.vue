@@ -30,6 +30,12 @@ const sourceUrl = computed(() => props.trackable.source?.url)
 const sourceSystem = computed(() => props.trackable.source?.system)
 const sourceAria = computed(() => sourceOpenLabel(sourceSystem.value))
 
+const kindTagClass = computed(() =>
+  props.kind === 'project'
+    ? 'bg-plum/12 text-plum ring-plum/20'
+    : 'bg-sage/15 text-olive ring-sage/30',
+)
+
 function openProjectView() {
   router.push(`/projects/${props.projectId}`)
 }
@@ -132,7 +138,7 @@ defineExpose({ cancelEdit })
         {{ trackable.name }}
       </button>
     </div>
-    <span class="mt-2 inline-block rounded-full bg-hill-sand mr-2 px-2.5 py-0.5 text-xs capitalize">
+    <span class="mt-2 mr-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ring-1" :class="kindTagClass">
       {{ kind }}
     </span>
     <button
