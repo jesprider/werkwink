@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router'
 import type { HillTrackable } from '../schema/types'
 import type { TrackableKind } from '../domain/trackableLookup'
 import { parseSourceUrl, sourceOpenLabel } from '../domain/parseSourceUrl'
-import { useEscapeToCancel } from '../composables/useEscapeToCancel'
 import { useHillChartStore } from '../stores/hillChart'
 import SourceSystemIcon from './SourceSystemIcon.vue'
 
@@ -23,7 +22,6 @@ const draftName = ref('')
 const draftLink = ref('')
 const nameInvalid = ref(false)
 const linkInvalid = ref(false)
-const escaping = ref(false)
 const nameRef = ref<HTMLInputElement | null>(null)
 const linkRef = ref<HTMLInputElement | null>(null)
 
@@ -41,8 +39,6 @@ function cancelEdit() {
   linkInvalid.value = false
 }
 
-useEscapeToCancel(editing, cancelEdit, escaping)
-
 function startEdit() {
   draftName.value = props.trackable.name
   draftLink.value = props.trackable.source?.url ?? ''
@@ -52,8 +48,7 @@ function startEdit() {
   void nextTick(() => nameRef.value?.focus())
 }
 
-function trySave() {
-  if (!editing.value || escaping.value) return
+function saveEdit() {
   const trimmedName = draftName.value.trim()
   if (!trimmedName) {
     nameInvalid.value = true
@@ -81,10 +76,21 @@ function trySave() {
   editing.value = false
 }
 
-function onKeydown(event: KeyboardEvent) {
-  if (!editing.value || event.key !== 'Enter') return
-  event.preventDefault()
-  trySave()
+function onEditKeydown(event: KeyboardEvent) {
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    saveEdit()
+  } else if (event.key === 'Escape') {
+    event.preventDefault()
+    cancelEdit()
+  }
+}
+
+function onEditFocusOut(event: FocusEvent) {
+  const container = event.currentTarget as HTMLElement
+  const next = event.relatedTarget as Node | null
+  if (next && container.contains(next)) return
+  cancelEdit()
 }
 
 defineExpose({ cancelEdit })
@@ -92,7 +98,7 @@ defineExpose({ cancelEdit })
 
 <template>
   <div class="min-w-0 flex-1">
-    <div v-if="editing" class="space-y-2">
+    <div v-if="editing" class="space-y-2" @keydown="onEditKeydown" @focusout="onEditFocusOut">
       <input
         ref="nameRef"
         v-model="draftName"
@@ -101,7 +107,6 @@ defineExpose({ cancelEdit })
         :aria-invalid="nameInvalid"
         aria-label="Name"
         @input="nameInvalid = false"
-        @keydown="onKeydown"
       />
       <input
         ref="linkRef"
@@ -112,8 +117,6 @@ defineExpose({ cancelEdit })
         :aria-invalid="linkInvalid"
         aria-label="External link"
         @input="linkInvalid = false"
-        @blur="trySave"
-        @keydown="onKeydown"
       />
       <p v-if="linkInvalid" class="text-xs text-rust">Enter a valid http or https URL.</p>
     </div>

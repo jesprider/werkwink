@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import type { Force } from '../schema/types'
-import { useEscapeToCancel } from '../composables/useEscapeToCancel'
 
 const props = defineProps<{
   force: Force
@@ -20,18 +19,9 @@ const emit = defineEmits<{
 const draftLabel = ref('')
 const draftOwner = ref('')
 const labelInvalid = ref(false)
-const escaping = ref(false)
-const ownerRef = ref<HTMLInputElement | null>(null)
 const labelRef = ref<HTMLInputElement | null>(null)
 
 const showResolve = computed(() => props.variant === 'active' && !props.force.isPrimary)
-const isEditingActive = computed(() => props.isEditing)
-
-function cancelEdit() {
-  emit('cancel')
-}
-
-useEscapeToCancel(isEditingActive, cancelEdit, escaping)
 
 watch(
   () => props.isEditing,
@@ -45,8 +35,7 @@ watch(
   },
 )
 
-function trySave() {
-  if (!props.isEditing || escaping.value) return
+function saveEdit() {
   const trimmed = draftLabel.value.trim()
   if (!trimmed) {
     labelInvalid.value = true
@@ -58,6 +47,10 @@ function trySave() {
   emit('save', { label: trimmed, owner: ownerTrimmed || null })
 }
 
+function cancelEdit() {
+  emit('cancel')
+}
+
 function onDisplayClick() {
   if (props.variant !== 'active') return
   emit('edit-start')
@@ -67,10 +60,23 @@ function onPastClick() {
   emit('unresolve')
 }
 
-function onKeydown(event: KeyboardEvent) {
-  if (!props.isEditing || event.key !== 'Enter') return
-  event.preventDefault()
-  trySave()
+function onEditKeydown(event: KeyboardEvent) {
+  if (!props.isEditing) return
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    saveEdit()
+  } else if (event.key === 'Escape') {
+    event.preventDefault()
+    cancelEdit()
+  }
+}
+
+function onEditFocusOut(event: FocusEvent) {
+  if (!props.isEditing) return
+  const container = event.currentTarget as HTMLElement
+  const next = event.relatedTarget as Node | null
+  if (next && container.contains(next)) return
+  cancelEdit()
 }
 
 function onResolveClick(event: MouseEvent) {
@@ -98,6 +104,8 @@ function onResolveClick(event: MouseEvent) {
   <li
     v-else-if="isEditing"
     class="flex flex-wrap items-center gap-2 rounded-full bg-hill-sand/70 px-3 py-1.5 text-sm ring-1 ring-terracotta/30"
+    @keydown="onEditKeydown"
+    @focusout="onEditFocusOut"
   >
     <input
       ref="labelRef"
@@ -107,17 +115,13 @@ function onResolveClick(event: MouseEvent) {
       :aria-invalid="labelInvalid"
       aria-label="Force label"
       @input="labelInvalid = false"
-      @keydown="onKeydown"
     />
     <input
-      ref="ownerRef"
       v-model="draftOwner"
       type="text"
       placeholder="Owner"
       class="min-w-[5rem] flex-1 rounded-full border-0 bg-white/80 px-2 py-0.5 outline-none focus:ring-1 focus:ring-terracotta/40"
       aria-label="Force owner"
-      @blur="trySave"
-      @keydown="onKeydown"
     />
     <span v-if="force.isPrimary" class="text-xs text-text-warm/60">(primary)</span>
   </li>
