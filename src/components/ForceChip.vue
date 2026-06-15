@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import type { Force } from '../schema/types'
+import { onInlineEditFocusOut, onInlineEditKeydown } from '../lib/inlineEditHandlers'
 
 const props = defineProps<{
   force: Force
@@ -61,22 +62,18 @@ function onPastClick() {
 }
 
 function onEditKeydown(event: KeyboardEvent) {
-  if (!props.isEditing) return
-  if (event.key === 'Enter') {
-    event.preventDefault()
-    saveEdit()
-  } else if (event.key === 'Escape') {
-    event.preventDefault()
-    cancelEdit()
-  }
+  onInlineEditKeydown(event, {
+    save: saveEdit,
+    cancel: cancelEdit,
+    active: () => props.isEditing,
+  })
 }
 
 function onEditFocusOut(event: FocusEvent) {
-  if (!props.isEditing) return
-  const container = event.currentTarget as HTMLElement
-  const next = event.relatedTarget as Node | null
-  if (next && container.contains(next)) return
-  cancelEdit()
+  onInlineEditFocusOut(event, {
+    cancel: cancelEdit,
+    active: () => props.isEditing,
+  })
 }
 
 function onResolveClick(event: MouseEvent) {

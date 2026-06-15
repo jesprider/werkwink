@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import type { HillTrackable } from '../schema/types'
 import type { TrackableKind } from '../domain/trackableLookup'
 import { parseSourceUrl, sourceOpenLabel } from '../domain/parseSourceUrl'
+import { onInlineEditFocusOut, onInlineEditKeydown } from '../lib/inlineEditHandlers'
 import { useHillChartStore } from '../stores/hillChart'
 import SourceSystemIcon from './SourceSystemIcon.vue'
 
@@ -77,20 +78,11 @@ function saveEdit() {
 }
 
 function onEditKeydown(event: KeyboardEvent) {
-  if (event.key === 'Enter') {
-    event.preventDefault()
-    saveEdit()
-  } else if (event.key === 'Escape') {
-    event.preventDefault()
-    cancelEdit()
-  }
+  onInlineEditKeydown(event, { save: saveEdit, cancel: cancelEdit })
 }
 
 function onEditFocusOut(event: FocusEvent) {
-  const container = event.currentTarget as HTMLElement
-  const next = event.relatedTarget as Node | null
-  if (next && container.contains(next)) return
-  cancelEdit()
+  onInlineEditFocusOut(event, { cancel: cancelEdit })
 }
 
 defineExpose({ cancelEdit })
