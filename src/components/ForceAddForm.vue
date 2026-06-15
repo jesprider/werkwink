@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue'
+import { onInlineEditFocusOut, onInlineEditKeydown } from '../lib/inlineEditHandlers'
 
 const emit = defineEmits<{
   save: [payload: { label: string; owner: string | null }]
@@ -32,20 +33,11 @@ function cancelEdit() {
 }
 
 function onEditKeydown(event: KeyboardEvent) {
-  if (event.key === 'Enter') {
-    event.preventDefault()
-    saveEdit()
-  } else if (event.key === 'Escape') {
-    event.preventDefault()
-    cancelEdit()
-  }
+  onInlineEditKeydown(event, { save: saveEdit, cancel: cancelEdit })
 }
 
 function onEditFocusOut(event: FocusEvent) {
-  const container = event.currentTarget as HTMLElement
-  const next = event.relatedTarget as Node | null
-  if (next && container.contains(next)) return
-  cancelEdit()
+  onInlineEditFocusOut(event, { cancel: cancelEdit })
 }
 </script>
 
