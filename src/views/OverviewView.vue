@@ -97,7 +97,6 @@ function onEndDailyClick() {
   <AppHeader
     :end-daily-enabled="endDailyEnabled"
     :end-daily-label="endDailyLabel"
-    @add-project="onAddProject"
     @end-daily-click="onEndDailyClick"
   />
   <StateControls
@@ -166,6 +165,7 @@ function onEndDailyClick() {
       @drop="onDrop"
     >
       <ChartWorkspace
+        add-label="+ Project"
         :active-markers="activeMarkers"
         :done-markers="doneMarkers"
         :selected-trackable-id="selectedTrackableId"
@@ -176,6 +176,7 @@ function onEndDailyClick() {
         @click="onTrackableClick"
         @open="onOpen"
         @close-panel="clearSelection"
+        @add="onAddProject"
       />
     </div>
   </section>

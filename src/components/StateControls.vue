@@ -17,7 +17,7 @@ const buttonClass =
 
 <template>
   <footer
-    class="fixed bottom-5 left-5 z-30 flex divide-x divide-text-warm/15 overflow-hidden rounded-md border border-text-warm/15 bg-cream/90 text-xs text-text-warm/70 backdrop-blur-sm"
+    class="fixed right-5 bottom-5 z-30 flex divide-x divide-text-warm/15 overflow-hidden rounded-md border border-text-warm/15 bg-cream/90 text-xs text-text-warm/70 backdrop-blur-sm"
     aria-label="State controls"
   >
     <button

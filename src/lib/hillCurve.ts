@@ -11,6 +11,11 @@ export function chartViewBox(): string {
   return `-${sidePad} 0 ${width + 2 * sidePad} ${height}`
 }
 
+/** Hill baseline (curve endpoints), as 0–1 of chart height. */
+export function chartBaselineY(): number {
+  return (CHART.height - CHART.bottomPad) / CHART.height
+}
+
 // Raised cosine: 0 at x=0 and x=100, 1 at the peak (x=50).
 export function yNorm(x: number): number {
   return (1 - Math.cos((2 * Math.PI * x) / 100)) / 2

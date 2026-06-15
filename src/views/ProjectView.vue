@@ -47,23 +47,15 @@ function onAddTask() {
 </script>
 
 <template>
-  <header v-if="project" class="flex flex-wrap items-start justify-between gap-4 px-6 py-4">
-    <div>
-      <RouterLink to="/projects" class="text-sm text-text-warm/80 hover:text-text-warm">
-        ← Overview
-      </RouterLink>
-      <h1 class="mt-1 font-heading text-3xl">{{ project.name }}</h1>
-    </div>
-    <button
-      type="button"
-      class="rounded-full bg-terracotta px-4 py-2 text-sm text-cream transition-opacity hover:opacity-90"
-      @click="onAddTask"
-    >
-      + Task
-    </button>
+  <header v-if="project" class="px-6 py-4">
+    <RouterLink to="/projects" class="text-sm text-text-warm/80 hover:text-text-warm">
+      ← Overview
+    </RouterLink>
+    <h1 class="mt-1 font-heading text-3xl">{{ project.name }}</h1>
   </header>
   <section v-if="project" class="px-6 pb-6">
     <ChartWorkspace
+      add-label="+ Task"
       :active-markers="activeMarkers"
       :done-markers="doneMarkers"
       :selected-trackable-id="selectedTrackableId"
@@ -72,6 +64,7 @@ function onAddTask() {
       @move="onMove"
       @click="onTrackableClick"
       @close-panel="clearSelection"
+      @add="onAddTask"
     />
   </section>
 </template>
