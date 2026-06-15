@@ -24,15 +24,35 @@ const emit = defineEmits<{
 
 const sectionTitle = props.direction === 'up' ? 'Active up forces' : 'Active down forces'
 const pastTitle = props.direction === 'up' ? 'Past boosters' : 'Past blockers'
-const addLabel = props.direction === 'up' ? '+ Up force' : '+ Down force'
 const addAria = props.direction === 'up' ? 'Add up force' : 'Add down force'
 </script>
 
 <template>
   <section class="mb-6">
-    <h3 class="mb-2 text-xs font-medium tracking-wide text-text-warm/60 uppercase">
-      {{ sectionTitle }}
-    </h3>
+    <div class="mb-2 flex items-center justify-between gap-2">
+      <h3 class="text-xs font-medium tracking-wide text-text-warm/60 uppercase">
+        {{ sectionTitle }}
+      </h3>
+      <button
+        v-if="!isAdding"
+        type="button"
+        class="shrink-0 rounded p-1 text-text-warm/60 transition-colors hover:bg-hill-sand hover:text-text-warm"
+        :aria-label="addAria"
+        @click="emit('add-start')"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="size-4"
+          aria-hidden="true"
+        >
+          <path
+            d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"
+          />
+        </svg>
+      </button>
+    </div>
     <ul class="space-y-2">
       <ForceChip
         v-for="force in activeForces"
@@ -48,15 +68,6 @@ const addAria = props.direction === 'up' ? 'Add up force' : 'Add down force'
       <ForceAddForm v-if="isAdding" @save="emit('add-save', $event)" @cancel="emit('add-cancel')" />
     </ul>
     <p v-if="!activeForces.length && !isAdding" class="mb-2 text-sm text-text-warm/50">None</p>
-    <button
-      v-if="!isAdding"
-      type="button"
-      class="mt-2 text-sm text-terracotta hover:underline"
-      :aria-label="addAria"
-      @click="emit('add-start')"
-    >
-      {{ addLabel }}
-    </button>
   </section>
 
   <details v-if="pastForces.length" :class="direction === 'up' ? 'mb-4' : ''">
