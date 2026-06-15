@@ -2,6 +2,7 @@
 defineProps<{
   endDailyEnabled: boolean
   endDailyLabel: 'End daily' | 'Saved'
+  showDemoLabel?: boolean
 }>()
 
 defineEmits<{
@@ -11,7 +12,15 @@ defineEmits<{
 
 <template>
   <header class="flex flex-wrap items-center justify-between gap-4 px-6 py-4">
-    <RouterLink to="/" class="font-heading text-xl">werkwink</RouterLink>
+    <div class="flex flex-wrap items-center gap-3">
+      <RouterLink to="/" class="font-heading text-xl">werkwink</RouterLink>
+      <span
+        v-if="showDemoLabel"
+        class="rounded-full bg-dusty-blue/15 px-3 py-1 text-xs font-medium text-dusty-blue ring-1 ring-dusty-blue/25"
+      >
+        Demo data
+      </span>
+    </div>
     <div class="flex flex-wrap items-center gap-2">
       <button
         type="button"
