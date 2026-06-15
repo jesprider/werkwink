@@ -42,7 +42,7 @@ function onOpen(id: string) {
       <p
         v-if="chartBlockMessage"
         role="status"
-        class="pointer-events-none absolute top-2 right-2 left-2 z-20 rounded-lg bg-rust/10 px-3 py-2 text-center text-sm text-rust"
+        class="pointer-events-none absolute top-2 left-1/2 z-20 w-max max-w-[calc(100%-1rem)] -translate-x-1/2 rounded-lg bg-rust/10 px-3 py-2 text-center text-sm text-rust"
       >
         {{ chartBlockMessage }}
       </p>
