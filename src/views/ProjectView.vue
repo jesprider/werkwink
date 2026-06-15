@@ -55,7 +55,7 @@ function onAddTask() {
   </header>
   <section v-if="project" class="px-6 pb-6">
     <ChartWorkspace
-      add-label="+ Task"
+      add-label="Add task"
       :active-markers="activeMarkers"
       :done-markers="doneMarkers"
       :selected-trackable-id="selectedTrackableId"

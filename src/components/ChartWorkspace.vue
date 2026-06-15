@@ -68,10 +68,22 @@ function onOpen(id: string) {
       >
         <button
           type="button"
-          class="pointer-events-auto text-xs text-text-warm/55 transition-colors hover:text-terracotta/85 hover:underline"
+          class="pointer-events-auto rounded bg-hill-sand/40 p-1 text-text-warm/60 transition-colors hover:bg-hill-sand hover:text-text-warm"
+          :title="addLabel"
+          :aria-label="addLabel"
           @click="emit('add')"
         >
-          {{ addLabel }}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            class="size-4"
+            aria-hidden="true"
+          >
+            <path
+              d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"
+            />
+          </svg>
         </button>
       </div>
     </div>

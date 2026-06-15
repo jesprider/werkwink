@@ -147,7 +147,7 @@ function onEndDailyClick() {
           class="rounded-full bg-hill-sand px-5 py-2.5 text-sm text-text-warm transition-opacity hover:opacity-90"
           @click="onAddProject"
         >
-          + Add your first project
+          Add your first project
         </button>
       </div>
       <RouterLink to="/" class="text-sm text-text-warm/70 underline hover:text-text-warm">
@@ -163,7 +163,7 @@ function onEndDailyClick() {
       @drop="onDrop"
     >
       <ChartWorkspace
-        add-label="+ Project"
+        add-label="Add project"
         :active-markers="activeMarkers"
         :done-markers="doneMarkers"
         :selected-trackable-id="selectedTrackableId"
