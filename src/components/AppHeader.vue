@@ -5,7 +5,6 @@ defineProps<{
 }>()
 
 defineEmits<{
-  (e: 'add-project'): void
   (e: 'end-daily-click'): void
 }>()
 </script>
@@ -14,13 +13,6 @@ defineEmits<{
   <header class="flex flex-wrap items-center justify-between gap-4 px-6 py-4">
     <RouterLink to="/" class="font-heading text-xl">werkwink</RouterLink>
     <div class="flex flex-wrap items-center gap-2">
-      <button
-        type="button"
-        class="rounded-full bg-terracotta px-4 py-2 text-sm text-cream transition-opacity hover:opacity-90"
-        @click="$emit('add-project')"
-      >
-        + Project
-      </button>
       <button
         type="button"
         :disabled="!endDailyEnabled"

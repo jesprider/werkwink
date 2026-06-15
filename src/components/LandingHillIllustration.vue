@@ -14,7 +14,6 @@ const UPHILL_TEXT = 'Figuring it out'
 const DOWNHILL_TEXT = 'Making it happen'
 
 const path = curvePath()
-const baseline = CHART.height - CHART.bottomPad
 const dotCx = curveX(DEMO_POSITION)
 const dotCy = curveY(DEMO_POSITION)
 const dotColor = PALETTE.terracotta
@@ -55,21 +54,7 @@ const downhillLabel = labelAboveCurve(DOWNHILL_LABEL_POS, DOWNHILL_TEXT)
     role="img"
     aria-label="Hill curve: figuring it out on the uphill, making it happen on the downhill"
   >
-    <path
-      :d="`${path} L ${CHART.width} ${baseline} L 0 ${baseline} Z`"
-      fill="#E8D9BD"
-      opacity="0.55"
-    />
     <path :d="path" fill="none" stroke="#D9C9A8" stroke-width="3" />
-    <line
-      :x1="0"
-      :y1="baseline"
-      :x2="CHART.width"
-      :y2="baseline"
-      stroke="#D9C9A8"
-      stroke-width="1.5"
-      opacity="0.7"
-    />
 
     <text
       :x="uphillLabel.x"

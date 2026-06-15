@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import type { ChartMarker } from '../domain/chartMarkers'
 import type { Project } from '../schema/types'
+import { chartBaselineY } from '../lib/hillCurve'
 import DoneStack from './DoneStack.vue'
 import HillChart from './HillChart.vue'
 import SidePanel from './SidePanel.vue'
@@ -13,6 +14,7 @@ defineProps<{
   panelProject?: Project
   chartBlockMessage?: string | null
   showOpenProject?: boolean
+  addLabel?: string
 }>()
 
 const emit = defineEmits<{
@@ -20,7 +22,10 @@ const emit = defineEmits<{
   click: [id: string]
   open: [id: string]
   closePanel: []
+  add: []
 }>()
+
+const addLinkTop = `${chartBaselineY() * 100}%`
 
 const hillChartRef = ref<InstanceType<typeof HillChart> | null>(null)
 const svgRef = computed(() => hillChartRef.value?.svgRef ?? null)
@@ -56,6 +61,19 @@ function onOpen(id: string) {
         @move="(id, position) => emit('move', id, position)"
         @click="emit('click', $event)"
       />
+      <div
+        v-if="addLabel"
+        class="pointer-events-none absolute left-1/2 z-10 -translate-x-1/2 -translate-y-full"
+        :style="{ top: addLinkTop }"
+      >
+        <button
+          type="button"
+          class="pointer-events-auto text-xs text-text-warm/55 transition-colors hover:text-terracotta/85 hover:underline"
+          @click="emit('add')"
+        >
+          {{ addLabel }}
+        </button>
+      </div>
     </div>
     <div class="w-80 shrink-0">
       <SidePanel
