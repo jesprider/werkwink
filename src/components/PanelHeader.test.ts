@@ -18,7 +18,7 @@ describe('PanelHeader', () => {
     routerPush.mockReset()
   })
 
-  it('exits name/link edit mode on Escape without saving', async () => {
+  it('exits edit mode on Escape without saving', async () => {
     const store = useHillChartStore()
     const projectId = store.addProject()
     const project = store.projects.find((p) => p.id === projectId)!
@@ -30,17 +30,30 @@ describe('PanelHeader', () => {
 
     await wrapper.get('button[title="Click to edit name and link"]').trigger('click')
     await nextTick()
-
-    const nameInput = wrapper.get('input[aria-label="Name"]')
-    await nameInput.setValue('Changed name')
-
-    window.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
-    )
-    await nextTick()
+    await wrapper.get('input[aria-label="Name"]').setValue('Changed name')
+    await wrapper.get('input[aria-label="Name"]').trigger('keydown', { key: 'Escape' })
 
     expect(wrapper.find('input[aria-label="Name"]').exists()).toBe(false)
     expect(wrapper.text()).toContain('Original name')
     expect(project.name).toBe('Original name')
+  })
+
+  it('saves on Enter and exits edit mode', async () => {
+    const store = useHillChartStore()
+    const projectId = store.addProject()
+    const project = store.projects.find((p) => p.id === projectId)!
+    store.updateTrackable(projectId, { name: 'Original name', source: null })
+
+    const wrapper = mount(PanelHeader, {
+      props: { trackable: project, kind: 'project', projectId },
+    })
+
+    await wrapper.get('button[title="Click to edit name and link"]').trigger('click')
+    await nextTick()
+    await wrapper.get('input[aria-label="Name"]').setValue('Saved name')
+    await wrapper.get('input[aria-label="Name"]').trigger('keydown', { key: 'Enter' })
+
+    expect(wrapper.find('input[aria-label="Name"]').exists()).toBe(false)
+    expect(project.name).toBe('Saved name')
   })
 })
