@@ -17,7 +17,7 @@ code and implementation docs use the terms below.
 | **Dot** | Informal name for a project or task **as shown on the hill** (conversation, UI). Not a TypeScript type. |
 | **Project dot** | The project’s chart marker (larger). |
 | **Task dot** | A task’s chart marker (smaller). |
-| **Force** | Up (assignee, helpers) or down (blockers) context on a project or task. |
+| **Force** | Up forces (assignee, helpers) or down forces (blockers, obstacles, dependencies) on a project or task. |
 | **Resolve (force)** | Mark a force resolved; moves to past section. |
 | **Daily / End daily** | Standup ritual; snapshot positions for today. |
 | **Snapshot / trail** | Historical positions for ghost markers on the chart. |
@@ -66,7 +66,8 @@ code and implementation docs use the terms below.
 | Drag a dot | `setPosition(trackableId, …)` | Updates `Project` or `Task` |
 | Staleness satellites | `stalenessSatelliteCount(lastMovedAt, position)` | Red dots on `MarkerChart` |
 | Days without movement (panel) | `daysWithoutMovement(lastMovedAt, position)` | Position section copy |
-| Resolve a blocker | `resolveForce` | — |
+| Resolve a down force | `resolveForce` | — |
+| Peak crossing blocked | Active down forces remain | Panel + chart nudge: *“Resolve active down forces before moving downhill.”* |
 
 ---
 

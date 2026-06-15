@@ -24,7 +24,7 @@ const emit = defineEmits<{
 }>()
 
 const sectionTitle = props.direction === 'up' ? 'Active up forces' : 'Active down forces'
-const pastTitle = props.direction === 'up' ? 'Past boosters' : 'Past blockers'
+const pastTitle = props.direction === 'up' ? 'Past up forces' : 'Past down forces'
 const addAria = props.direction === 'up' ? 'Add up force' : 'Add down force'
 </script>
 
