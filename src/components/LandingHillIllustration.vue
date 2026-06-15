@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CHART, chartViewBox, curvePath, curveX, curveY } from '../lib/hillCurve'
+import { CHART, chartViewBox, curvePath, curveX, curveY, HILL_STROKE } from '../lib/hillCurve'
 import { PALETTE } from '../schema/palette'
 
 const DEMO_POSITION = 28
@@ -54,7 +54,7 @@ const downhillLabel = labelAboveCurve(DOWNHILL_LABEL_POS, DOWNHILL_TEXT)
     role="img"
     aria-label="Hill curve: figuring it out on the uphill, making it happen on the downhill"
   >
-    <path :d="path" fill="none" stroke="#D9C9A8" stroke-width="3" />
+    <path :d="path" fill="none" :stroke="HILL_STROKE" stroke-width="3" />
 
     <text
       :x="uphillLabel.x"

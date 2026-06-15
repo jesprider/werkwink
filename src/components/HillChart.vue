@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { chartViewBox, curvePath, curveX, curveY } from '../lib/hillCurve'
+import { chartViewBox, curvePath, curveX, curveY, HILL_STROKE } from '../lib/hillCurve'
 import { useHillDrag } from '../composables/useHillDrag'
 import type { ChartMarker as ChartMarkerModel } from '../domain/chartMarkers'
 import MarkerChart from './MarkerChart.vue'
@@ -39,7 +39,7 @@ defineExpose({ svgRef })
     role="img"
     aria-label="Hill chart"
   >
-    <path :d="path" fill="none" stroke="#E8D9BD" stroke-width="3" />
+    <path :d="path" fill="none" :stroke="HILL_STROKE" stroke-width="3" />
 
     <g v-for="m in markers" :key="m.id">
       <MarkerTrail

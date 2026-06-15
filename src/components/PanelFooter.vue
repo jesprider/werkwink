@@ -36,7 +36,8 @@ function onDelete() {
 <template>
   <button
     type="button"
-    class="absolute right-5 bottom-5 rounded-full p-1.5 text-text-warm/60 hover:bg-rust/10 hover:text-rust"
+    class="absolute right-5 bottom-5 rounded p-1.5 text-text-warm/60 hover:bg-rust/10 hover:text-rust"
+    :title="deleteAriaLabel()"
     :aria-label="deleteAriaLabel()"
     @click="onDelete"
   >

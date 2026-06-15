@@ -104,7 +104,8 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
       />
       <button
         type="button"
-        class="shrink-0 rounded-full px-2 py-1 text-sm text-text-warm/60 hover:bg-hill-sand hover:text-text-warm"
+        class="shrink-0 rounded px-2 py-1 text-sm text-text-warm/60 hover:bg-hill-sand hover:text-text-warm"
+        title="Close panel"
         aria-label="Close panel"
         @click="$emit('close')"
       >

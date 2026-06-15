@@ -6,6 +6,9 @@ export const CHART = {
   sidePad: 36,
 } as const
 
+/** Hill curve stroke — matches theme `hill-sand`. */
+export const HILL_STROKE = '#E8D9BD'
+
 export function chartViewBox(): string {
   const { width, height, sidePad } = CHART
   return `-${sidePad} 0 ${width + 2 * sidePad} ${height}`
