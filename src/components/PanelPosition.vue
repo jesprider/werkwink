@@ -74,7 +74,7 @@ function onSliderInput(event: Event) {
 <template>
   <section class="mb-6">
     <h3 class="mb-2 text-xs font-medium tracking-wide text-text-warm/60 uppercase">Position</h3>
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2">
       <input
         type="range"
         min="0"
@@ -88,7 +88,7 @@ function onSliderInput(event: Event) {
         aria-label="Position on hill"
         @input="onSliderInput"
       />
-      <span class="w-8 text-right text-lg tabular-nums">{{ trackable.position }}</span>
+      <span class="w-8 text-right font-heading text-lg tabular-nums">{{ trackable.position }}</span>
     </div>
     <p v-if="stalenessLabel" class="mt-1 text-sm text-text-warm/70">{{ stalenessLabel }}</p>
     <p v-if="atPeak" class="mt-1 text-sm text-text-warm/70">At the peak</p>
