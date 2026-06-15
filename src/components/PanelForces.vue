@@ -26,10 +26,11 @@ const emit = defineEmits<{
 const sectionTitle = props.direction === 'up' ? 'Active up forces' : 'Active down forces'
 const pastTitle = props.direction === 'up' ? 'Past up forces' : 'Past down forces'
 const addAria = props.direction === 'up' ? 'Add up force' : 'Add down force'
+const sectionSpacingClass = props.direction === 'up' ? 'mb-4' : 'mb-6'
 </script>
 
 <template>
-  <section class="mb-6">
+  <section :class="sectionSpacingClass">
     <div class="mb-2 flex items-center justify-between gap-2">
       <h3 class="text-xs font-medium tracking-wide text-text-warm/60 uppercase">
         {{ sectionTitle }}
@@ -50,6 +51,7 @@ const addAria = props.direction === 'up' ? 'Add up force' : 'Add down force'
         v-for="force in activeForces"
         :key="force.id"
         :force="force"
+        :direction="direction"
         variant="active"
         :is-editing="editingForceId === force.id"
         @edit-start="emit('edit-start', force.id)"
@@ -57,22 +59,30 @@ const addAria = props.direction === 'up' ? 'Add up force' : 'Add down force'
         @cancel="emit('cancel-edit')"
         @resolve="emit('resolve', force.id)"
       />
-      <ForceAddForm v-if="isAdding" @save="emit('add-save', $event)" @cancel="emit('add-cancel')" />
-    </ul>
-    <p v-if="!activeForces.length && !isAdding" class="mb-2 text-sm text-text-warm/50">None</p>
-  </section>
-
-  <details v-if="pastForces.length" :class="direction === 'up' ? 'mb-4' : ''">
-    <summary class="text-sm font-medium">{{ pastTitle }}</summary>
-    <ul class="mt-2 space-y-2">
-      <ForceChip
-        v-for="force in pastForces"
-        :key="force.id"
-        :force="force"
-        variant="past"
-        :is-editing="false"
-        @unresolve="emit('unresolve', force.id)"
+      <ForceAddForm
+        v-if="isAdding"
+        :direction="direction"
+        @save="emit('add-save', $event)"
+        @cancel="emit('add-cancel')"
       />
     </ul>
-  </details>
+    <p v-if="!activeForces.length && !isAdding" class="text-sm text-text-warm/50">None</p>
+
+    <details v-if="pastForces.length" class="mt-3">
+      <summary class="cursor-pointer text-xs font-normal text-text-warm/45 hover:text-text-warm/65">
+        {{ pastTitle }}
+      </summary>
+      <ul class="mt-2 space-y-2">
+        <ForceChip
+          v-for="force in pastForces"
+          :key="force.id"
+          :force="force"
+          :direction="direction"
+          variant="past"
+          :is-editing="false"
+          @unresolve="emit('unresolve', force.id)"
+        />
+      </ul>
+    </details>
+  </section>
 </template>

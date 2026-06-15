@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import type { Force } from '../schema/types'
+import type { Force, ForceDirection } from '../schema/types'
 import { onInlineEditFocusOut, onInlineEditKeydown } from '../lib/inlineEditHandlers'
 
 const props = defineProps<{
   force: Force
+  direction?: ForceDirection
   variant: 'active' | 'past'
   isEditing: boolean
 }>()
@@ -23,6 +24,50 @@ const labelInvalid = ref(false)
 const labelRef = ref<HTMLInputElement | null>(null)
 
 const showResolve = computed(() => props.variant === 'active' && !props.force.isPrimary)
+
+const isDown = computed(() => props.direction === 'down')
+
+const displayPillShell = 'flex min-h-9 min-w-0 items-center gap-2 rounded-full px-3 py-1.5 text-sm'
+const editPillShell = 'flex h-9 min-w-0 items-center gap-2 rounded-full px-3 text-sm'
+
+const pastChipClass = computed(() =>
+  isDown.value
+    ? `${displayPillShell} bg-force-down/10 text-text-warm/65 transition-colors hover:bg-force-down/15`
+    : `${displayPillShell} bg-force-up/12 text-text-warm/65 transition-colors hover:bg-force-up/18`,
+)
+
+const activeChipClass = computed(() =>
+  isDown.value
+    ? `group ${displayPillShell} bg-force-down/12 ring-1 ring-force-down/20`
+    : `group ${displayPillShell} bg-force-up/15 ring-1 ring-force-up/25`,
+)
+
+const editingChipClass = computed(() =>
+  isDown.value
+    ? `flex-wrap ${editPillShell} bg-force-down/12 ring-1 ring-force-down/30`
+    : `flex-wrap ${editPillShell} bg-force-up/15 ring-1 ring-force-up/35`,
+)
+
+const inputClass =
+  'h-6 flex-1 rounded-full border-0 bg-white/80 px-2 text-sm leading-none outline-none focus:ring-1'
+
+const labelInputClass = computed(() =>
+  isDown.value
+    ? `${inputClass} min-w-[6rem] focus:ring-force-down/40`
+    : `${inputClass} min-w-[6rem] focus:ring-force-up/40`,
+)
+
+const ownerInputClass = computed(() =>
+  isDown.value
+    ? `${inputClass} min-w-[5rem] focus:ring-force-down/40`
+    : `${inputClass} min-w-[5rem] focus:ring-force-up/40`,
+)
+
+const resolveButtonClass = computed(() =>
+  isDown.value
+    ? 'flex size-6 shrink-0 items-center justify-center rounded-full leading-none text-force-down/75 transition-colors hover:bg-force-down/15 hover:text-force-down'
+    : 'flex size-6 shrink-0 items-center justify-center rounded-full leading-none text-force-up/85 transition-colors hover:bg-force-up/22 hover:text-force-up',
+)
 
 watch(
   () => props.isEditing,
@@ -85,7 +130,7 @@ function onResolveClick(event: MouseEvent) {
 <template>
   <li
     v-if="variant === 'past'"
-    class="rounded-full bg-hill-sand/40 px-3 py-1.5 text-sm text-text-warm/70 transition-colors hover:bg-hill-sand/60"
+    :class="pastChipClass"
     role="button"
     tabindex="0"
     :aria-label="`Restore ${force.label} to active`"
@@ -94,13 +139,15 @@ function onResolveClick(event: MouseEvent) {
     @keydown.enter="onPastClick"
     @keydown.space.prevent="onPastClick"
   >
-    {{ force.label }}
-    <span v-if="force.owner" class="text-text-warm/60"> · {{ force.owner }}</span>
+    <span class="min-w-0 text-left">
+      {{ force.label
+      }}<span v-if="force.owner" class="text-text-warm/60"> · {{ force.owner }}</span>
+    </span>
   </li>
 
   <li
     v-else-if="isEditing"
-    class="flex flex-wrap items-center gap-2 rounded-full bg-hill-sand/70 px-3 py-1.5 text-sm ring-1 ring-terracotta/30"
+    :class="editingChipClass"
     @keydown="onEditKeydown"
     @focusout="onEditFocusOut"
   >
@@ -108,7 +155,7 @@ function onResolveClick(event: MouseEvent) {
       ref="labelRef"
       v-model="draftLabel"
       type="text"
-      class="min-w-[6rem] flex-1 rounded-full border-0 bg-white/80 px-2 py-0.5 outline-none focus:ring-1 focus:ring-terracotta/40"
+      :class="labelInputClass"
       :aria-invalid="labelInvalid"
       aria-label="Force label"
       @input="labelInvalid = false"
@@ -117,29 +164,33 @@ function onResolveClick(event: MouseEvent) {
       v-model="draftOwner"
       type="text"
       placeholder="Owner"
-      class="min-w-[5rem] flex-1 rounded-full border-0 bg-white/80 px-2 py-0.5 outline-none focus:ring-1 focus:ring-terracotta/40"
+      :class="ownerInputClass"
       aria-label="Force owner"
     />
     <span v-if="force.isPrimary" class="text-xs text-text-warm/60">(primary)</span>
   </li>
 
-  <li v-else class="group flex items-center gap-2 rounded-full bg-hill-sand/70 px-3 py-1.5 text-sm">
+  <li v-else :class="activeChipClass">
     <button
       type="button"
       class="min-w-0 flex-1 cursor-text text-left"
       title="Click to edit"
       @click="onDisplayClick"
     >
-      <span class="group-hover:underline group-hover:decoration-terracotta/40">{{
-        force.label
-      }}</span>
+      <span
+        class="group-hover:underline"
+        :class="
+          isDown ? 'group-hover:decoration-force-down/40' : 'group-hover:decoration-force-up/40'
+        "
+        >{{ force.label }}</span
+      >
       <span v-if="force.owner" class="text-text-warm/70"> · {{ force.owner }}</span>
       <span v-if="force.isPrimary" class="ml-1 text-xs text-text-warm/60">(primary)</span>
     </button>
     <button
       v-if="showResolve"
       type="button"
-      class="shrink-0 rounded-full px-1.5 py-0.5 text-text-warm/60 hover:bg-hill-sand hover:text-olive"
+      :class="resolveButtonClass"
       aria-label="Resolve force"
       @click="onResolveClick"
     >
