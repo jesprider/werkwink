@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue'
+import { useEscapeToCancelWhileMounted } from '../composables/useEscapeToCancel'
 
 const emit = defineEmits<{
   save: [payload: { label: string; owner: string | null }]
@@ -9,13 +10,22 @@ const emit = defineEmits<{
 const label = ref('')
 const owner = ref('')
 const labelInvalid = ref(false)
+const escaping = ref(false)
 const labelRef = ref<HTMLInputElement | null>(null)
 
 onMounted(() => {
   void nextTick(() => labelRef.value?.focus())
 })
 
+function cancelAdd() {
+  escaping.value = true
+  emit('cancel')
+}
+
+useEscapeToCancelWhileMounted(cancelAdd, escaping)
+
 function trySave() {
+  if (escaping.value) return
   const trimmed = label.value.trim()
   if (!trimmed) {
     labelInvalid.value = true
@@ -28,20 +38,15 @@ function trySave() {
 }
 
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Enter') {
-    event.preventDefault()
-    trySave()
-  } else if (event.key === 'Escape') {
-    event.preventDefault()
-    emit('cancel')
-  }
+  if (event.key !== 'Enter') return
+  event.preventDefault()
+  trySave()
 }
 </script>
 
 <template>
   <li
     class="flex flex-wrap items-center gap-2 rounded-full bg-hill-sand/50 px-3 py-1.5 text-sm ring-1 ring-hill-sand"
-    @keydown="onKeydown"
   >
     <input
       ref="labelRef"
@@ -52,6 +57,7 @@ function onKeydown(event: KeyboardEvent) {
       :aria-invalid="labelInvalid"
       aria-label="Force label"
       @input="labelInvalid = false"
+      @keydown="onKeydown"
     />
     <input
       v-model="owner"
@@ -60,6 +66,7 @@ function onKeydown(event: KeyboardEvent) {
       class="min-w-[5rem] flex-1 rounded-full border-0 bg-white/80 px-2 py-0.5 outline-none focus:ring-1 focus:ring-terracotta/40"
       aria-label="Force owner"
       @blur="trySave"
+      @keydown="onKeydown"
     />
   </li>
 </template>
