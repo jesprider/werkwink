@@ -138,7 +138,10 @@ defineExpose({ cancelEdit })
         {{ trackable.name }}
       </button>
     </div>
-    <span class="mt-2 mr-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ring-1" :class="kindTagClass">
+    <span
+      class="mt-2 mr-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ring-1"
+      :class="kindTagClass"
+    >
       {{ kind }}
     </span>
     <button
