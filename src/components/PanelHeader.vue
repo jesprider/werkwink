@@ -135,7 +135,7 @@ defineExpose({ cancelEdit })
         {{ trackable.name }}
       </button>
     </div>
-    <span class="mt-2 inline-block rounded-full bg-hill-sand px-2.5 py-0.5 text-xs capitalize">
+    <span class="mt-2 inline-block rounded-full bg-hill-sand mr-2 px-2.5 py-0.5 text-xs capitalize">
       {{ kind }}
     </span>
     <button
