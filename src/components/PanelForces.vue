@@ -2,6 +2,7 @@
 import type { Force, ForceDirection } from '../schema/types'
 import ForceAddForm from './ForceAddForm.vue'
 import ForceChip from './ForceChip.vue'
+import IconPlus from './IconPlus.vue'
 
 const props = defineProps<{
   direction: ForceDirection
@@ -37,20 +38,11 @@ const addAria = props.direction === 'up' ? 'Add up force' : 'Add down force'
         v-if="!isAdding"
         type="button"
         class="shrink-0 rounded p-1 text-text-warm/60 transition-colors hover:bg-hill-sand hover:text-text-warm"
+        :title="addAria"
         :aria-label="addAria"
         @click="emit('add-start')"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          class="size-4"
-          aria-hidden="true"
-        >
-          <path
-            d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"
-          />
-        </svg>
+        <IconPlus />
       </button>
     </div>
     <ul class="space-y-2">
