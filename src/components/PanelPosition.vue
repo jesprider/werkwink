@@ -92,7 +92,7 @@ function onSliderInput(event: Event) {
     </div>
     <p v-if="stalenessLabel" class="mt-1 text-sm text-text-warm/70">{{ stalenessLabel }}</p>
     <p v-if="atPeak" class="mt-1 text-sm text-text-warm/70">At the peak</p>
-    <p v-if="showBlockerHint" class="mt-1 text-sm text-text-warm/70">
+    <p v-if="showBlockerHint" class="mt-1 text-sm text-rust">
       {{ PEAK_CROSSING_BLOCKED_MESSAGE }}
     </p>
     <p v-if="showProjectDoneHint" class="mt-1 text-sm text-text-warm/70">
