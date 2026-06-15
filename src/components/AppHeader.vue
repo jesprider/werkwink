@@ -27,8 +27,8 @@ defineEmits<{
         :disabled="!endDailyEnabled"
         :class="
           endDailyEnabled
-            ? 'rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm transition-opacity hover:opacity-90'
-            : 'rounded-full bg-hill-sand px-4 py-2 text-sm text-text-warm/50'
+            ? 'rounded-md border border-text-warm/15 px-3 py-1.5 text-sm text-text-warm/70 transition-colors hover:bg-hill-sand/50 hover:text-text-warm'
+            : 'rounded-md border border-text-warm/15 px-3 py-1.5 text-sm text-text-warm/35 disabled:hover:bg-transparent'
         "
         @click="endDailyEnabled && $emit('end-daily-click')"
       >
