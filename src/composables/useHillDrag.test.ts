@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { positionFromClientX, useHillDrag } from './useHillDrag'
+import { DOUBLE_CLICK_MS, positionFromClientX, useHillDrag } from './useHillDrag'
 
 describe('positionFromClientX', () => {
   it('maps clientX across padded svg rect to integer 0..100', () => {
@@ -103,5 +103,112 @@ describe('useHillDrag onSelect', () => {
     window.dispatchEvent(new PointerEvent('pointerup'))
 
     expect(onSelect).not.toHaveBeenCalled()
+  })
+})
+
+describe('useHillDrag double-click detection', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  function newDrag(handlers: {
+    onClick?: (id: string) => void
+    onOpen?: (id: string) => void
+    clickable?: boolean
+  }) {
+    return useHillDrag({
+      getSvg: () => null,
+      clickable: () => handlers.clickable ?? true,
+      onMove: vi.fn(),
+      onClick: handlers.onClick,
+      onOpen: handlers.onOpen,
+    })
+  }
+
+  function click({ startDrag }: ReturnType<typeof useHillDrag>, id: string) {
+    startDrag(id, { preventDefault: vi.fn(), clientX: 0 } as unknown as PointerEvent)
+    window.dispatchEvent(new PointerEvent('pointerup'))
+  }
+
+  it('emits a single click for one press-release', () => {
+    const onClick = vi.fn()
+    const onOpen = vi.fn()
+    const api = newDrag({ onClick, onOpen })
+
+    click(api, 'a')
+
+    expect(onClick).toHaveBeenCalledExactlyOnceWith('a')
+    expect(onOpen).not.toHaveBeenCalled()
+  })
+
+  it('opens on the second quick click of the same marker', () => {
+    const onClick = vi.fn()
+    const onOpen = vi.fn()
+    const api = newDrag({ onClick, onOpen })
+
+    click(api, 'a')
+    click(api, 'a')
+
+    expect(onClick).toHaveBeenCalledExactlyOnceWith('a')
+    expect(onOpen).toHaveBeenCalledExactlyOnceWith('a')
+  })
+
+  it('treats two clicks past the double-click window as separate clicks', () => {
+    const onClick = vi.fn()
+    const onOpen = vi.fn()
+    let t = 0
+    vi.spyOn(performance, 'now').mockImplementation(() => t)
+    const api = newDrag({ onClick, onOpen })
+
+    click(api, 'a')
+    t = DOUBLE_CLICK_MS + 50
+    click(api, 'a')
+
+    expect(onClick).toHaveBeenCalledTimes(2)
+    expect(onOpen).not.toHaveBeenCalled()
+  })
+
+  it('does not open when the two quick clicks hit different markers', () => {
+    const onClick = vi.fn()
+    const onOpen = vi.fn()
+    const api = newDrag({ onClick, onOpen })
+
+    click(api, 'a')
+    click(api, 'b')
+
+    expect(onClick).toHaveBeenCalledTimes(2)
+    expect(onOpen).not.toHaveBeenCalled()
+  })
+
+  it('does not click or open after a drag, and resets the click pairing', () => {
+    const onClick = vi.fn()
+    const onOpen = vi.fn()
+    const api = newDrag({ onClick, onOpen })
+
+    click(api, 'a')
+    expect(onClick).toHaveBeenCalledTimes(1)
+
+    // A drag (move past threshold) is not a click and must not pair with the
+    // earlier click into a double-click.
+    api.startDrag('a', { preventDefault: vi.fn(), clientX: 0 } as unknown as PointerEvent)
+    window.dispatchEvent(new PointerEvent('pointermove', { clientX: 100 }))
+    window.dispatchEvent(new PointerEvent('pointerup'))
+
+    click(api, 'a')
+
+    expect(onClick).toHaveBeenCalledTimes(2)
+    expect(onOpen).not.toHaveBeenCalled()
+  })
+
+  it('ignores clicks when not clickable', () => {
+    const onClick = vi.fn()
+    const onOpen = vi.fn()
+    const api = newDrag({ onClick, onOpen, clickable: false })
+
+    click(api, 'a')
+    click(api, 'a')
+
+    expect(onClick).not.toHaveBeenCalled()
+    expect(onOpen).not.toHaveBeenCalled()
   })
 })

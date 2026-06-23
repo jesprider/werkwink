@@ -32,6 +32,7 @@ const { startDrag: onGrab, draggingId } = useHillDrag({
   onMove: (id, position) => emit('move', id, position),
   onClick: (id) => emit('click', id),
   onSelect: (id) => emit('select', id),
+  onOpen: (id) => emit('open', id),
 })
 
 const foregroundId = computed(() => props.selectedId ?? draggingId.value ?? null)
@@ -72,7 +73,6 @@ defineExpose({ svgRef })
         :label-side="sides.get(m.id) ?? 'below'"
         :highlighted="m.id === foregroundId"
         @grab="(ev: PointerEvent) => onGrab(m.id, ev)"
-        @open="emit('open', m.id)"
       />
     </g>
   </svg>

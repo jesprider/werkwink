@@ -25,7 +25,6 @@ const forcesText = computed(() => `↑${props.up} ↓${props.down}`)
 
 const emit = defineEmits<{
   (e: 'grab', ev: PointerEvent): void
-  (e: 'open'): void
 }>()
 
 const satelliteRadius = computed(() => Math.max(3, Math.round(props.radius * 0.22)))
@@ -67,7 +66,7 @@ const labelLayout = computed(() =>
 </script>
 
 <template>
-  <g class="cursor-grab" @pointerdown="emit('grab', $event)" @dblclick="emit('open')">
+  <g class="cursor-grab" @pointerdown="emit('grab', $event)">
     <circle :cx="cx" :cy="cy" :r="radius" :fill="color" stroke="#FDFAF4" stroke-width="2" />
     <circle
       v-for="(satellite, i) in satelliteCoords"
