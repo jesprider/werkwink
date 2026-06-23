@@ -86,4 +86,40 @@ describe('validateHillChartJson', () => {
     expect(r.state.projects[0].position).toBe(50)
     expect(r.state.projects[2].position).toBe(100)
   })
+
+  it('defaults missing dailyNoteDraft and notes on import', () => {
+    const r = validateHillChartJson(MINIMAL_IMPORT_JSON)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    const project = r.state.projects[0]
+    expect(project.dailyNoteDraft).toBe('')
+    expect(project.notes).toEqual([])
+  })
+
+  it('accepts notes history on a project', () => {
+    const data = JSON.parse(MINIMAL_IMPORT_JSON) as Record<string, unknown>
+    const p = (data.projects as Record<string, unknown>[])[0]
+    p.dailyNoteDraft = 'In progress'
+    p.notes = [{ date: '2026-06-05', text: 'Blocked on API' }]
+    const r = validateHillChartJson(JSON.stringify(data))
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.state.projects[0].notes).toEqual([{ date: '2026-06-05', text: 'Blocked on API' }])
+  })
+
+  it('rejects note text over 500 characters', () => {
+    const data = JSON.parse(MINIMAL_IMPORT_JSON) as Record<string, unknown>
+    const p = (data.projects as Record<string, unknown>[])[0]
+    p.notes = [{ date: '2026-06-05', text: 'x'.repeat(501) }]
+    const r = validateHillChartJson(JSON.stringify(data))
+    expect(r.ok).toBe(false)
+  })
+
+  it('rejects empty note text in history', () => {
+    const data = JSON.parse(MINIMAL_IMPORT_JSON) as Record<string, unknown>
+    const p = (data.projects as Record<string, unknown>[])[0]
+    p.notes = [{ date: '2026-06-05', text: '   ' }]
+    const r = validateHillChartJson(JSON.stringify(data))
+    expect(r.ok).toBe(false)
+  })
 })
