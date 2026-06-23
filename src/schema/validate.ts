@@ -1,5 +1,6 @@
 import { PALETTE_ORDER } from './palette'
 import type {
+  DailyNote,
   Force,
   ForceDirection,
   ForceStatus,
@@ -224,6 +225,63 @@ function parseSnapshots(raw: unknown, path: string, errors: string[]): Snapshot[
   return snapshots
 }
 
+const MAX_NOTE_LENGTH = 500
+
+function parseDailyNote(raw: unknown, path: string, errors: string[]): DailyNote | null {
+  if (!isRecord(raw)) {
+    pushError(errors, path, 'must be an object')
+    return null
+  }
+  const date = requireString(raw, 'date', path, errors)
+  const textRaw = raw.text
+  if (typeof textRaw !== 'string') {
+    pushError(errors, path, 'text must be a string')
+    return null
+  }
+  const text = textRaw.trim()
+  if (text === '') {
+    pushError(errors, path, 'text must be non-empty')
+    return null
+  }
+  if (text.length > MAX_NOTE_LENGTH) {
+    pushError(errors, path, `text must be at most ${MAX_NOTE_LENGTH} characters`)
+    return null
+  }
+  if (date === null) return null
+  if (!isIsoDateString(date)) {
+    pushError(errors, path, 'date must be a valid date string')
+    return null
+  }
+  return { date, text }
+}
+
+function parseDailyNoteDraft(raw: unknown, path: string, errors: string[]): string {
+  if (raw === undefined) return ''
+  if (typeof raw !== 'string') {
+    pushError(errors, path, 'dailyNoteDraft must be a string')
+    return ''
+  }
+  if (raw.length > MAX_NOTE_LENGTH) {
+    pushError(errors, path, `dailyNoteDraft must be at most ${MAX_NOTE_LENGTH} characters`)
+    return ''
+  }
+  return raw
+}
+
+function parseNotes(raw: unknown, path: string, errors: string[]): DailyNote[] {
+  if (raw === undefined) return []
+  if (!Array.isArray(raw)) {
+    pushError(errors, path, 'notes must be an array')
+    return []
+  }
+  const notes: DailyNote[] = []
+  raw.forEach((item, index) => {
+    const note = parseDailyNote(item, `${path}[${index}]`, errors)
+    if (note) notes.push(note)
+  })
+  return notes
+}
+
 function parseTask(raw: unknown, path: string, errors: string[]): Task | null {
   if (!isRecord(raw)) {
     pushError(errors, path, 'must be an object')
@@ -247,8 +305,20 @@ function parseTask(raw: unknown, path: string, errors: string[]): Task | null {
   const source = parseSource(raw.source, `${path}.source`, errors)
   const forces = parseForces(raw.forces, `${path}.forces`, errors)
   const snapshots = parseSnapshots(raw.snapshots, `${path}.snapshots`, errors)
+  const dailyNoteDraft = parseDailyNoteDraft(raw.dailyNoteDraft, `${path}.dailyNoteDraft`, errors)
+  const notes = parseNotes(raw.notes, `${path}.notes`, errors)
 
-  return { id, name, position, lastMovedAt, forces, snapshots, ...(source ? { source } : {}) }
+  return {
+    id,
+    name,
+    position,
+    lastMovedAt,
+    forces,
+    snapshots,
+    dailyNoteDraft,
+    notes,
+    ...(source ? { source } : {}),
+  }
 }
 
 function parseProject(raw: unknown, path: string, errors: string[]): Project | null {
@@ -280,6 +350,8 @@ function parseProject(raw: unknown, path: string, errors: string[]): Project | n
   const source = parseSource(raw.source, `${path}.source`, errors)
   const forces = parseForces(raw.forces, `${path}.forces`, errors)
   const snapshots = parseSnapshots(raw.snapshots, `${path}.snapshots`, errors)
+  const dailyNoteDraft = parseDailyNoteDraft(raw.dailyNoteDraft, `${path}.dailyNoteDraft`, errors)
+  const notes = parseNotes(raw.notes, `${path}.notes`, errors)
 
   let tasks: Task[] = []
   if (raw.tasks === undefined) {
@@ -301,6 +373,8 @@ function parseProject(raw: unknown, path: string, errors: string[]): Project | n
     lastMovedAt,
     forces,
     snapshots,
+    dailyNoteDraft,
+    notes,
     tasks,
     ...(source ? { source } : {}),
   }
