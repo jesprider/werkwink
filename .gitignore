@@ -8,3 +8,6 @@ npm-debug.log*
 
 # Implementation plans are kept local / internal only
 docs/superpowers/plans/
+
+# Superpowers brainstorm scratch (session servers, logs, generated HTML)
+.superpowers/
