@@ -28,7 +28,7 @@ const DOT_PX = 24
       <li
         v-for="marker in doneMarkers"
         :key="marker.id"
-        class="group flex cursor-pointer items-center gap-2 rounded-lg px-1 py-1.5 hover:bg-hill-sand/40"
+        class="group flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-hill-sand/40"
         @click="emit('click', marker.id)"
       >
         <div
