@@ -24,7 +24,6 @@ const draft = computed({
       rows="3"
       maxlength="500"
       class="w-full resize-none rounded-lg border border-hill-sand/80 bg-white/60 px-3 py-2 text-sm text-text-warm placeholder:text-text-warm/40 focus:border-terracotta/50 focus:outline-none"
-      placeholder="Add to today's note — saved on Capture…"
       aria-label="Daily standup note"
     />
   </section>
