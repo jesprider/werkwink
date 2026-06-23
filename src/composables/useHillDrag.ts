@@ -1,4 +1,4 @@
-import { onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import { positionFromClientX } from '../lib/hillCurve'
 
 export { positionFromClientX }
@@ -10,33 +10,33 @@ export function useHillDrag(options: {
   onMove: (id: string, position: number) => void
   onClick?: (id: string) => void
 }) {
-  let draggingId: string | null = null
+  const draggingId = ref<string | null>(null)
   let dragStartX = 0
   let didDrag = false
 
   function onPointerMove(ev: PointerEvent) {
-    if (!draggingId) return
+    if (!draggingId.value) return
     if (Math.abs(ev.clientX - dragStartX) > DRAG_THRESHOLD_PX) {
       didDrag = true
     }
     const pos = positionFromClientX(ev.clientX, options.getSvg())
     if (pos === null) return
-    options.onMove(draggingId, pos)
+    options.onMove(draggingId.value, pos)
   }
 
   function onPointerUp() {
-    const id = draggingId
+    const id = draggingId.value
     if (id && !didDrag && options.clickable?.() && options.onClick) {
       options.onClick(id)
     }
-    draggingId = null
+    draggingId.value = null
     window.removeEventListener('pointermove', onPointerMove)
     window.removeEventListener('pointerup', onPointerUp)
   }
 
   function startDrag(id: string, ev: PointerEvent) {
     ev.preventDefault()
-    draggingId = id
+    draggingId.value = id
     dragStartX = ev.clientX
     didDrag = false
     window.addEventListener('pointermove', onPointerMove)
@@ -45,5 +45,5 @@ export function useHillDrag(options: {
 
   onBeforeUnmount(onPointerUp)
 
-  return { startDrag }
+  return { startDrag, draggingId }
 }
