@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { chartViewBox, curvePath, curveX, curveY, HILL_STROKE } from '../lib/hillCurve'
 import { useHillDrag } from '../composables/useHillDrag'
-import type { ChartMarker as ChartMarkerModel } from '../domain/chartMarkers'
+import { markersInPaintOrder, type ChartMarker as ChartMarkerModel } from '../domain/chartMarkers'
 import MarkerChart from './MarkerChart.vue'
 import MarkerTrail from './MarkerTrail.vue'
 
@@ -21,12 +21,16 @@ const path = curvePath()
 
 const svgRef = ref<SVGSVGElement | null>(null)
 
-const { startDrag: onGrab } = useHillDrag({
+const { startDrag: onGrab, draggingId } = useHillDrag({
   getSvg: () => svgRef.value,
   clickable: () => props.clickable ?? false,
   onMove: (id, position) => emit('move', id, position),
   onClick: (id) => emit('click', id),
 })
+
+const foregroundId = computed(() => props.selectedId ?? draggingId.value ?? null)
+
+const paintOrderMarkers = computed(() => markersInPaintOrder(props.markers, foregroundId.value))
 
 defineExpose({ svgRef })
 </script>
@@ -41,7 +45,7 @@ defineExpose({ svgRef })
   >
     <path :d="path" fill="none" :stroke="HILL_STROKE" stroke-width="3" />
 
-    <g v-for="m in markers" :key="m.id">
+    <g v-for="m in paintOrderMarkers" :key="m.id">
       <MarkerTrail
         v-if="m.id === selectedId"
         :ghosts="m.ghosts"
