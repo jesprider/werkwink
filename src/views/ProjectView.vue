@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 import { useHillChartStore } from '../stores/hillChart'
 import { markersForProject, partitionMarkersForProjectView } from '../domain/chartMarkers'
 import ChartWorkspace from '../components/ChartWorkspace.vue'
+import { PEAK_POSITION } from '../domain/forceRules'
 import { lookupInProject } from '../domain/trackableLookup'
 import { useChartSelection } from '../composables/useChartSelection'
 
@@ -44,6 +45,10 @@ function onAddTask() {
   const id = store.addTask(props.id)
   if (id) selectedTrackableId.value = id
 }
+
+function onRestore(id: string) {
+  store.setPosition(id, PEAK_POSITION)
+}
 </script>
 
 <template>
@@ -65,6 +70,7 @@ function onAddTask() {
       @click="onTrackableClick"
       @close-panel="clearSelection"
       @add="onAddTask"
+      @restore="onRestore"
     />
   </section>
 </template>
