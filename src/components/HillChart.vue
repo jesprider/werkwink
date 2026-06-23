@@ -61,6 +61,7 @@ defineExpose({ svgRef })
         :name="m.name"
         :up="m.up"
         :down="m.down"
+        :highlighted="m.id === foregroundId"
         @grab="(ev: PointerEvent) => onGrab(m.id, ev)"
         @open="emit('open', m.id)"
       />
