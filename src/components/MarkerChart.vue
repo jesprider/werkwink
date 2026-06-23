@@ -2,6 +2,12 @@
 import { computed } from 'vue'
 import { STALE_RED } from '../domain/staleness'
 
+const CREAM = '#FDFAF4'
+const TITLE_FONT_SIZE = 12
+const TITLE_Y_OFFSET = 17
+const FORCES_FONT_SIZE = 12
+const FORCES_Y_OFFSET = 34
+
 const props = defineProps<{
   cx: number
   cy: number
@@ -11,7 +17,10 @@ const props = defineProps<{
   up: number
   down: number
   stalenessSatellites: number
+  highlighted?: boolean
 }>()
+
+const forcesText = computed(() => `↑${props.up} ↓${props.down}`)
 
 const emit = defineEmits<{
   (e: 'grab', ev: PointerEvent): void
@@ -42,6 +51,21 @@ const satelliteCoords = computed(() => {
     }
   })
 })
+
+const labelBackground = computed(() => {
+  const width = Math.max(props.name.length * 6, forcesText.value.length * 6) + 10
+  const titleBaseline = props.cy + props.radius + TITLE_Y_OFFSET
+  const forcesBaseline = props.cy + props.radius + FORCES_Y_OFFSET
+  const top = titleBaseline - 11
+  const bottom = forcesBaseline + 3
+  return {
+    x: props.cx - width / 2,
+    y: top,
+    width,
+    height: bottom - top,
+    rx: 5,
+  }
+})
 </script>
 
 <template>
@@ -58,11 +82,22 @@ const satelliteCoords = computed(() => {
       stroke-width="1"
       pointer-events="none"
     />
+    <rect
+      v-if="highlighted"
+      :x="labelBackground.x"
+      :y="labelBackground.y"
+      :width="labelBackground.width"
+      :height="labelBackground.height"
+      :rx="labelBackground.rx"
+      :fill="CREAM"
+      fill-opacity="0.85"
+      pointer-events="none"
+    />
     <text
       :x="cx"
-      :y="cy + radius + 18"
+      :y="cy + radius + TITLE_Y_OFFSET"
       text-anchor="middle"
-      font-size="15"
+      :font-size="TITLE_FONT_SIZE"
       fill="#3C3530"
       font-family="Inter, sans-serif"
     >
@@ -70,13 +105,13 @@ const satelliteCoords = computed(() => {
     </text>
     <text
       :x="cx"
-      :y="cy + radius + 34"
+      :y="cy + radius + FORCES_Y_OFFSET"
       text-anchor="middle"
-      font-size="13"
+      :font-size="FORCES_FONT_SIZE"
       fill="#3C3530"
       font-family="Inter, sans-serif"
     >
-      ↑{{ up }} ↓{{ down }}
+      {{ forcesText }}
     </text>
   </g>
 </template>
