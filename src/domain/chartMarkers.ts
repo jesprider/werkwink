@@ -23,7 +23,7 @@ export interface ChartMarker {
 }
 
 const OVERVIEW_RADIUS = 16
-const PROJECT_RADIUS = 22
+const PROJECT_RADIUS = 16
 const TASK_RADIUS = 11
 
 function buildChartMarker(

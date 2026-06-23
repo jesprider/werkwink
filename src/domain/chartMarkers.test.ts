@@ -105,7 +105,7 @@ describe('overviewMarkers', () => {
 })
 
 describe('markersForProject', () => {
-  it('returns the project marker first (radius 22) then each task (radius 11), all in project color', () => {
+  it('returns the project marker first (radius 16) then each task (radius 11), all in project color', () => {
     const markers = markersForProject(
       project({
         tasks: [
@@ -137,7 +137,7 @@ describe('markersForProject', () => {
     expect(markers).toHaveLength(2)
     expect(markers[0]).toMatchObject({
       id: 'proj_1',
-      radius: 22,
+      radius: 16,
       color: '#C56B4A',
       up: 0,
       down: 0,
@@ -154,7 +154,7 @@ describe('markersForProject', () => {
   it('returns just the project marker when there are no tasks', () => {
     const markers = markersForProject(project({ tasks: [] }))
     expect(markers).toHaveLength(1)
-    expect(markers[0].radius).toBe(22)
+    expect(markers[0].radius).toBe(16)
   })
 
   it('includes trail ghosts on task markers in project view', () => {
@@ -238,7 +238,7 @@ describe('partitionMarkersForProjectView', () => {
     )
     const { active, done } = partitionMarkersForProjectView(markers, 'proj_1')
     expect(active.map((m) => m.id).sort()).toEqual(['proj_1', 'task_b'])
-    expect(active.find((m) => m.id === 'proj_1')?.radius).toBe(22)
+    expect(active.find((m) => m.id === 'proj_1')?.radius).toBe(16)
     expect(done.map((m) => m.id)).toEqual(['task_a'])
   })
 
