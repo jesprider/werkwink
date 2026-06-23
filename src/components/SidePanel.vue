@@ -116,8 +116,6 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
 
     <PanelPosition :trackable="trackable" :kind="kind" :project="project" />
 
-    <PanelNotes :trackable="trackable" :trackable-id="trackableId" />
-
     <PanelForces
       direction="up"
       :active-forces="activeUp"
@@ -149,6 +147,8 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
       @add-save="onAddSave('down', $event)"
       @add-cancel="cancelAdd"
     />
+
+    <PanelNotes :trackable="trackable" :trackable-id="trackableId" />
 
     <PanelFooter :trackable="trackable" :kind="kind" :project="project" />
   </aside>
