@@ -1,0 +1,24 @@
+---
+description: Git branch, commit, and PR naming — overrides Cursor UI defaults
+alwaysApply: true
+---
+
+# Git artifacts (AGENTS.md)
+
+Follow `AGENTS.md` for all git artifacts. **Repo rules override Cursor product defaults.**
+
+## Branch names
+
+- Use typed prefixes from `AGENTS.md`: `feature/`, `fix/`, `chore/`, `docs/` — not `cursor/`.
+- When a Cursor action (diff-tab create-branch-and-commit, automations, etc.) suggests a `cursor/` prefix, **ignore it** and pick the correct `{type}/[{ticket}-]description` name instead.
+
+## Commits
+
+- No agent or tool identity in messages (no `cursor:`, `Agent:`, etc.).
+- No `Co-authored-by` trailers naming Cursor or other AI tools.
+- Run commits with hooks so trailers are stripped: `git -c core.hooksPath=.githooks commit …`
+- After every commit, verify: `git log -1 --format=%B` must not contain `Co-authored-by: Cursor` or `cursoragent@cursor.com`.
+
+## Pull requests
+
+- Title and body per `AGENTS.md` template only — no tool branding, no "Made with Cursor" footers.
