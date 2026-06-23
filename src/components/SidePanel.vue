@@ -6,6 +6,7 @@ import { useHillChartStore } from '../stores/hillChart'
 import PanelFooter from './PanelFooter.vue'
 import PanelForces from './PanelForces.vue'
 import PanelHeader from './PanelHeader.vue'
+import PanelNotes from './PanelNotes.vue'
 import PanelPosition from './PanelPosition.vue'
 
 const props = defineProps<{
@@ -114,6 +115,8 @@ function onAddSave(direction: ForceDirection, payload: { label: string; owner: s
     </div>
 
     <PanelPosition :trackable="trackable" :kind="kind" :project="project" />
+
+    <PanelNotes :trackable="trackable" :trackable-id="trackableId" />
 
     <PanelForces
       direction="up"
