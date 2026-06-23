@@ -9,19 +9,22 @@ export function useHillDrag(options: {
   clickable?: () => boolean
   onMove: (id: string, position: number) => void
   onClick?: (id: string) => void
+  onSelect?: (id: string) => void
 }) {
   const draggingId = ref<string | null>(null)
   let dragStartX = 0
   let didDrag = false
 
   function onPointerMove(ev: PointerEvent) {
-    if (!draggingId.value) return
-    if (Math.abs(ev.clientX - dragStartX) > DRAG_THRESHOLD_PX) {
+    const id = draggingId.value
+    if (!id) return
+    if (!didDrag && Math.abs(ev.clientX - dragStartX) > DRAG_THRESHOLD_PX) {
       didDrag = true
+      if (options.clickable?.()) options.onSelect?.(id)
     }
     const pos = positionFromClientX(ev.clientX, options.getSvg())
     if (pos === null) return
-    options.onMove(draggingId.value, pos)
+    options.onMove(id, pos)
   }
 
   function onPointerUp() {

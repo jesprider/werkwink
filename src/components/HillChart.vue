@@ -19,6 +19,7 @@ const emit = defineEmits<{
   (e: 'move', id: string, position: number): void
   (e: 'open', id: string): void
   (e: 'click', id: string): void
+  (e: 'select', id: string): void
 }>()
 
 const path = curvePath()
@@ -30,6 +31,7 @@ const { startDrag: onGrab, draggingId } = useHillDrag({
   clickable: () => props.clickable ?? false,
   onMove: (id, position) => emit('move', id, position),
   onClick: (id) => emit('click', id),
+  onSelect: (id) => emit('select', id),
 })
 
 const foregroundId = computed(() => props.selectedId ?? draggingId.value ?? null)

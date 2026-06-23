@@ -22,15 +22,21 @@ const activeMarkers = computed(() => partitionMarkers(chartMarkers.value).active
 const doneMarkers = computed(() => partitionMarkers(chartMarkers.value).done)
 const overviewProjectIds = computed(() => projects.value.map((p) => p.id))
 
-const { selectedTrackableId, chartBlockMessage, onMove, onTrackableClick, clearSelection } =
-  useChartSelection({
-    validIds: overviewProjectIds,
-    applyPosition: (id, position) => store.setPosition(id, position),
-    nudgeContextForMove: (id) => {
-      const proj = projects.value.find((p) => p.id === id)
-      return { trackable: proj, project: proj }
-    },
-  })
+const {
+  selectedTrackableId,
+  chartBlockMessage,
+  onMove,
+  onTrackableClick,
+  selectTrackable,
+  clearSelection,
+} = useChartSelection({
+  validIds: overviewProjectIds,
+  applyPosition: (id, position) => store.setPosition(id, position),
+  nudgeContextForMove: (id) => {
+    const proj = projects.value.find((p) => p.id === id)
+    return { trackable: proj, project: proj }
+  },
+})
 
 const {
   importEnabled,
@@ -175,6 +181,7 @@ function onCaptureClick() {
         show-open-project
         @move="onMove"
         @click="onTrackableClick"
+        @select="selectTrackable"
         @open="onOpen"
         @close-panel="clearSelection"
         @add="onAddProject"

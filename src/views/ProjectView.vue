@@ -26,16 +26,22 @@ const activeMarkers = computed(() => partitioned.value.active)
 const doneMarkers = computed(() => partitioned.value.done)
 const markerIds = computed(() => chartMarkers.value.map((m) => m.id))
 
-const { selectedTrackableId, chartBlockMessage, onMove, onTrackableClick, clearSelection } =
-  useChartSelection({
-    validIds: markerIds,
-    applyPosition: (id, position) => store.setPosition(id, position),
-    nudgeContextForMove: (id) => {
-      if (!project.value) return { trackable: undefined, project: undefined }
-      const lookup = lookupInProject(project.value, id)
-      return { trackable: lookup?.trackable, project: project.value }
-    },
-  })
+const {
+  selectedTrackableId,
+  chartBlockMessage,
+  onMove,
+  onTrackableClick,
+  selectTrackable,
+  clearSelection,
+} = useChartSelection({
+  validIds: markerIds,
+  applyPosition: (id, position) => store.setPosition(id, position),
+  nudgeContextForMove: (id) => {
+    if (!project.value) return { trackable: undefined, project: undefined }
+    const lookup = lookupInProject(project.value, id)
+    return { trackable: lookup?.trackable, project: project.value }
+  },
+})
 
 watchEffect(() => {
   if (!project.value) router.replace('/projects')
@@ -68,6 +74,7 @@ function onRestore(id: string) {
       :chart-block-message="chartBlockMessage"
       @move="onMove"
       @click="onTrackableClick"
+      @select="selectTrackable"
       @close-panel="clearSelection"
       @add="onAddTask"
       @restore="onRestore"

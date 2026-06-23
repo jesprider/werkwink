@@ -33,6 +33,10 @@ export function useChartSelection(options: {
     selectedTrackableId.value = selectedTrackableId.value === id ? null : id
   }
 
+  function selectTrackable(id: string) {
+    selectedTrackableId.value = id
+  }
+
   function clearSelection() {
     selectedTrackableId.value = null
   }
@@ -42,6 +46,7 @@ export function useChartSelection(options: {
     chartBlockMessage,
     onMove,
     onTrackableClick,
+    selectTrackable,
     clearSelection,
   }
 }

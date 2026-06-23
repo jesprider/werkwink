@@ -20,6 +20,7 @@ defineProps<{
 const emit = defineEmits<{
   move: [id: string, position: number]
   click: [id: string]
+  select: [id: string]
   open: [id: string]
   closePanel: []
   add: []
@@ -50,6 +51,7 @@ function onOpen(id: string) {
         @move="(id, position) => emit('move', id, position)"
         @open="onOpen"
         @click="emit('click', $event)"
+        @select="emit('select', $event)"
       />
       <div
         v-if="addLabel"
