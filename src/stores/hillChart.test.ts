@@ -620,6 +620,83 @@ describe('hillChart store', () => {
 
       expect(store.demo).toBe(true)
     })
+
+    it('commits non-empty draft to notes and clears draft', () => {
+      const store = useHillChartStore()
+      const today = localDateString()
+      const project = store.projects[0]
+      project.dailyNoteDraft = '  Shipped login flow  '
+
+      store.endDaily()
+
+      expect(project.notes).toContainEqual({ date: today, text: 'Shipped login flow' })
+      expect(project.dailyNoteDraft).toBe('')
+    })
+
+    it('skips empty or whitespace-only drafts', () => {
+      const store = useHillChartStore()
+      const project = store.projects[0]
+      project.dailyNoteDraft = '   '
+
+      store.endDaily()
+
+      expect(project.notes).toEqual([])
+      expect(project.dailyNoteDraft).toBe('')
+    })
+
+    it('replaces today note when endDaily runs again same day', () => {
+      const store = useHillChartStore()
+      const today = localDateString()
+      const project = store.projects[0]
+      project.dailyNoteDraft = 'First'
+      store.endDaily()
+      project.dailyNoteDraft = 'Second'
+      store.lastDailyDate = null
+
+      store.endDaily()
+
+      expect(project.notes).toEqual([{ date: today, text: 'Second' }])
+    })
+
+    it('handles legacy trackables without dailyNoteDraft field', () => {
+      const store = useHillChartStore()
+      const project = store.projects[0]
+      delete (project as { dailyNoteDraft?: string }).dailyNoteDraft
+
+      expect(() => store.endDaily()).not.toThrow()
+      expect(project.notes).toEqual([])
+    })
+  })
+
+  describe('setDailyNoteDraft', () => {
+    it('updates draft on the matching project', () => {
+      const store = useHillChartStore()
+      const project = store.projects[0]
+
+      store.setDailyNoteDraft(project.id, 'Waiting on design review')
+
+      expect(project.dailyNoteDraft).toBe('Waiting on design review')
+    })
+
+    it('updates draft on a nested task', () => {
+      const store = useHillChartStore()
+      const project = store.projects[0]
+      const task = project.tasks[0]
+
+      store.setDailyNoteDraft(task.id, 'API integration done')
+
+      expect(task.dailyNoteDraft).toBe('API integration done')
+    })
+
+    it('no-ops when trackable id is unknown', () => {
+      const store = useHillChartStore()
+      const project = store.projects[0]
+      const before = project.dailyNoteDraft
+
+      store.setDailyNoteDraft('missing_id', 'noop')
+
+      expect(project.dailyNoteDraft).toBe(before)
+    })
   })
 
   describe('removeProject', () => {

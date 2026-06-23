@@ -33,6 +33,8 @@ const project: Project = {
     },
   ],
   snapshots: [],
+  dailyNoteDraft: '',
+  notes: [],
   tasks: [
     {
       id: 'task_1',
@@ -41,6 +43,8 @@ const project: Project = {
       lastMovedAt: '2026-05-01T10:00:00Z',
       forces: [],
       snapshots: [],
+      dailyNoteDraft: '',
+      notes: [],
     },
   ],
 }

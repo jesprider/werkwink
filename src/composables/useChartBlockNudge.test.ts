@@ -28,6 +28,8 @@ function projectFixture(overrides: Partial<Project> = {}): Project {
     lastMovedAt: '2026-06-01T12:00:00.000Z',
     forces: [],
     snapshots: [],
+    dailyNoteDraft: '',
+    notes: [],
     tasks: [
       {
         id: 'task_1',
@@ -36,6 +38,8 @@ function projectFixture(overrides: Partial<Project> = {}): Project {
         lastMovedAt: '2026-06-01T12:00:00.000Z',
         forces: [],
         snapshots: [],
+        dailyNoteDraft: '',
+        notes: [],
       },
     ],
     ...overrides,
@@ -72,6 +76,8 @@ describe('useChartBlockNudge', () => {
         },
       ],
       snapshots: [],
+      dailyNoteDraft: '',
+      notes: [],
     }
 
     maybeNudgeOnMove(trackable, undefined, 'proj_1', 55)

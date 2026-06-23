@@ -17,6 +17,8 @@ function task(position: number): Task {
     lastMovedAt: new Date().toISOString(),
     forces: [],
     snapshots: [],
+    dailyNoteDraft: '',
+    notes: [],
   }
 }
 
@@ -29,6 +31,8 @@ function project(tasks: Task[]): Project {
     lastMovedAt: new Date().toISOString(),
     forces: [],
     snapshots: [],
+    dailyNoteDraft: '',
+    notes: [],
     tasks,
   }
 }

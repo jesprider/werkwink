@@ -13,6 +13,7 @@ import { clampProjectDonePosition } from '../domain/doneRules'
 import { canCrossPeak, PEAK_POSITION, snapIfDownhillWithBlockers } from '../domain/forceRules'
 import { createPrimaryOwnerForce } from '../domain/primaryOwnerForce'
 import { findTrackableInProjects } from '../domain/trackableLookup'
+import { upsertDailyNote } from '../domain/dailyNotes'
 import { upsertSnapshot } from '../domain/snapshots'
 import { isSameLocalDay, localDateString } from '../lib/localDate'
 import { PALETTE_ORDER } from '../schema/palette'
@@ -71,10 +72,18 @@ export const useHillChartStore = defineStore('hillChart', {
     endDaily(): void {
       if (this.projects.length === 0) return
       const today = localDateString()
+      const commitNote = (trackable: HillTrackable) => {
+        const trimmed = (trackable.dailyNoteDraft ?? '').trim()
+        trackable.dailyNoteDraft = ''
+        if (trimmed === '') return
+        trackable.notes = upsertDailyNote(trackable.notes ?? [], today, trimmed)
+      }
       for (const project of this.projects) {
         project.snapshots = upsertSnapshot(project.snapshots, today, project.position)
+        commitNote(project)
         for (const task of project.tasks) {
           task.snapshots = upsertSnapshot(task.snapshots, today, task.position)
+          commitNote(task)
         }
       }
       this.lastDailyDate = today
@@ -91,6 +100,8 @@ export const useHillChartStore = defineStore('hillChart', {
         lastMovedAt: now,
         forces: [createPrimaryOwnerForce(null, now)],
         snapshots: [],
+        dailyNoteDraft: '',
+        notes: [],
         tasks: [],
       }
       this.projects.push(project)
@@ -113,6 +124,8 @@ export const useHillChartStore = defineStore('hillChart', {
         lastMovedAt: now,
         forces: [createPrimaryOwnerForce(projectPrimaryOwner, now)],
         snapshots: [],
+        dailyNoteDraft: '',
+        notes: [],
       }
       project.tasks.push(task)
       return id
@@ -147,6 +160,12 @@ export const useHillChartStore = defineStore('hillChart', {
       if (next === current) return
       trackable.position = next
       trackable.lastMovedAt = new Date().toISOString()
+    },
+
+    setDailyNoteDraft(trackableId: string, text: string): void {
+      const trackable = findTrackableInProjects(this.projects, trackableId)
+      if (!trackable) return
+      trackable.dailyNoteDraft = text
     },
 
     updateTrackable(trackableId: string, patch: { name?: string; source?: Source | null }) {
