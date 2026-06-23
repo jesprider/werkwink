@@ -306,7 +306,7 @@ src/
     ForceAddForm.vue
     ImportButton.vue
     EndDailyButton.vue
-    DoneStack.vue
+    DonePanel.vue
   composables/
     useDrag.ts
     useStaleness.ts
