@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { positionFromClientX } from './useHillDrag'
+// @vitest-environment happy-dom
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { positionFromClientX, useHillDrag } from './useHillDrag'
 
 describe('positionFromClientX', () => {
   it('maps clientX across padded svg rect to integer 0..100', () => {
@@ -17,5 +18,29 @@ describe('positionFromClientX', () => {
       getBoundingClientRect: () => ({ left: 0, width: 0 }),
     } as SVGSVGElement
     expect(positionFromClientX(50, svg)).toBeNull()
+  })
+})
+
+describe('useHillDrag draggingId', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('sets draggingId on startDrag and clears on pointerup', () => {
+    const onMove = vi.fn()
+    const { startDrag, draggingId } = useHillDrag({
+      getSvg: () => null,
+      onMove,
+    })
+
+    expect(draggingId.value).toBeNull()
+
+    const preventDefault = vi.fn()
+    startDrag('dot_a', { preventDefault } as unknown as PointerEvent)
+    expect(draggingId.value).toBe('dot_a')
+    expect(preventDefault).toHaveBeenCalled()
+
+    window.dispatchEvent(new PointerEvent('pointerup'))
+    expect(draggingId.value).toBeNull()
   })
 })
