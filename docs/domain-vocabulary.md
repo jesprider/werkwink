@@ -20,6 +20,8 @@ code and implementation docs use the terms below.
 | **Force** | Up forces (assignee, helpers) or down forces (blockers, obstacles, dependencies) on a project or task. |
 | **Resolve (force)** | Mark a force resolved; moves to past section. |
 | **Daily / End daily** | Standup ritual; snapshot positions for today. |
+| **Daily note** | Short standup update typed in the side panel while the daily is open. |
+| **Notes history** | Per-dot `{ date, text }[]` committed on End daily; export-only in v1. |
 | **Snapshot / trail** | Historical positions for ghost markers on the chart. |
 | **Staleness satellite** | Small red marker orbiting a dot; one per day without movement (from day 2, max 4). Skipped at position 100 (done). |
 | **Days without movement** | Local calendar days since `lastMovedAt`; shown in the side panel. Grace day: moved yesterday → 0 satellites, panel may still show “1 day”. |
@@ -34,7 +36,7 @@ code and implementation docs use the terms below.
 |------|-------|---------|
 | `Project` | Domain (`schema/types.ts`) | Aggregate root; persisted. |
 | `Task` | Domain | Entity inside `Project.tasks`. |
-| `HillTrackable` | Domain | Shared shape: id, name, position, forces, snapshots, optional `source`. Implemented by `Project` and `Task`. |
+| `HillTrackable` | Domain | Shared shape: id, name, position, forces, snapshots, `dailyNoteDraft`, `notes`, optional `source`. Implemented by `Project` and `Task`. |
 | `HillChartState` | Domain | Root store document: `projects[]`. |
 | `ChartMarker` | Presentation | Read model for one SVG marker (position, color, radius, force counts, `stalenessSatellites`). |
 | `overviewMarkers` / `markersForProject` | Presentation | Build `ChartMarker[]` for a view (`domain/chartMarkers.ts`). |
