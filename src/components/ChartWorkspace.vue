@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import type { ChartMarker } from '../domain/chartMarkers'
 import type { Project } from '../schema/types'
 import { chartBaselineY } from '../lib/hillCurve'
-import DoneStack from './DoneStack.vue'
+import DonePanel from './DonePanel.vue'
 import HillChart from './HillChart.vue'
 import IconPlus from './IconPlus.vue'
 import SidePanel from './SidePanel.vue'
@@ -24,12 +23,10 @@ const emit = defineEmits<{
   open: [id: string]
   closePanel: []
   add: []
+  restore: [id: string]
 }>()
 
 const addLinkTop = `${chartBaselineY() * 100}%`
-
-const hillChartRef = ref<InstanceType<typeof HillChart> | null>(null)
-const svgRef = computed(() => hillChartRef.value?.svgRef ?? null)
 
 function onOpen(id: string) {
   emit('open', id)
@@ -47,19 +44,11 @@ function onOpen(id: string) {
         {{ chartBlockMessage }}
       </p>
       <HillChart
-        ref="hillChartRef"
         clickable
         :markers="activeMarkers"
         :selected-id="selectedTrackableId"
         @move="(id, position) => emit('move', id, position)"
         @open="onOpen"
-        @click="emit('click', $event)"
-      />
-      <DoneStack
-        :done-markers="doneMarkers"
-        :selected-id="selectedTrackableId"
-        :svg-ref="svgRef"
-        @move="(id, position) => emit('move', id, position)"
         @click="emit('click', $event)"
       />
       <div
@@ -79,8 +68,14 @@ function onOpen(id: string) {
       </div>
     </div>
     <div class="w-80 shrink-0">
+      <DonePanel
+        v-if="!selectedTrackableId && doneMarkers.length"
+        :done-markers="doneMarkers"
+        @click="(id) => emit('click', id)"
+        @restore="(id) => emit('restore', id)"
+      />
       <SidePanel
-        v-if="panelProject && selectedTrackableId"
+        v-else-if="panelProject && selectedTrackableId"
         :project="panelProject"
         :trackable-id="selectedTrackableId"
         :show-open-project="showOpenProject"
