@@ -33,6 +33,11 @@ export interface Snapshot {
   position: number
 }
 
+export interface DailyNote {
+  date: string
+  text: string
+}
+
 /** Shared by Project and Task — anything positioned on the hill with forces and history. */
 export interface HillTrackable {
   id: string
@@ -42,6 +47,8 @@ export interface HillTrackable {
   lastMovedAt: string
   forces: Force[]
   snapshots: Snapshot[]
+  dailyNoteDraft: string
+  notes: DailyNote[]
 }
 
 export type Task = HillTrackable
