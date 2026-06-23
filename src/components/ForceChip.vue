@@ -32,8 +32,14 @@ const editPillShell = 'flex h-9 min-w-0 items-center gap-2 rounded-full px-3 tex
 
 const pastChipClass = computed(() =>
   isDown.value
-    ? `${displayPillShell} bg-force-down/10 text-text-warm/65 transition-colors hover:bg-force-down/15`
-    : `${displayPillShell} bg-force-up/12 text-text-warm/65 transition-colors hover:bg-force-up/18`,
+    ? `${displayPillShell} bg-force-down/10 text-text-warm/65`
+    : `${displayPillShell} bg-force-up/12 text-text-warm/65`,
+)
+
+const reopenButtonClass = computed(() =>
+  isDown.value
+    ? 'shrink-0 px-2 py-0.5 text-xs leading-none text-force-down/75 transition-colors hover:text-force-down'
+    : 'shrink-0 px-2 py-0.5 text-xs leading-none text-force-up/85 transition-colors hover:text-force-up',
 )
 
 const activeChipClass = computed(() =>
@@ -102,7 +108,8 @@ function onDisplayClick() {
   emit('edit-start')
 }
 
-function onPastClick() {
+function onReopenClick(event: MouseEvent) {
+  event.stopPropagation()
   emit('unresolve')
 }
 
@@ -128,21 +135,20 @@ function onResolveClick(event: MouseEvent) {
 </script>
 
 <template>
-  <li
-    v-if="variant === 'past'"
-    :class="pastChipClass"
-    role="button"
-    tabindex="0"
-    :aria-label="`Restore ${force.label} to active`"
-    title="Click to restore"
-    @click="onPastClick"
-    @keydown.enter="onPastClick"
-    @keydown.space.prevent="onPastClick"
-  >
-    <span class="min-w-0 text-left">
+  <li v-if="variant === 'past'" :class="pastChipClass">
+    <span class="min-w-0 flex-1 text-left">
       {{ force.label
       }}<span v-if="force.owner" class="text-text-warm/60"> · {{ force.owner }}</span>
     </span>
+    <button
+      type="button"
+      :class="reopenButtonClass"
+      :aria-label="`Reopen ${force.label}`"
+      title="Reopen force"
+      @click="onReopenClick"
+    >
+      ↩ Reopen
+    </button>
   </li>
 
   <li
