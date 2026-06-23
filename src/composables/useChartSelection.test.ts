@@ -29,6 +29,20 @@ describe('useChartSelection', () => {
     expect(selectedTrackableId.value).toBeNull()
   })
 
+  it('selectTrackable selects without toggling off on repeat', () => {
+    const { selectedTrackableId, selectTrackable } = useChartSelection({
+      validIds: ['proj_1'],
+      applyPosition: vi.fn(),
+      nudgeContextForMove: () => ({ trackable: undefined, project: undefined }),
+    })
+
+    selectTrackable('proj_1')
+    expect(selectedTrackableId.value).toBe('proj_1')
+
+    selectTrackable('proj_1')
+    expect(selectedTrackableId.value).toBe('proj_1')
+  })
+
   it('clears selection when id is no longer valid', async () => {
     const store = useHillChartStore()
     const validIds = computed(() => store.projects.map((p) => p.id))

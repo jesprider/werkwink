@@ -44,3 +44,64 @@ describe('useHillDrag draggingId', () => {
     expect(draggingId.value).toBeNull()
   })
 })
+
+describe('useHillDrag onSelect', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('selects once on drag past threshold and skips onClick', () => {
+    const onSelect = vi.fn()
+    const onClick = vi.fn()
+    const { startDrag } = useHillDrag({
+      getSvg: () => null,
+      clickable: () => true,
+      onMove: vi.fn(),
+      onClick,
+      onSelect,
+    })
+
+    startDrag('dot_a', { preventDefault: vi.fn(), clientX: 100 } as unknown as PointerEvent)
+    window.dispatchEvent(new PointerEvent('pointermove', { clientX: 120 }))
+    window.dispatchEvent(new PointerEvent('pointermove', { clientX: 140 }))
+    window.dispatchEvent(new PointerEvent('pointerup'))
+
+    expect(onSelect).toHaveBeenCalledTimes(1)
+    expect(onSelect).toHaveBeenCalledWith('dot_a')
+    expect(onClick).not.toHaveBeenCalled()
+  })
+
+  it('does not select on a plain click', () => {
+    const onSelect = vi.fn()
+    const onClick = vi.fn()
+    const { startDrag } = useHillDrag({
+      getSvg: () => null,
+      clickable: () => true,
+      onMove: vi.fn(),
+      onClick,
+      onSelect,
+    })
+
+    startDrag('dot_a', { preventDefault: vi.fn(), clientX: 100 } as unknown as PointerEvent)
+    window.dispatchEvent(new PointerEvent('pointerup'))
+
+    expect(onSelect).not.toHaveBeenCalled()
+    expect(onClick).toHaveBeenCalledWith('dot_a')
+  })
+
+  it('does not select when chart is not clickable', () => {
+    const onSelect = vi.fn()
+    const { startDrag } = useHillDrag({
+      getSvg: () => null,
+      clickable: () => false,
+      onMove: vi.fn(),
+      onSelect,
+    })
+
+    startDrag('dot_a', { preventDefault: vi.fn(), clientX: 100 } as unknown as PointerEvent)
+    window.dispatchEvent(new PointerEvent('pointermove', { clientX: 200 }))
+    window.dispatchEvent(new PointerEvent('pointerup'))
+
+    expect(onSelect).not.toHaveBeenCalled()
+  })
+})
