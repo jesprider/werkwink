@@ -84,3 +84,15 @@ export function partitionMarkersForProjectView(
     done: done.filter((m) => m.id !== projectId),
   }
 }
+
+export function markersInPaintOrder(
+  markers: ChartMarker[],
+  foregroundId: string | null,
+): ChartMarker[] {
+  if (!foregroundId) return markers
+  const index = markers.findIndex((m) => m.id === foregroundId)
+  if (index === -1) return markers
+  const foreground = markers[index]!
+  const others = markers.filter((m) => m.id !== foregroundId)
+  return [...others, foreground]
+}

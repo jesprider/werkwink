@@ -1,11 +1,27 @@
 import { describe, it, expect } from 'vitest'
 import type { Project } from '../schema/types'
+import type { ChartMarker } from './chartMarkers'
 import {
   overviewMarkers,
   markersForProject,
   partitionMarkers,
   partitionMarkersForProjectView,
+  markersInPaintOrder,
 } from './chartMarkers'
+
+function stubMarker(id: string): ChartMarker {
+  return {
+    id,
+    position: 30,
+    color: '#000',
+    radius: 16,
+    name: id,
+    up: 0,
+    down: 0,
+    stalenessSatellites: 0,
+    ghosts: [],
+  }
+}
 
 function project(overrides: Partial<Project> = {}): Project {
   return {
@@ -232,5 +248,31 @@ describe('partitionMarkersForProjectView', () => {
       }),
     )
     expect(partitionMarkersForProjectView(markers, 'proj_1')).toEqual(partitionMarkers(markers))
+  })
+})
+
+describe('markersInPaintOrder', () => {
+  it('returns markers unchanged when foregroundId is null', () => {
+    const markers = [stubMarker('a'), stubMarker('b'), stubMarker('c')]
+    expect(markersInPaintOrder(markers, null)).toEqual(markers)
+  })
+
+  it('moves foreground marker to the end preserving others', () => {
+    const markers = [stubMarker('a'), stubMarker('b'), stubMarker('c')]
+    expect(markersInPaintOrder(markers, 'b')).toEqual([
+      stubMarker('a'),
+      stubMarker('c'),
+      stubMarker('b'),
+    ])
+  })
+
+  it('returns markers unchanged when foregroundId is not found', () => {
+    const markers = [stubMarker('a'), stubMarker('b')]
+    expect(markersInPaintOrder(markers, 'missing')).toEqual(markers)
+  })
+
+  it('returns single-marker array unchanged', () => {
+    const markers = [stubMarker('only')]
+    expect(markersInPaintOrder(markers, 'only')).toEqual(markers)
   })
 })
