@@ -10,7 +10,7 @@ describe('PanelNotes', () => {
     setActivePinia(createPinia())
   })
 
-  it('renders textarea when daily is open', () => {
+  it('renders the notes textarea', () => {
     const store = useHillChartStore()
     const project = store.projects[0]
 
@@ -22,16 +22,16 @@ describe('PanelNotes', () => {
     expect(wrapper.text()).toContain('Notes')
   })
 
-  it('hides section when daily is closed', () => {
+  it('keeps the textarea available after a capture', () => {
     const store = useHillChartStore()
-    store.endDaily()
+    store.capture()
     const project = store.projects[0]
 
     const wrapper = mount(PanelNotes, {
       props: { trackable: project, trackableId: project.id },
     })
 
-    expect(wrapper.find('textarea').exists()).toBe(false)
+    expect(wrapper.find('textarea').exists()).toBe(true)
   })
 
   it('updates draft via store on input', async () => {

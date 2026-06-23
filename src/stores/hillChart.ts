@@ -13,9 +13,9 @@ import { clampProjectDonePosition } from '../domain/doneRules'
 import { canCrossPeak, PEAK_POSITION, snapIfDownhillWithBlockers } from '../domain/forceRules'
 import { createPrimaryOwnerForce } from '../domain/primaryOwnerForce'
 import { findTrackableInProjects } from '../domain/trackableLookup'
-import { upsertDailyNote } from '../domain/dailyNotes'
-import { upsertSnapshot } from '../domain/snapshots'
-import { isSameLocalDay, localDateString } from '../lib/localDate'
+import { appendDailyNote } from '../domain/dailyNotes'
+import { isPositionDirty, upsertSnapshot } from '../domain/snapshots'
+import { localDateString } from '../lib/localDate'
 import { PALETTE_ORDER } from '../schema/palette'
 import { WERKWINK_STORAGE_KEY } from '../storage/loadState'
 
@@ -32,11 +32,16 @@ export const useHillChartStore = defineStore('hillChart', {
     canImport(state): boolean {
       return state.demo === true || state.projects.length === 0
     },
-    canEndDaily(state): boolean {
-      return (
-        state.projects.length > 0 &&
-        (state.lastDailyDate === null || !isSameLocalDay(state.lastDailyDate))
-      )
+    canCapture(state): boolean {
+      if (state.projects.length === 0) return false
+      const draftPending = (t: HillTrackable) => (t.dailyNoteDraft ?? '').trim() !== ''
+      for (const project of state.projects) {
+        if (isPositionDirty(project) || draftPending(project)) return true
+        for (const task of project.tasks) {
+          if (isPositionDirty(task) || draftPending(task)) return true
+        }
+      }
+      return false
     },
   },
   actions: {
@@ -44,7 +49,6 @@ export const useHillChartStore = defineStore('hillChart', {
       if (!this.canImport) return
       this.version = state.version
       this.exportedAt = state.exportedAt
-      this.lastDailyDate = state.lastDailyDate ?? null
       this.projects = state.projects
       this.demo = false
     },
@@ -55,7 +59,6 @@ export const useHillChartStore = defineStore('hillChart', {
         version: this.version,
         exportedAt: this.exportedAt,
         demo: this.demo,
-        lastDailyDate: this.lastDailyDate,
         projects: this.projects,
       }
     },
@@ -65,28 +68,25 @@ export const useHillChartStore = defineStore('hillChart', {
       this.version = 1
       this.exportedAt = null
       this.demo = false
-      this.lastDailyDate = null
       this.projects = []
     },
 
-    endDaily(): void {
+    capture(): void {
       if (this.projects.length === 0) return
       const today = localDateString()
-      const commitNote = (trackable: HillTrackable) => {
+      const commit = (trackable: HillTrackable) => {
+        trackable.snapshots = upsertSnapshot(trackable.snapshots, today, trackable.position)
         const trimmed = (trackable.dailyNoteDraft ?? '').trim()
         trackable.dailyNoteDraft = ''
         if (trimmed === '') return
-        trackable.notes = upsertDailyNote(trackable.notes ?? [], today, trimmed)
+        trackable.notes = appendDailyNote(trackable.notes ?? [], today, trimmed)
       }
       for (const project of this.projects) {
-        project.snapshots = upsertSnapshot(project.snapshots, today, project.position)
-        commitNote(project)
+        commit(project)
         for (const task of project.tasks) {
-          task.snapshots = upsertSnapshot(task.snapshots, today, task.position)
-          commitNote(task)
+          commit(task)
         }
       }
-      this.lastDailyDate = today
     },
 
     addProject(): string {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useHillChartStore } from '../stores/hillChart'
@@ -15,7 +15,7 @@ import { useJsonImport } from '../composables/useJsonImport'
 
 const store = useHillChartStore()
 const router = useRouter()
-const { projects, demo, canEndDaily: endDailyEnabled } = storeToRefs(store)
+const { projects, demo, canCapture } = storeToRefs(store)
 
 const chartMarkers = computed(() => overviewMarkers(projects.value))
 const activeMarkers = computed(() => partitionMarkers(chartMarkers.value).active)
@@ -52,7 +52,9 @@ const isEmpty = computed(() => projects.value.length === 0)
 const exportEnabled = computed(() => projects.value.length > 0)
 const cleanEnabled = computed(() => projects.value.length > 0)
 
-const endDailyLabel = ref<'End daily' | 'Saved'>('End daily')
+const captureLabel = computed<'Capture' | 'Captured ✓'>(() =>
+  canCapture.value ? 'Capture' : 'Captured ✓',
+)
 
 const selectedProject = computed(() =>
   selectedTrackableId.value
@@ -89,21 +91,17 @@ function onCleanClick() {
   clearErrors()
 }
 
-function onEndDailyClick() {
-  store.endDaily()
-  endDailyLabel.value = 'Saved'
-  setTimeout(() => {
-    endDailyLabel.value = 'End daily'
-  }, 2000)
+function onCaptureClick() {
+  store.capture()
 }
 </script>
 
 <template>
   <AppHeader
-    :end-daily-enabled="endDailyEnabled"
-    :end-daily-label="endDailyLabel"
+    :can-capture="canCapture"
+    :capture-label="captureLabel"
     :show-demo-label="showDemoLabel"
-    @end-daily-click="onEndDailyClick"
+    @capture-click="onCaptureClick"
   />
   <StateControls
     class="fixed right-5 bottom-5 z-30"

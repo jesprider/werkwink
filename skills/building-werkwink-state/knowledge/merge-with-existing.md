@@ -10,8 +10,8 @@ back to exact `name` match only if no source (discourage).
 
 ## For Matched Items
 
-**Preserve:** `position`, `lastMovedAt`, `forces`, `snapshots`, `id`, `color`
-(projects).
+**Preserve:** `position`, `lastMovedAt`, `forces`, `snapshots`, `notes`, `id`, `color`
+(projects). Drop any legacy root `lastDailyDate` (obsolete since the Capture rework).
 
 **Update optionally:** `name` if changed in tracker (ask if user wants title sync).
 
@@ -20,6 +20,7 @@ back to exact `name` match only if no source (discourage).
 - `position: 0`
 - `lastMovedAt`: now (ISO)
 - `snapshots: []`
+- `notes: []`
 - Primary Owner force from current tracker assignee
 - New `id` if no match
 - Next `PALETTE_ORDER` color for new projects

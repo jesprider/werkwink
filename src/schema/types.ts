@@ -62,6 +62,5 @@ export interface HillChartState {
   version: number
   exportedAt: string | null
   demo: boolean
-  lastDailyDate: string | null
   projects: Project[]
 }

@@ -28,7 +28,6 @@ export const sampleState: HillChartState = {
   version: 1,
   exportedAt: null,
   demo: true,
-  lastDailyDate: null,
   projects: [
     {
       id: 'proj_1',

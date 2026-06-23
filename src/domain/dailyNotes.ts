@@ -1,10 +1,14 @@
 import type { DailyNote } from '../schema/types'
 
-export function upsertDailyNote(notes: DailyNote[], date: string, text: string): DailyNote[] {
+/**
+ * Append `text` to the note for `date` (newline-joined), or create the entry when
+ * none exists yet. Keeps the list sorted newest date first.
+ */
+export function appendDailyNote(notes: DailyNote[], date: string, text: string): DailyNote[] {
   const next = [...notes]
   const idx = next.findIndex((n) => n.date === date)
   if (idx >= 0) {
-    next[idx] = { date, text }
+    next[idx] = { date, text: `${next[idx].text}\n${text}` }
   } else {
     next.push({ date, text })
   }

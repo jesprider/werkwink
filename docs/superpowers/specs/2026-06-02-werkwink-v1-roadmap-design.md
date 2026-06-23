@@ -36,7 +36,8 @@ whose status is `pending`** and work only that scope.
 
 - Live: `/projects` overview, `/projects/:id` project view, draggable dots,
   `↑/↓` badges, double-click overview → drill-in, side panel, import/export,
-  end-daily snapshots.
+  Capture snapshots + notes (reversible save; replaced "End daily" — see
+  `docs/superpowers/specs/2026-06-23-werkwink-capture-rework-design.md`).
 - Hill chart: ghost trail of last 10 snapshots behind the **selected** dot
   (opacity ramp oldest → newest); ghost trails keep project color.
 - Staleness: red **satellites** on the upper arc of live dots (one per day without

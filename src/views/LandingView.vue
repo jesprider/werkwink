@@ -49,7 +49,7 @@ import LandingHillIllustration from '../components/LandingHillIllustration.vue'
       <ol class="list-decimal space-y-2 pl-5 text-text-warm/90">
         <li>Open the chart and walk through each project with the team.</li>
         <li>Drag dots and capture blockers and helpers as forces.</li>
-        <li>Click <strong>End daily</strong> to commit today's snapshot.</li>
+        <li>Click <strong>Capture</strong> to commit today's snapshot and notes.</li>
       </ol>
     </section>
 
