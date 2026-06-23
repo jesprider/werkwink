@@ -423,18 +423,8 @@ function validateHillChartObject(data: unknown): ValidateResult {
     demo = data.demo
   }
 
-  let lastDailyDate: string | null = null
-  if (data.lastDailyDate === undefined || data.lastDailyDate === null) {
-    lastDailyDate = null
-  } else if (typeof data.lastDailyDate === 'string') {
-    if (!isIsoDateString(data.lastDailyDate)) {
-      pushError(errors, 'lastDailyDate', 'must be a valid date string')
-    } else {
-      lastDailyDate = data.lastDailyDate
-    }
-  } else {
-    pushError(errors, 'lastDailyDate', 'must be null or a string')
-  }
+  // `lastDailyDate` was removed in the Capture rework; legacy exports may still
+  // carry it. Ignore the field rather than erroring so old files still import.
 
   let projects: Project[] = []
   if (data.projects === undefined) {
@@ -462,7 +452,6 @@ function validateHillChartObject(data: unknown): ValidateResult {
       version: 1,
       exportedAt,
       demo,
-      lastDailyDate,
       projects,
     },
   }

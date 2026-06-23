@@ -1,4 +1,14 @@
-import type { Snapshot } from '../schema/types'
+import type { HillTrackable, Snapshot } from '../schema/types'
+
+/**
+ * True when the trackable's current position differs from its latest snapshot, or it
+ * has never been captured. Snapshots are sorted newest-first, so `snapshots[0]` is the
+ * most recent. Drives the delta-armed Capture button.
+ */
+export function isPositionDirty(trackable: HillTrackable): boolean {
+  const latest = trackable.snapshots[0]
+  return latest === undefined || latest.position !== trackable.position
+}
 
 export function upsertSnapshot(snapshots: Snapshot[], date: string, position: number): Snapshot[] {
   const next = [...snapshots]

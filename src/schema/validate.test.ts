@@ -76,6 +76,15 @@ describe('validateHillChartJson', () => {
     expect(r.ok).toBe(false)
   })
 
+  it('tolerates a legacy lastDailyDate field and drops it', () => {
+    const data = JSON.parse(MINIMAL_IMPORT_JSON) as Record<string, unknown>
+    data.lastDailyDate = '2026-06-05'
+    const r = validateHillChartJson(JSON.stringify(data))
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect('lastDailyDate' in r.state).toBe(false)
+  })
+
   it('accepts fixtures/hill-chart-import-demo.json', () => {
     const raw = readFileSync(IMPORT_DEMO_PATH, 'utf8')
     const r = validateHillChartJson(raw)

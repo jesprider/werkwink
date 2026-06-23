@@ -8,7 +8,7 @@ A team manager's tool for running the daily standup using Basecamp-style hill ch
 
 A single user — **the manager** — drives the app live during the daily. The team talks through their work; the manager drags dots and captures blockers/helpers in real time. The chart is screen-shared. No team-member editing, no auth, no sync.
 
-End of standup: one **"End daily"** click commits today's positions as a snapshot. Tomorrow's chart shows yesterday's trail behind each dot.
+As the conversation moves dots and captures notes, one **"Capture"** click commits today's positions as a snapshot and appends today's notes. Capture is a reversible save, not a ritual boundary: it is always available, idempotent (re-capturing overwrites today's entry), and armed only when something has changed. Tomorrow's chart shows the trail behind each dot. Reporting is separate — the manager exports state and feeds it to an AI skill on their own cadence.
 
 ---
 
@@ -129,7 +129,9 @@ Full glossary: [`docs/domain-vocabulary.md`](domain-vocabulary.md).
   - Items with no `source` are "internal only" — created manually in the app, no external link.
 - `force.isPrimary` — exactly one per dot, the assignee. Cannot be resolved (UI hides the resolve button).
 - `force.status` — `"active"` or `"resolved"`. Resolved forces stay in the array; UI renders them in the "Past" sections.
-- `snapshots` — at most one entry per calendar date; "End daily" replaces today's if it exists. Skipped days simply have no entry (gaps in the trail are fine).
+- `snapshots` — at most one entry per calendar date; **Capture** replaces today's if it exists. Skipped days simply have no entry (gaps in the trail are fine).
+- `dailyNoteDraft` — transient, write-only input buffer for the side-panel Notes field. Appended to today's `notes` entry on Capture, then cleared. Never displays committed text.
+- `notes` — per-dot `{ date, text }[]` history; Capture appends the draft to today's entry (newline-joined). **Export-only** — never rendered in the app.
 
 ---
 
@@ -144,7 +146,7 @@ Suggested contents, top to bottom:
 - **Hero** — short tagline ("Run your daily on a hill") and one sentence: "A manager's view of where each project sits on the uncertainty curve, and what's pushing it back."
 - **The hill** — the original Basecamp illustration (or a clean Vue/SVG recreation) showing uphill = figuring it out, downhill = execution.
 - **Forces** — a small explainer: each dot has up forces (the assignee, helpers, alternative approaches) and down forces (blockers, obstacles). The goal during the daily is to keep up > down on the uphill.
-- **The daily ritual** — three short steps: open the app → walk through projects with the team, drag dots and capture blockers → click "End daily" to commit today's snapshot.
+- **The daily ritual** — three short steps: open the app → walk through projects with the team, drag dots and capture blockers → click "Capture" to commit today's snapshot and notes.
 - **Primary CTA** — a single button: **"Try it live →"** linking to `/projects`.
 - **Secondary CTA** — *deferred*; Import JSON remains on the overview empty state and header (not on the landing page in v1).
 
@@ -161,7 +163,7 @@ Single full-screen hill chart with **all project dots**. Each project dot:
 
 Done projects collapse into the stacked column at bottom-right.
 
-**Header controls:** app name (links back to `/`), Import / Export / Clean buttons, "+ Project" button, "End daily" button.
+**Header controls:** app name (links back to `/`), Import / Export / Clean buttons, "+ Project" button, "Capture" button (shows "Captured ✓" and disables when there is nothing new to save).
 
 **Empty state:** prominent CTAs for "Import JSON" and "+ Add your first project." A subtle link back to the landing page ("New here? Read what this app is →").
 
@@ -183,7 +185,7 @@ Opens to the right when you click a dot. Component state (not in the URL). Secti
 4. **Active down forces** — same shape. `+ Down force` button.
 5. **Past boosters** — collapsible, resolved up forces, most recent first.
 6. **Past blockers** — collapsible, resolved down forces, most recent first.
-7. **Notes** — while the daily is open (`canEndDaily`), a short textarea for today's standup update on this dot. Hidden after End daily. Non-empty drafts commit to `notes` history on End daily (not shown in the panel).
+7. **Notes** — a short, **write-only** textarea for today's standup update on this dot. Always available; it never shows previously captured text (not past days, not today's). On Capture the input is appended to today's `notes` entry (newline-joined) and cleared. `notes` history is export-only, never rendered.
 8. **Delete** — trash icon at the bottom-right of the panel; confirm before removing project or task.
 
 ### 4.5 Force add UX
@@ -205,13 +207,28 @@ Clicking `+ Up force` or `+ Down force` reveals an **inline form** (label input,
 - **In the project view:** click a dot → opens the side panel for that dot.
 - **In the projects overview:** TBD between (a) single-click opens side panel + double-click drills into project view, or (b) single-click drills + a side affordance opens the panel. Will be settled in implementation; default proposal: single-click opens side panel, dedicated "Open project →" button in the panel drills in. (See open questions.)
 
-### 5.3 End daily
+### 5.3 Capture
 
-A header button. On click:
+A header button — a reversible save, always available when there is at least one
+project. On click, for **every** project and task dot:
 
-- Captures every dot's current `position` as a snapshot stamped with today's date.
-- If today already has a snapshot for this dot, it's replaced.
-- No confirmation dialog; no summary modal in v1.
+- Stamps the dot's current `position` as a snapshot with today's date (replaces today's
+  entry if present).
+- Appends the dot's non-empty Notes input to today's `notes` entry (newline-joined),
+  then clears the input.
+
+It is **idempotent**: capturing again the same day overwrites today's snapshot, so an
+accidental or premature capture is fixed by simply capturing again. There is no
+confirmation dialog, no summary modal, and no separate restore/undo.
+
+**Armed state (delta-based).** The button is enabled only when something has changed
+since the last capture — any dot whose `position` differs from its latest snapshot (or
+that has never been captured), or any dot with text in its Notes input. Otherwise it
+shows **"Captured ✓"** and is disabled. Opening the app on a new day with no changes
+leaves it idle — there is no per-day snapshot requirement (some teams don't run a
+standup daily). Force edits persist live and do **not** arm Capture.
+
+See `docs/superpowers/specs/2026-06-23-werkwink-capture-rework-design.md`.
 
 ### 5.4 Import / Export / Clean
 
@@ -485,7 +502,7 @@ Captured during the design interview so future-you can see the reasoning:
 12. JSON schema is nested (tasks inside projects).
 13. Crossing the peak blocked while active down forces remain; new/reopened downs on downhill snap to 45.
 14. Done dots stay at 100; can be dragged back; stack into a column on the right.
-15. Snapshot trigger = explicit "End daily" button.
+15. Snapshot trigger = explicit "Capture" button (reversible save; _updated 2026-06-23 from "End daily" — see Capture rework spec_).
 16. Force display = `↑/↓` badge counts on the dot + side panel on click.
 17. Overview project distinction = warm color + name label.
 18. Tasks share the project color.
@@ -496,7 +513,7 @@ Captured during the design interview so future-you can see the reasoning:
 23. Side panel sections: Header / Position / Active forces / Past; delete icon bottom-right.
 24. Skill output: `.json` file in the workspace.
 25. Routing: `/` (landing page), `/projects` (overview), `/projects/:id` (project detail); side panel is component state.
-26. "End daily" replaces today's snapshot; skipped days are gaps.
+26. "Capture" replaces today's snapshot and appends today's notes; skipped days are gaps; the button is delta-armed and idempotent (_updated 2026-06-23 from "End daily" — see Capture rework spec_).
 27. Dots draggable on both overview and project view.
 28. Assignee optional at manual creation; placeholder primary force is set automatically.
 29. Trail length on chart = last 10; no side-panel history chart in v1.

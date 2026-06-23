@@ -390,38 +390,38 @@ describe('hillChart store', () => {
     })
   })
 
-  describe('canEndDaily getter', () => {
-    beforeEach(() => {
-      vi.useFakeTimers()
-      vi.setSystemTime(new Date(2026, 5, 6, 12, 0, 0))
-    })
-
-    afterEach(() => {
-      vi.useRealTimers()
-    })
-
+  describe('canCapture getter', () => {
     it('returns false when projects is empty', () => {
       const store = useHillChartStore()
       store.projects = []
-      expect(store.canEndDaily).toBe(false)
+      expect(store.canCapture).toBe(false)
     })
 
-    it('returns true when projects exist and lastDailyDate is null', () => {
+    it('returns false right after a capture with no further changes', () => {
       const store = useHillChartStore()
-      store.lastDailyDate = null
-      expect(store.canEndDaily).toBe(true)
+      store.capture()
+      expect(store.canCapture).toBe(false)
     })
 
-    it('returns true when lastDailyDate is a prior day', () => {
+    it('returns true after moving a dot', () => {
       const store = useHillChartStore()
-      store.lastDailyDate = '2026-06-05'
-      expect(store.canEndDaily).toBe(true)
+      store.capture()
+      store.setPosition('proj_1', 33)
+      expect(store.canCapture).toBe(true)
     })
 
-    it('returns false when lastDailyDate is today', () => {
+    it('returns true when a note draft is pending', () => {
       const store = useHillChartStore()
-      store.lastDailyDate = localDateString()
-      expect(store.canEndDaily).toBe(false)
+      store.capture()
+      store.setDailyNoteDraft('proj_1', 'Blocked on infra')
+      expect(store.canCapture).toBe(true)
+    })
+
+    it('returns true for a freshly added project with no snapshots', () => {
+      const store = useHillChartStore()
+      store.capture()
+      store.addProject()
+      expect(store.canCapture).toBe(true)
     })
   })
 
@@ -480,7 +480,6 @@ describe('hillChart store', () => {
       expect(snapshot.exportedAt).toBe(store.exportedAt)
       expect(snapshot.version).toBe(store.version)
       expect(snapshot.demo).toBe(store.demo)
-      expect(snapshot.lastDailyDate).toBe(store.lastDailyDate)
       expect(snapshot.projects).toBe(store.projects)
       expect(snapshot.projects.length).toBe(5)
     })
@@ -507,7 +506,6 @@ describe('hillChart store', () => {
       expect(store.exportedAt).toBeNull()
       expect(store.demo).toBe(false)
       expect(store.version).toBe(1)
-      expect(store.lastDailyDate).toBeNull()
       expect(store.canImport).toBe(true)
     })
 
@@ -524,7 +522,7 @@ describe('hillChart store', () => {
     })
   })
 
-  describe('endDaily', () => {
+  describe('capture', () => {
     beforeEach(() => {
       vi.useFakeTimers()
       vi.setSystemTime(new Date(2026, 5, 6, 12, 0, 0))
@@ -538,9 +536,8 @@ describe('hillChart store', () => {
       const store = useHillChartStore()
       const today = localDateString()
 
-      store.endDaily()
+      store.capture()
 
-      expect(store.lastDailyDate).toBe(today)
       for (const project of store.projects) {
         expect(project.snapshots).toContainEqual({ date: today, position: project.position })
         for (const task of project.tasks) {
@@ -556,7 +553,20 @@ describe('hillChart store', () => {
       project.snapshots = [{ date: today, position: 1 }]
       project.position = 99
 
-      store.endDaily()
+      store.capture()
+
+      expect(project.snapshots).toEqual([{ date: today, position: 99 }])
+    })
+
+    it('is idempotent — a second capture the same day leaves today unchanged', () => {
+      const store = useHillChartStore()
+      const today = localDateString()
+      const project = store.projects[0]
+      project.snapshots = [{ date: today, position: 1 }]
+      project.position = 99
+
+      store.capture()
+      store.capture()
 
       expect(project.snapshots).toEqual([{ date: today, position: 99 }])
     })
@@ -566,7 +576,7 @@ describe('hillChart store', () => {
       const project = store.projects[0]
       project.snapshots = [{ date: '2026-06-05', position: 10 }]
 
-      store.endDaily()
+      store.capture()
 
       expect(project.snapshots[0].date).toBe('2026-06-06')
       expect(project.snapshots[1].date).toBe('2026-06-05')
@@ -576,58 +586,37 @@ describe('hillChart store', () => {
       const store = useHillChartStore()
       store.projects = []
 
-      store.endDaily()
-
-      expect(store.lastDailyDate).toBeNull()
+      expect(() => store.capture()).not.toThrow()
+      expect(store.projects).toEqual([])
     })
 
-    it('addTask after endDaily leaves new task without today snapshot', () => {
+    it('addTask after capture leaves new task without today snapshot', () => {
       const store = useHillChartStore()
-      const today = localDateString()
       const project = store.projects[0]
 
-      store.endDaily()
+      store.capture()
       const taskId = store.addTask(project.id)
       const task = project.tasks.find((t) => t.id === taskId)!
 
-      expect(store.lastDailyDate).toBe(today)
       expect(task.snapshots).toEqual([])
     })
 
-    it('cleanState clears lastDailyDate', () => {
-      const store = useHillChartStore()
-      store.endDaily()
-
-      store.cleanState()
-
-      expect(store.lastDailyDate).toBeNull()
-    })
-
-    it('exportState includes lastDailyDate', () => {
-      const store = useHillChartStore()
-      store.endDaily()
-
-      const snapshot = store.exportState()
-
-      expect(snapshot.lastDailyDate).toBe('2026-06-06')
-    })
-
-    it('preserves demo true after endDaily', () => {
+    it('preserves demo true after capture', () => {
       const store = useHillChartStore()
       expect(store.demo).toBe(true)
 
-      store.endDaily()
+      store.capture()
 
       expect(store.demo).toBe(true)
     })
 
-    it('commits non-empty draft to notes and clears draft', () => {
+    it('appends non-empty draft to today note and clears draft', () => {
       const store = useHillChartStore()
       const today = localDateString()
       const project = store.projects[0]
       project.dailyNoteDraft = '  Shipped login flow  '
 
-      store.endDaily()
+      store.capture()
 
       expect(project.notes).toContainEqual({ date: today, text: 'Shipped login flow' })
       expect(project.dailyNoteDraft).toBe('')
@@ -638,24 +627,23 @@ describe('hillChart store', () => {
       const project = store.projects[0]
       project.dailyNoteDraft = '   '
 
-      store.endDaily()
+      store.capture()
 
       expect(project.notes).toEqual([])
       expect(project.dailyNoteDraft).toBe('')
     })
 
-    it('replaces today note when endDaily runs again same day', () => {
+    it('appends successive drafts to the same day note (newline-joined)', () => {
       const store = useHillChartStore()
       const today = localDateString()
       const project = store.projects[0]
+
       project.dailyNoteDraft = 'First'
-      store.endDaily()
+      store.capture()
       project.dailyNoteDraft = 'Second'
-      store.lastDailyDate = null
+      store.capture()
 
-      store.endDaily()
-
-      expect(project.notes).toEqual([{ date: today, text: 'Second' }])
+      expect(project.notes).toContainEqual({ date: today, text: 'First\nSecond' })
     })
 
     it('handles legacy trackables without dailyNoteDraft field', () => {
@@ -663,7 +651,7 @@ describe('hillChart store', () => {
       const project = store.projects[0]
       delete (project as { dailyNoteDraft?: string }).dailyNoteDraft
 
-      expect(() => store.endDaily()).not.toThrow()
+      expect(() => store.capture()).not.toThrow()
       expect(project.notes).toEqual([])
     })
   })

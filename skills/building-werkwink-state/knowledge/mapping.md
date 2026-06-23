@@ -75,10 +75,11 @@ Cycle `PALETTE_ORDER` from werkwink (`terracotta`, `mustard`, `olive`, `rust`,
   version: 1,
   exportedAt: string | null,  // ISO now when writing
   demo: false,                // omit ok; import forces false
-  lastDailyDate: null,
   projects: Project[]
 }
 ```
 
-Preserve `exportedAt`, `lastDailyDate`, positions, forces, and snapshots for items
-already in a merge export — see `merge-with-existing.md`.
+Preserve `exportedAt`, positions, forces, snapshots, and `notes` for items already in a
+merge export — see `merge-with-existing.md`. A legacy `lastDailyDate` field may appear in
+older exports; it is obsolete (removed in the Capture rework) and import ignores it, so
+drop it when rewriting.

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 defineProps<{
-  endDailyEnabled: boolean
-  endDailyLabel: 'End daily' | 'Saved'
+  canCapture: boolean
+  captureLabel: 'Capture' | 'Captured ✓'
   showDemoLabel?: boolean
 }>()
 
 defineEmits<{
-  (e: 'end-daily-click'): void
+  (e: 'capture-click'): void
 }>()
 </script>
 
@@ -24,15 +24,15 @@ defineEmits<{
     <div class="flex flex-wrap items-center gap-2">
       <button
         type="button"
-        :disabled="!endDailyEnabled"
+        :disabled="!canCapture"
         :class="
-          endDailyEnabled
+          canCapture
             ? 'rounded-md border border-text-warm/15 px-3 py-1.5 text-sm text-text-warm/70 transition-colors hover:bg-hill-sand/50 hover:text-text-warm'
             : 'rounded-md border border-text-warm/15 px-3 py-1.5 text-sm text-text-warm/35 disabled:hover:bg-transparent'
         "
-        @click="endDailyEnabled && $emit('end-daily-click')"
+        @click="canCapture && $emit('capture-click')"
       >
-        {{ endDailyLabel }}
+        {{ captureLabel }}
       </button>
     </div>
   </header>

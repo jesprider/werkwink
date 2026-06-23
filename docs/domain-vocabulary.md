@@ -19,9 +19,9 @@ code and implementation docs use the terms below.
 | **Task dot** | A task’s chart marker (smaller). |
 | **Force** | Up forces (assignee, helpers) or down forces (blockers, obstacles, dependencies) on a project or task. |
 | **Resolve (force)** | Mark a force resolved; moves to past section. |
-| **Daily / End daily** | Standup ritual; snapshot positions for today. |
-| **Daily note** | Short standup update typed in the side panel while the daily is open. |
-| **Notes history** | Per-dot `{ date, text }[]` committed on End daily; export-only in v1. |
+| **Capture** | Reversible save: snapshot today's positions and append today's notes for every dot. Always available; idempotent; delta-armed (replaces "End daily"). |
+| **Daily note** | Short standup update typed in the side panel's write-only Notes field; appended to today's note on Capture, then cleared. Previously captured text is never shown. |
+| **Notes history** | Per-dot `{ date, text }[]`; Capture appends the draft to today's entry (newline-joined). Export-only in v1. |
 | **Snapshot / trail** | Historical positions for ghost markers on the chart. |
 | **Staleness satellite** | Small red marker orbiting a dot; one per day without movement (from day 2, max 4). Skipped at position 100 (done). |
 | **Days without movement** | Local calendar days since `lastMovedAt`; shown in the side panel. Grace day: moved yesterday → 0 satellites, panel may still show “1 day”. |
@@ -36,8 +36,8 @@ code and implementation docs use the terms below.
 |------|-------|---------|
 | `Project` | Domain (`schema/types.ts`) | Aggregate root; persisted. |
 | `Task` | Domain | Entity inside `Project.tasks`. |
-| `HillTrackable` | Domain | Shared shape: id, name, position, forces, snapshots, `dailyNoteDraft`, `notes`, optional `source`. Implemented by `Project` and `Task`. |
-| `HillChartState` | Domain | Root store document: `projects[]`. |
+| `HillTrackable` | Domain | Shared shape: id, name, position, forces, snapshots, `dailyNoteDraft` (transient write-only buffer), `notes`, optional `source`. Implemented by `Project` and `Task`. |
+| `HillChartState` | Domain | Root store document: `version`, `exportedAt`, `demo`, `projects[]`. (No `lastDailyDate` — removed in the Capture rework.) |
 | `ChartMarker` | Presentation | Read model for one SVG marker (position, color, radius, force counts, `stalenessSatellites`). |
 | `overviewMarkers` / `markersForProject` | Presentation | Build `ChartMarker[]` for a view (`domain/chartMarkers.ts`). |
 | `MarkerChart.vue` | UI | Renders one marker on the hill (main dot + staleness satellites). |
@@ -50,7 +50,9 @@ code and implementation docs use the terms below.
 | `InProjectLookup` | Domain | `{ kind: TrackableKind, trackable: HillTrackable }`. |
 | `TrackableKind` | Domain | `'project' \| 'task'`. |
 | `selectedTrackableId` | UI state | Which trackable the side panel shows (project view). |
-| `canEndDaily` | Store getter | `projects.length > 0` and `lastDailyDate` is not today (via `isSameLocalDay`). |
+| `canCapture` | Store getter | `projects.length > 0` and at least one dot is dirty: its `position` differs from its latest snapshot (or it has none), or its `dailyNoteDraft` is non-empty. |
+| `capture` | Store action | Upsert today's position snapshot and append today's note for every dot; clears note drafts. Idempotent (replaces "End daily" / `endDaily`). |
+| `appendDailyNote` | Domain (`domain/dailyNotes.ts`) | Append text to today's note entry (newline-joined) or create it; newest date first. |
 | `resolveForce` / `unresolveForce` | Store actions | Force lifecycle only. |
 | `partitionMarkers` | Domain (`domain/chartMarkers.ts`) | Splits markers into `active` (curve) and `done` (stack). |
 | `DonePanel.vue` | Component | Renders done list in right column; row click, hover restore. |

@@ -1,7 +1,13 @@
 # werkwink — Iteration 14: End daily (design)
 
+> **Superseded (2026-06-23):** "End daily" was reworked into the reversible **Capture**
+> action. `lastDailyDate`, the once-per-day lock, the 2s "Saved" label, and the
+> draft-clear-on-commit behaviour described below no longer apply. See
+> `docs/superpowers/specs/2026-06-23-werkwink-capture-rework-design.md`. This document
+> is kept as the historical record of the original snapshot mechanic.
+
 **Date:** 2026-06-06  
-**Status:** Approved  
+**Status:** Superseded by Capture rework (2026-06-23)  
 **Parent spec:** `docs/werkwink-design-spec.md` (§5.3)  
 **Roadmap:** `docs/superpowers/specs/2026-06-02-werkwink-v1-roadmap-design.md` (iteration 14)  
 **Builds on:** iteration 4 (header stubs), iteration 13 (export/clean + persist)
