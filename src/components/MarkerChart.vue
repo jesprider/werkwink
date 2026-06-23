@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { STALE_RED } from '../domain/staleness'
-import { clampLabelCenterX } from '../lib/hillCurve'
+import { estimateLabelWidth } from '../lib/hillCurve'
+import { computeLabelLayout, type LabelSide } from '../lib/labelLayout'
 
 const CREAM = '#FDFAF4'
 const TITLE_FONT_SIZE = 12
-const TITLE_Y_OFFSET = 17
 const FORCES_FONT_SIZE = 12
-const FORCES_Y_OFFSET = 34
 
 const props = defineProps<{
   cx: number
@@ -19,6 +18,7 @@ const props = defineProps<{
   down: number
   stalenessSatellites: number
   highlighted?: boolean
+  labelSide?: LabelSide
 }>()
 
 const forcesText = computed(() => `↑${props.up} ↓${props.down}`)
@@ -53,24 +53,17 @@ const satelliteCoords = computed(() => {
   })
 })
 
-const labelWidth = computed(() => Math.max(props.name.length * 6, forcesText.value.length * 6) + 10)
+const labelWidth = computed(() => estimateLabelWidth(props.name, forcesText.value))
 
-const labelCenterX = computed(() => clampLabelCenterX(props.cx, labelWidth.value))
-
-const labelBackground = computed(() => {
-  const width = labelWidth.value
-  const titleBaseline = props.cy + props.radius + TITLE_Y_OFFSET
-  const forcesBaseline = props.cy + props.radius + FORCES_Y_OFFSET
-  const top = titleBaseline - 11
-  const bottom = forcesBaseline + 3
-  return {
-    x: labelCenterX.value - width / 2,
-    y: top,
-    width,
-    height: bottom - top,
-    rx: 5,
-  }
-})
+const labelLayout = computed(() =>
+  computeLabelLayout(
+    props.cx,
+    props.cy,
+    props.radius,
+    labelWidth.value,
+    props.labelSide ?? 'below',
+  ),
+)
 </script>
 
 <template>
@@ -89,19 +82,19 @@ const labelBackground = computed(() => {
     />
     <rect
       v-if="highlighted"
-      :x="labelBackground.x"
-      :y="labelBackground.y"
-      :width="labelBackground.width"
-      :height="labelBackground.height"
-      :rx="labelBackground.rx"
+      :x="labelLayout.bg.x"
+      :y="labelLayout.bg.y"
+      :width="labelLayout.bg.width"
+      :height="labelLayout.bg.height"
+      :rx="labelLayout.bg.rx"
       :fill="CREAM"
       fill-opacity="0.85"
       pointer-events="none"
     />
     <text
-      :x="labelCenterX"
-      :y="cy + radius + TITLE_Y_OFFSET"
-      text-anchor="middle"
+      :x="labelLayout.titleX"
+      :y="labelLayout.titleY"
+      :text-anchor="labelLayout.anchor"
       :font-size="TITLE_FONT_SIZE"
       fill="#3C3530"
       font-family="Inter, sans-serif"
@@ -109,9 +102,9 @@ const labelBackground = computed(() => {
       {{ name }}
     </text>
     <text
-      :x="labelCenterX"
-      :y="cy + radius + FORCES_Y_OFFSET"
-      text-anchor="middle"
+      :x="labelLayout.forcesX"
+      :y="labelLayout.forcesY"
+      :text-anchor="labelLayout.anchor"
       :font-size="FORCES_FONT_SIZE"
       fill="#3C3530"
       font-family="Inter, sans-serif"

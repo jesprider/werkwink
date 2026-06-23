@@ -22,6 +22,11 @@ export function clampLabelCenterX(cx: number, labelWidth: number): number {
   return Math.min(Math.max(cx, minX + half), maxX - half)
 }
 
+/** Rough label box width from the longest of the title / forces lines. */
+export function estimateLabelWidth(name: string, forcesText: string): number {
+  return Math.max(name.length * 6, forcesText.length * 6) + 10
+}
+
 /** Hill baseline (curve endpoints), as 0–1 of chart height. */
 export function chartBaselineY(): number {
   return (CHART.height - CHART.bottomPad) / CHART.height

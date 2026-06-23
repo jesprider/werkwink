@@ -7,6 +7,7 @@ import {
   partitionMarkers,
   partitionMarkersForProjectView,
   markersInPaintOrder,
+  labelSides,
 } from './chartMarkers'
 
 function stubMarker(id: string): ChartMarker {
@@ -260,6 +261,38 @@ describe('partitionMarkersForProjectView', () => {
       }),
     )
     expect(partitionMarkersForProjectView(markers, 'proj_1')).toEqual(partitionMarkers(markers))
+  })
+})
+
+describe('labelSides', () => {
+  function marker(id: string, position: number, name = id): ChartMarker {
+    return { ...stubMarker(id), position, name }
+  }
+
+  it('keeps well-separated labels below their dots', () => {
+    const sides = labelSides([marker('a', 10), marker('b', 90)])
+    expect(sides.get('a')).toBe('below')
+    expect(sides.get('b')).toBe('below')
+  })
+
+  it('lifts a colliding neighbor above its dot before using a side', () => {
+    const sides = labelSides([marker('a', 50), marker('b', 51)])
+    expect(sides.get('a')).toBe('below')
+    expect(sides.get('b')).toBe('above')
+  })
+
+  it('falls through below → above → right as a cluster tightens', () => {
+    const sides = labelSides([marker('a', 50), marker('b', 51), marker('c', 52)])
+    expect(sides.get('a')).toBe('below')
+    expect(sides.get('b')).toBe('above')
+    expect(sides.get('c')).toBe('right')
+  })
+
+  it('resolves collisions left-to-right regardless of input order', () => {
+    const sides = labelSides([marker('c', 52), marker('a', 50), marker('b', 51)])
+    expect(sides.get('a')).toBe('below')
+    expect(sides.get('b')).toBe('above')
+    expect(sides.get('c')).toBe('right')
   })
 })
 
