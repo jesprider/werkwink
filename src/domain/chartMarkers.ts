@@ -1,11 +1,14 @@
 import type { HillTrackable, Project } from '../schema/types'
 import { PALETTE } from '../schema/palette'
 import { localDateString } from '../lib/localDate'
+import { curveX, curveY, estimateLabelWidth } from '../lib/hillCurve'
+import { computeLabelLayout, type LabelBox, type LabelSide } from '../lib/labelLayout'
 import { activeForceCount } from './forceRules'
 import { trailGhosts, type TrailGhost } from './trailGhosts'
 import { stalenessSatelliteCount, DONE_POSITION } from './staleness'
 
 export type { TrailGhost }
+export type { LabelSide }
 
 export interface ChartMarker {
   id: string
@@ -83,6 +86,54 @@ export function partitionMarkersForProjectView(
     active: [...active, projectMarker],
     done: done.filter((m) => m.id !== projectId),
   }
+}
+
+/** Placements tried in order; first one that clears all collisions wins. */
+const LABEL_SIDE_PRIORITY: LabelSide[] = ['below', 'above', 'right', 'left']
+
+function rectsOverlap(a: LabelBox, b: LabelBox): boolean {
+  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y
+}
+
+/**
+ * De-collide labels: scan markers left → right and, for each, pick the first
+ * placement (below → above → right → left) whose box clears every label already
+ * placed and every other dot. Falls back to below when nothing fits.
+ */
+export function labelSides(markers: ChartMarker[]): Map<string, LabelSide> {
+  const sides = new Map<string, LabelSide>()
+  const ordered = [...markers].sort((a, b) => a.position - b.position)
+  const dotBoxes: LabelBox[] = ordered.map((m) => {
+    const cx = curveX(m.position)
+    const cy = curveY(m.position)
+    return { x: cx - m.radius, y: cy - m.radius, width: m.radius * 2, height: m.radius * 2 }
+  })
+  const placed: LabelBox[] = []
+
+  ordered.forEach((m, i) => {
+    const cx = curveX(m.position)
+    const cy = curveY(m.position)
+    const width = estimateLabelWidth(m.name, `↑${m.up} ↓${m.down}`)
+
+    let chosen: LabelSide | null = null
+    for (const side of LABEL_SIDE_PRIORITY) {
+      const box = computeLabelLayout(cx, cy, m.radius, width, side).bg
+      const hitsLabel = placed.some((b) => rectsOverlap(box, b))
+      const hitsDot = dotBoxes.some((d, di) => di !== i && rectsOverlap(box, d))
+      if (!hitsLabel && !hitsDot) {
+        chosen = side
+        placed.push(box)
+        break
+      }
+    }
+    if (chosen === null) {
+      chosen = 'below'
+      placed.push(computeLabelLayout(cx, cy, m.radius, width, 'below').bg)
+    }
+    sides.set(m.id, chosen)
+  })
+
+  return sides
 }
 
 export function markersInPaintOrder(

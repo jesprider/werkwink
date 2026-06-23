@@ -2,7 +2,11 @@
 import { computed, ref } from 'vue'
 import { chartViewBox, curvePath, curveX, curveY, HILL_STROKE } from '../lib/hillCurve'
 import { useHillDrag } from '../composables/useHillDrag'
-import { markersInPaintOrder, type ChartMarker as ChartMarkerModel } from '../domain/chartMarkers'
+import {
+  labelSides,
+  markersInPaintOrder,
+  type ChartMarker as ChartMarkerModel,
+} from '../domain/chartMarkers'
 import MarkerChart from './MarkerChart.vue'
 import MarkerTrail from './MarkerTrail.vue'
 
@@ -31,6 +35,8 @@ const { startDrag: onGrab, draggingId } = useHillDrag({
 const foregroundId = computed(() => props.selectedId ?? draggingId.value ?? null)
 
 const paintOrderMarkers = computed(() => markersInPaintOrder(props.markers, foregroundId.value))
+
+const sides = computed(() => labelSides(props.markers))
 
 defineExpose({ svgRef })
 </script>
@@ -61,6 +67,7 @@ defineExpose({ svgRef })
         :name="m.name"
         :up="m.up"
         :down="m.down"
+        :label-side="sides.get(m.id) ?? 'below'"
         :highlighted="m.id === foregroundId"
         @grab="(ev: PointerEvent) => onGrab(m.id, ev)"
         @open="emit('open', m.id)"
