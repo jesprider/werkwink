@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import type { Project } from '../schema/types'
+import type { Force, Project } from '../schema/types'
 import { findTrackableInProjects, lookupInProject, forcesByStatus } from './trackableLookup'
 
 const project: Project = {
@@ -88,5 +88,45 @@ describe('forcesByStatus', () => {
     const forces = forcesByStatus(project.forces, 'up', 'resolved')
     expect(forces).toHaveLength(1)
     expect(forces[0].id).toBe('f_past')
+  })
+
+  it('pins primary active up force first, then newest non-primary', () => {
+    const forces: Force[] = [
+      {
+        id: 'f_primary',
+        direction: 'up',
+        label: 'Owner',
+        owner: 'Alex',
+        isPrimary: true,
+        status: 'active',
+        createdAt: '2026-05-01T10:00:00Z',
+        resolvedAt: null,
+        resolutionReason: null,
+      },
+      {
+        id: 'f_newer',
+        direction: 'up',
+        label: 'Boost',
+        owner: null,
+        isPrimary: false,
+        status: 'active',
+        createdAt: '2026-06-01T10:00:00Z',
+        resolvedAt: null,
+        resolutionReason: null,
+      },
+      {
+        id: 'f_older',
+        direction: 'up',
+        label: 'Earlier boost',
+        owner: null,
+        isPrimary: false,
+        status: 'active',
+        createdAt: '2026-05-15T10:00:00Z',
+        resolvedAt: null,
+        resolutionReason: null,
+      },
+    ]
+    const result = forcesByStatus(forces, 'up', 'active')
+    expect(result.map((f) => f.id)).toEqual(['f_primary', 'f_newer', 'f_older'])
   })
 })

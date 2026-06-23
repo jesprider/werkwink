@@ -35,6 +35,11 @@ export function forcesByStatus(
   return forces
     .filter((f) => f.direction === direction && f.status === status)
     .sort((a, b) => {
+      if (direction === 'up' && status === 'active') {
+        if (a.isPrimary !== b.isPrimary) {
+          return a.isPrimary ? -1 : 1
+        }
+      }
       const aDate = status === 'resolved' ? (a.resolvedAt ?? a.createdAt) : a.createdAt
       const bDate = status === 'resolved' ? (b.resolvedAt ?? b.createdAt) : b.createdAt
       return new Date(bDate).getTime() - new Date(aDate).getTime()
