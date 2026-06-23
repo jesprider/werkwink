@@ -23,8 +23,8 @@ code and implementation docs use the terms below.
 | **Snapshot / trail** | Historical positions for ghost markers on the chart. |
 | **Staleness satellite** | Small red marker orbiting a dot; one per day without movement (from day 2, max 4). Skipped at position 100 (done). |
 | **Days without movement** | Local calendar days since `lastMovedAt`; shown in the side panel. Grace day: moved yesterday → 0 satellites, panel may still show “1 day”. |
-| **Done stack** | Bottom-right column holding dots at position 100; collapsed chip(s) + "+ N more" when N≥2. |
-| **Un-done** | Drag a stack dot left onto the hill to move below 100. |
+| **Done panel** | Right column list when no dot is selected; panel card with dot + name rows. |
+| **Restore** | Hover ↩ Restore on a done row (or position slider in panel); places dot at peak (50). |
 
 ---
 
@@ -51,7 +51,7 @@ code and implementation docs use the terms below.
 | `canEndDaily` | Store getter | `projects.length > 0` and `lastDailyDate` is not today (via `isSameLocalDay`). |
 | `resolveForce` / `unresolveForce` | Store actions | Force lifecycle only. |
 | `partitionMarkers` | Domain (`domain/chartMarkers.ts`) | Splits markers into `active` (curve) and `done` (stack). |
-| `DoneStack.vue` | Component | Renders done dots; expand/collapse, click, drag. |
+| `DonePanel.vue` | Component | Renders done list in right column; row click, hover restore. |
 | `allTasksDone` / `clampProjectDonePosition` | Domain (`doneRules.ts`) | Project cannot reach 100 until all tasks are at 100. |
 
 ---

@@ -37,7 +37,7 @@ down force while already downhill snaps the dot back to **45** (just before the
 peak). No new down forces are blocked outright; the chart reflects renewed
 uncertainty instead.
 
-**Done.** Position 100 = done. Done dots remain on the chart at 100 (no archival). They can be dragged back if a problem surfaces. To keep the right side readable, done dots **stack into a collapsed column** at the bottom-right with a "+ N more" badge; click to expand into a list.
+**Done.** Position 100 = done. Done items leave the curve (no archival). When no dot is selected, they appear in a **done panel** in the reserved right column — a card list with dot + name rows. Click a row to open the side panel; hover **↩ Restore** to return the dot to the peak (50).
 
 **Staleness.** Dots that have not moved recently show small **staleness satellites** — red circles on the upper arc of the main marker. One satellite per day without movement from day 2, max 4; the main dot keeps its project color. See §5.8.
 
@@ -500,7 +500,7 @@ Captured during the design interview so future-you can see the reasoning:
 28. Assignee optional at manual creation; placeholder primary force is set automatically.
 29. Trail length on chart = last 10; no side-panel history chart in v1.
 30. Staleness satellites: one red dot per day without movement from day 2, max 4; panel shows days without movement; skipped at position 100.
-31. Done dots stack into a column with "+ N more" badge.
+31. Done items show in a right-column done panel; hover ↩ Restore returns to peak (50).
 32. Display during daily = ordinary screen-share; no dedicated presentation mode in v1.
 33. Hosted on Cloudflare Pages: public GitHub repo, auto-deploy on `main`, preview deploys per branch, SPA fallback via a `public/_redirects` file. Custom domain and analytics deferred.
 34. App is **tracker-agnostic**. Each dot may carry an optional `source: { system, id, url }` referencing an external project-management tool. Tracker-specific logic lives only in the import skill (Jira, Linear, Asana, GitHub Issues, Monday, ClickUp, Trello, etc. all supported via per-tracker knowledge files). The app never talks to any tracker directly.
