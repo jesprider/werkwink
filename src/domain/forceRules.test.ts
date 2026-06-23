@@ -18,6 +18,8 @@ function trackable(overrides: Partial<HillTrackable> = {}): HillTrackable {
     lastMovedAt: '2026-05-01T10:00:00Z',
     forces: [],
     snapshots: [],
+    dailyNoteDraft: '',
+    notes: [],
     ...overrides,
   }
 }

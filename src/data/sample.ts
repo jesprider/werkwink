@@ -88,6 +88,8 @@ export const sampleState: HillChartState = {
         },
       ],
       snapshots: trailSnapshots([18, 24, 30, 36, 42, 46, 49]),
+      dailyNoteDraft: '',
+      notes: [],
       tasks: [
         {
           id: 'task_1a',
@@ -124,6 +126,8 @@ export const sampleState: HillChartState = {
             },
           ],
           snapshots: trailSnapshots([10, 14, 18, 22, 26]),
+          dailyNoteDraft: '',
+          notes: [],
         },
         {
           id: 'task_1b',
@@ -155,6 +159,8 @@ export const sampleState: HillChartState = {
             },
           ],
           snapshots: [],
+          dailyNoteDraft: '',
+          notes: [],
         },
         {
           id: 'task_1c',
@@ -186,6 +192,8 @@ export const sampleState: HillChartState = {
             },
           ],
           snapshots: trailSnapshots([48, 52, 56, 60]),
+          dailyNoteDraft: '',
+          notes: [],
         },
       ],
     },
@@ -231,6 +239,8 @@ export const sampleState: HillChartState = {
         },
       ],
       snapshots: trailSnapshots([40, 48, 55, 62, 68, 72]),
+      dailyNoteDraft: '',
+      notes: [],
       tasks: [
         {
           id: 'task_2a',
@@ -251,6 +261,8 @@ export const sampleState: HillChartState = {
             },
           ],
           snapshots: trailSnapshots([12, 18, 24, 28]),
+          dailyNoteDraft: '',
+          notes: [],
         },
         {
           id: 'task_2b',
@@ -271,6 +283,8 @@ export const sampleState: HillChartState = {
             },
           ],
           snapshots: [],
+          dailyNoteDraft: '',
+          notes: [],
         },
       ],
     },
@@ -310,6 +324,8 @@ export const sampleState: HillChartState = {
         },
       ],
       snapshots: trailSnapshots([50, 55, 60, 65, 68, 75, 85, 95, 100]),
+      dailyNoteDraft: '',
+      notes: [],
       tasks: [
         {
           id: 'task_3a',
@@ -330,6 +346,8 @@ export const sampleState: HillChartState = {
             },
           ],
           snapshots: trailSnapshots([60, 72, 84, 92, 100]),
+          dailyNoteDraft: '',
+          notes: [],
         },
         {
           id: 'task_3b',
@@ -350,6 +368,8 @@ export const sampleState: HillChartState = {
             },
           ],
           snapshots: trailSnapshots([70, 82, 90, 100]),
+          dailyNoteDraft: '',
+          notes: [],
         },
       ],
     },
@@ -406,6 +426,8 @@ export const sampleState: HillChartState = {
         },
       ],
       snapshots: [],
+      dailyNoteDraft: '',
+      notes: [],
       tasks: [],
     },
     {
@@ -433,6 +455,8 @@ export const sampleState: HillChartState = {
         },
       ],
       snapshots: trailSnapshots([70, 78, 85, 92, 97, 100]),
+      dailyNoteDraft: '',
+      notes: [],
       tasks: [],
     },
   ],
