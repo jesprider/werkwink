@@ -10,85 +10,81 @@ const props = withDefaults(
 )
 
 const label = computed(() => props.system ?? 'link')
+
+/** Official brand marks (Simple Icons geometry, CC0) on a 24-unit grid. */
+const BRANDS: Record<string, { color: string; path: string }> = {
+  jira: {
+    color: '#2684FF',
+    path: 'M11.571 11.513H0a5.218 5.218 0 0 0 5.232 5.215h2.13v2.057A5.215 5.215 0 0 0 12.575 24V12.518a1.005 1.005 0 0 0-1.005-1.005zm5.723-5.756H5.736a5.215 5.215 0 0 0 5.215 5.214h2.129v2.058a5.218 5.218 0 0 0 5.215 5.214V6.758a1.001 1.001 0 0 0-1.001-1.001zM23.013 0H11.455a5.215 5.215 0 0 0 5.215 5.215h2.129v2.057A5.215 5.215 0 0 0 24 12.483V1.005A1.001 1.001 0 0 0 23.013 0Z',
+  },
+  linear: {
+    color: '#5E6AD2',
+    path: 'M2.886 4.18A11.982 11.982 0 0 1 11.99 0C18.624 0 24 5.376 24 12.009c0 3.64-1.62 6.903-4.18 9.105L2.887 4.18ZM1.817 5.626l16.556 16.556c-.524.33-1.075.62-1.65.866L.951 7.277c.247-.575.537-1.126.866-1.65ZM.322 9.163l14.515 14.515c-.71.172-1.443.282-2.195.322L0 11.358a12 12 0 0 1 .322-2.195Zm-.17 4.862 9.823 9.824a12.02 12.02 0 0 1-9.824-9.824Z',
+  },
+  github: {
+    color: '#181717',
+    path: 'M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12',
+  },
+  gitlab: {
+    color: '#FC6D26',
+    path: 'm23.6004 9.5927-.0337-.0862L20.3.9814a.851.851 0 0 0-.3362-.405.8748.8748 0 0 0-.9997.0539.8748.8748 0 0 0-.29.4399l-2.2055 6.748H7.5375l-2.2057-6.748a.8573.8573 0 0 0-.29-.4412.8748.8748 0 0 0-.9997-.0537.8585.8585 0 0 0-.3362.4049L.4332 9.5015l-.0325.0862a6.0657 6.0657 0 0 0 2.0119 7.0105l.0113.0087.03.0213 4.976 3.7264 2.462 1.8633 1.4995 1.1321a1.0085 1.0085 0 0 0 1.2197 0l1.4995-1.1321 2.4619-1.8633 5.006-3.7489.0125-.01a6.0682 6.0682 0 0 0 2.0094-7.003z',
+  },
+  asana: {
+    color: '#F06A6A',
+    path: 'M18.78 12.653c-2.882 0-5.22 2.336-5.22 5.22s2.338 5.22 5.22 5.22 5.22-2.34 5.22-5.22-2.336-5.22-5.22-5.22zm-13.56 0c-2.88 0-5.22 2.337-5.22 5.22s2.338 5.22 5.22 5.22 5.22-2.338 5.22-5.22-2.336-5.22-5.22-5.22zm12-6.525c0 2.883-2.337 5.22-5.22 5.22-2.882 0-5.22-2.337-5.22-5.22 0-2.88 2.338-5.22 5.22-5.22 2.883 0 5.22 2.34 5.22 5.22z',
+  },
+  clickup: {
+    color: '#7B68EE',
+    path: 'M2 18.439l3.69-2.828c1.961 2.56 4.044 3.739 6.363 3.739 2.307 0 4.33-1.166 6.203-3.704L22 18.405C19.298 22.065 15.941 24 12.053 24 8.178 24 4.788 22.078 2 18.439zM12.04 6.15l-6.568 5.66-3.036-3.52L12.055 0l9.543 8.296-3.05 3.509z',
+  },
+  trello: {
+    color: '#0052CC',
+    path: 'M21.147 0H2.853A2.86 2.86 0 000 2.853v18.294A2.86 2.86 0 002.853 24h18.294A2.86 2.86 0 0024 21.147V2.853A2.86 2.86 0 0021.147 0zM10.34 17.287a.953.953 0 01-.953.953h-4a.954.954 0 01-.954-.953V5.38a.953.953 0 01.954-.953h4a.954.954 0 01.953.953zm9.233-5.467a.944.944 0 01-.953.947h-4a.947.947 0 01-.953-.947V5.38a.953.953 0 01.953-.953h4a.954.954 0 01.953.953z',
+  },
+}
+
+const brand = computed(() => BRANDS[label.value])
+
+/** monday.com — three rounded capsules in its brand colors (no Simple Icons mark). */
+const MONDAY_CAPSULES = [
+  { x: 3.6, color: '#FF3D57' },
+  { x: 9.8, color: '#00CA72' },
+  { x: 16, color: '#FFCB00' },
+]
 </script>
 
 <template>
   <svg
     :width="size"
     :height="size"
-    viewBox="0 0 16 16"
+    viewBox="0 0 24 24"
     class="shrink-0"
     aria-hidden="true"
     focusable="false"
   >
-    <!-- Jira -->
-    <template v-if="label === 'jira'">
-      <rect width="16" height="16" rx="3" fill="#2684FF" />
-      <path fill="#fff" d="M8.2 11.5 5 8.3l1.4-1.4 1.8 1.8 4.4-4.4L13 5.3z" />
-    </template>
-    <!-- Linear -->
-    <template v-else-if="label === 'linear'">
-      <rect width="16" height="16" rx="3" fill="#5E6AD2" />
-      <path fill="#fff" d="M4 12 12 4M7 4h5v5M4 9v5h5" stroke="#fff" stroke-width="1.2" />
-    </template>
-    <!-- GitHub -->
-    <template v-else-if="label === 'github'">
-      <rect width="16" height="16" rx="3" fill="#24292f" />
-      <path
-        fill="#fff"
-        d="M8 3a5 5 0 0 0-1.6 9.7c.4.1.6-.2.6-.4v-1.4c-2.5.5-3-1.2-3-1.2-.4-1-.98-1.3-.98-1.3-.8-.5.06-.5.06-.5.9.06 1.4.9 1.4.9.8 1.4 2.1 1 2.6.8.1-.6.3-1 .5-1.2-2-.2-4.1-1-4.1-4.5a3.5 3.5 0 0 1 1-2.4 3.2 3.2 0 0 1 .1-2.3s.8-.3 2.6 1a8.8 8.8 0 0 1 4.8 0c1.8-1.3 2.6-1 2.6-1 .6 1.6.2 2.8.1 2.3.6.6 1 1.4 1 2.4 0 3.5-2.1 4.3-4.1 4.5.3.3.6.8.6 1.6v2.3c0 .2.2.5.6.4A5 5 0 0 0 8 3Z"
-      />
-    </template>
-    <!-- GitLab -->
-    <template v-else-if="label === 'gitlab'">
-      <rect width="16" height="16" rx="3" fill="#FC6D26" />
-      <path fill="#fff" d="m8 3 1.2 3.7H12L9.4 8.3l1.2 3.7L8 9.4 5.4 12l1.2-3.7L4 6.7h2.8L8 3Z" />
-    </template>
-    <!-- Asana -->
-    <template v-else-if="label === 'asana'">
-      <circle cx="8" cy="8" r="7" fill="#F06A6A" />
-      <circle cx="8" cy="6" r="2.5" fill="#fff" />
-      <circle cx="5" cy="10" r="2" fill="#fff" />
-      <circle cx="11" cy="10" r="2" fill="#fff" />
-    </template>
-    <!-- ClickUp -->
-    <template v-else-if="label === 'clickup'">
-      <rect width="16" height="16" rx="3" fill="#7B68EE" />
-      <path fill="#fff" d="M4 8h8M8 4v8" stroke="#fff" stroke-width="2" stroke-linecap="round" />
-    </template>
-    <!-- Monday -->
+    <path v-if="brand" :d="brand.path" :fill="brand.color" />
     <template v-else-if="label === 'monday'">
-      <rect width="16" height="16" rx="3" fill="#FF3D57" />
-      <circle cx="5" cy="8" r="2" fill="#fff" />
-      <circle cx="8" cy="8" r="2" fill="#fff" />
-      <circle cx="11" cy="8" r="2" fill="#fff" />
-    </template>
-    <!-- Trello -->
-    <template v-else-if="label === 'trello'">
-      <rect width="16" height="16" rx="3" fill="#0079BF" />
-      <rect x="4" y="4" width="8" height="8" rx="1" fill="#fff" />
-      <rect x="5" y="5" width="3" height="5" rx="0.5" fill="#0079BF" />
-      <rect x="9" y="5" width="3" height="3" rx="0.5" fill="#0079BF" />
-    </template>
-    <!-- Generic link -->
-    <template v-else>
-      <circle
-        cx="8"
-        cy="8"
-        r="7"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.2"
-        class="text-text-warm/50"
-      />
-      <path
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.2"
-        stroke-linecap="round"
-        class="text-text-warm/50"
-        d="M6.5 9.5 9.5 6.5M7 6h2.5v2.5M9 10h2.5v2.5"
+      <rect
+        v-for="cap in MONDAY_CAPSULES"
+        :key="cap.x"
+        :x="cap.x"
+        y="5.5"
+        width="4.4"
+        height="13"
+        rx="2.2"
+        :fill="cap.color"
       />
     </template>
+    <g
+      v-else
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </g>
   </svg>
 </template>
