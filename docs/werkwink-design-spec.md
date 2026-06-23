@@ -179,11 +179,12 @@ Opens to the right when you click a dot. Component state (not in the URL). Secti
 
 1. **Header** — dot name (inline editable), type badge (Project / Task), external link (if `source.url` is set, opens in a new tab; an icon hints at the system when `source.system` is recognised).
 2. **Position** — fine-grained slider 0–100, plus "At the peak" indicator when applicable. Editing the slider mirrors dragging on the chart.
-3. **Active up forces** — chip per force: label + optional owner. Primary force has a small "primary" mark and no resolve button. `+ Up force` button at end.
-4. **Active down forces** — same shape. `+ Down force` button.
-5. **Past boosters** — collapsible, resolved up forces, most recent first.
-6. **Past blockers** — collapsible, resolved down forces, most recent first.
-7. **Delete** — trash icon at the bottom-right of the panel; confirm before removing project or task.
+3. **Notes** — while the daily is open (`canEndDaily`), a short textarea for today's standup update on this dot. Hidden after End daily. Non-empty drafts commit to `notes` history on End daily (not shown in the panel).
+4. **Active up forces** — chip per force: label + optional owner. Primary force has a small "primary" mark and no resolve button. `+ Up force` button at end.
+5. **Active down forces** — same shape. `+ Down force` button.
+6. **Past boosters** — collapsible, resolved up forces, most recent first.
+7. **Past blockers** — collapsible, resolved down forces, most recent first.
+8. **Delete** — trash icon at the bottom-right of the panel; confirm before removing project or task.
 
 ### 4.5 Force add UX
 
