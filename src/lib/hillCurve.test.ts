@@ -6,6 +6,7 @@ import {
   positionFromRatio,
   chartViewBox,
   positionFromClientX,
+  clampLabelCenterX,
   CHART,
 } from './hillCurve'
 
@@ -14,6 +15,20 @@ describe('chartViewBox includes horizontal padding for marker overflow', () => {
     expect(chartViewBox()).toBe(
       `-${CHART.sidePad} 0 ${CHART.width + 2 * CHART.sidePad} ${CHART.height}`,
     )
+  })
+})
+
+describe('clampLabelCenterX keeps labels inside padded viewBox', () => {
+  it('returns cx when the label fits centered on the dot', () => {
+    expect(clampLabelCenterX(500, 60)).toBe(500)
+  })
+
+  it('shifts right when the label would clip on the left', () => {
+    expect(clampLabelCenterX(0, 80)).toBe(-CHART.sidePad + 40)
+  })
+
+  it('shifts left when the label would clip on the right', () => {
+    expect(clampLabelCenterX(CHART.width, 80)).toBe(CHART.width + CHART.sidePad - 40)
   })
 })
 

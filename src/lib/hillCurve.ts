@@ -14,6 +14,14 @@ export function chartViewBox(): string {
   return `-${sidePad} 0 ${width + 2 * sidePad} ${height}`
 }
 
+/** Keep a center-anchored label inside the padded chart viewBox. */
+export function clampLabelCenterX(cx: number, labelWidth: number): number {
+  const half = labelWidth / 2
+  const minX = -CHART.sidePad
+  const maxX = CHART.width + CHART.sidePad
+  return Math.min(Math.max(cx, minX + half), maxX - half)
+}
+
 /** Hill baseline (curve endpoints), as 0–1 of chart height. */
 export function chartBaselineY(): number {
   return (CHART.height - CHART.bottomPad) / CHART.height

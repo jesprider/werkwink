@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { STALE_RED } from '../domain/staleness'
+import { clampLabelCenterX } from '../lib/hillCurve'
 
 const CREAM = '#FDFAF4'
 const TITLE_FONT_SIZE = 12
@@ -52,14 +53,18 @@ const satelliteCoords = computed(() => {
   })
 })
 
+const labelWidth = computed(() => Math.max(props.name.length * 6, forcesText.value.length * 6) + 10)
+
+const labelCenterX = computed(() => clampLabelCenterX(props.cx, labelWidth.value))
+
 const labelBackground = computed(() => {
-  const width = Math.max(props.name.length * 6, forcesText.value.length * 6) + 10
+  const width = labelWidth.value
   const titleBaseline = props.cy + props.radius + TITLE_Y_OFFSET
   const forcesBaseline = props.cy + props.radius + FORCES_Y_OFFSET
   const top = titleBaseline - 11
   const bottom = forcesBaseline + 3
   return {
-    x: props.cx - width / 2,
+    x: labelCenterX.value - width / 2,
     y: top,
     width,
     height: bottom - top,
@@ -94,7 +99,7 @@ const labelBackground = computed(() => {
       pointer-events="none"
     />
     <text
-      :x="cx"
+      :x="labelCenterX"
       :y="cy + radius + TITLE_Y_OFFSET"
       text-anchor="middle"
       :font-size="TITLE_FONT_SIZE"
@@ -104,7 +109,7 @@ const labelBackground = computed(() => {
       {{ name }}
     </text>
     <text
-      :x="cx"
+      :x="labelCenterX"
       :y="cy + radius + FORCES_Y_OFFSET"
       text-anchor="middle"
       :font-size="FORCES_FONT_SIZE"
