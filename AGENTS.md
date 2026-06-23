@@ -26,7 +26,12 @@ may wrap the command and inject `--trailer "Co-authored-by: Cursor …"` via its
 **Attribution** feature. That is not `AGENTS.md` being ignored and not the model
 adding it to the message text. Disable in **Cursor Settings → Agent → Attribution**
 (commit attribution off). This repo also ships `.githooks/prepare-commit-msg` to
-strip Cursor trailers — enable once per clone: `git config core.hooksPath .githooks`.
+strip Cursor trailers — enable once per clone: `git config core.hooksPath .githooks`,
+or pass hooks per command: `git -c core.hooksPath=.githooks commit …`.
+
+**Cursor UI vs repo rules:** Some Cursor actions (e.g. diff-tab create-branch-and-commit)
+suggest a `cursor/` branch prefix. **Ignore that** — use the typed branch patterns
+below. Agents also load `.cursor/rules/git-artifacts.mdc`, which restates this override.
 
 ---
 
