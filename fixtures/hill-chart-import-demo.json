@@ -1,21 +1,22 @@
 {
   "version": 1,
-  "exportedAt": "2026-06-07T10:00:00.000Z",
+  "exportedAt": "2026-06-22T10:00:00.000Z",
+  "demo": false,
   "projects": [
     {
-      "id": "proj_demo_linear",
-      "name": "Platform API migration",
-      "color": "dusty-blue",
+      "id": "proj_demo_uphill",
+      "name": "Uphill — boosters outweigh a blocker",
+      "color": "terracotta",
       "source": {
-        "system": "linear",
-        "id": "ENG-42",
-        "url": "https://linear.app/example/issue/ENG-42"
+        "system": "jira",
+        "id": "MOB-101",
+        "url": "https://example.atlassian.net/browse/MOB-101"
       },
-      "position": 50,
-      "lastMovedAt": "2026-06-04T09:00:00.000Z",
+      "position": 32,
+      "lastMovedAt": "2026-06-22T09:00:00.000Z",
       "forces": [
         {
-          "id": "f_demo_p1_owner",
+          "id": "f_uphill_owner",
           "direction": "up",
           "label": "Owner",
           "owner": "Jordan Lee",
@@ -26,7 +27,7 @@
           "resolutionReason": null
         },
         {
-          "id": "f_demo_p1_help",
+          "id": "f_uphill_help",
           "direction": "up",
           "label": "Pairing with platform SRE",
           "owner": "Morgan Kim",
@@ -37,20 +38,31 @@
           "resolutionReason": null
         },
         {
-          "id": "f_demo_p1_block",
+          "id": "f_uphill_block",
           "direction": "down",
           "label": "Staging environment unstable",
           "owner": null,
           "isPrimary": false,
           "status": "active",
-          "createdAt": "2026-06-01T09:00:00.000Z",
+          "createdAt": "2026-06-18T09:00:00.000Z",
           "resolvedAt": null,
           "resolutionReason": null
         },
         {
-          "id": "f_demo_p1_resolved",
+          "id": "f_uphill_past_up",
+          "direction": "up",
+          "label": "Architecture spike (past booster)",
+          "owner": "Jordan Lee",
+          "isPrimary": false,
+          "status": "resolved",
+          "createdAt": "2026-05-12T09:00:00.000Z",
+          "resolvedAt": "2026-05-26T16:00:00.000Z",
+          "resolutionReason": "Approach validated"
+        },
+        {
+          "id": "f_uphill_past_down",
           "direction": "down",
-          "label": "Capacity planning sign-off",
+          "label": "Capacity planning sign-off (past blocker)",
           "owner": null,
           "isPrimary": false,
           "status": "resolved",
@@ -60,162 +72,27 @@
         }
       ],
       "snapshots": [
-        { "date": "2026-05-31", "position": 22 },
-        { "date": "2026-06-01", "position": 28 },
-        { "date": "2026-06-02", "position": 34 },
-        { "date": "2026-06-03", "position": 42 },
-        { "date": "2026-06-04", "position": 48 },
-        { "date": "2026-06-05", "position": 50 },
-        { "date": "2026-06-06", "position": 50 }
+        { "date": "2026-06-22", "position": 32 },
+        { "date": "2026-06-21", "position": 28 },
+        { "date": "2026-06-20", "position": 22 },
+        { "date": "2026-06-19", "position": 16 },
+        { "date": "2026-06-18", "position": 10 }
       ],
       "tasks": [
         {
-          "id": "task_demo_auth",
-          "name": "OAuth provider cutover",
-          "source": {
-            "system": "linear",
-            "id": "ENG-108",
-            "url": "https://linear.app/example/issue/ENG-108"
-          },
-          "position": 24,
-          "lastMovedAt": "2026-06-07T08:00:00.000Z",
+          "id": "task_demo_uphill_new",
+          "name": "Subtask — just added (position 0)",
+          "position": 0,
+          "lastMovedAt": "2026-06-22T08:00:00.000Z",
           "forces": [
             {
-              "id": "f_demo_t1_owner",
-              "direction": "up",
-              "label": "Owner",
-              "owner": "Jordan Lee",
-              "isPrimary": true,
-              "status": "active",
-              "createdAt": "2026-05-20T09:00:00.000Z",
-              "resolvedAt": null,
-              "resolutionReason": null
-            },
-            {
-              "id": "f_demo_t1_block",
-              "direction": "down",
-              "label": "IdP certificate rotation",
-              "owner": null,
-              "isPrimary": false,
-              "status": "active",
-              "createdAt": "2026-06-05T09:00:00.000Z",
-              "resolvedAt": null,
-              "resolutionReason": null
-            }
-          ],
-          "snapshots": [
-            { "date": "2026-06-03", "position": 10 },
-            { "date": "2026-06-04", "position": 16 },
-            { "date": "2026-06-05", "position": 20 },
-            { "date": "2026-06-06", "position": 24 }
-          ]
-        },
-        {
-          "id": "task_demo_webhooks",
-          "name": "Webhook retry policy",
-          "position": 58,
-          "lastMovedAt": "2026-06-06T14:00:00.000Z",
-          "forces": [
-            {
-              "id": "f_demo_t2_owner",
+              "id": "f_uphill_new_owner",
               "direction": "up",
               "label": "Owner",
               "owner": "Morgan Kim",
               "isPrimary": true,
               "status": "active",
-              "createdAt": "2026-05-22T09:00:00.000Z",
-              "resolvedAt": null,
-              "resolutionReason": null
-            },
-            {
-              "id": "f_demo_t2_block",
-              "direction": "down",
-              "label": "Queue backlog from legacy clients",
-              "owner": null,
-              "isPrimary": false,
-              "status": "active",
-              "createdAt": "2026-06-02T09:00:00.000Z",
-              "resolvedAt": null,
-              "resolutionReason": null
-            }
-          ],
-          "snapshots": [
-            { "date": "2026-06-04", "position": 44 },
-            { "date": "2026-06-05", "position": 50 },
-            { "date": "2026-06-06", "position": 58 }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "proj_demo_jira",
-      "name": "Customer onboarding refresh",
-      "color": "mustard",
-      "source": {
-        "system": "jira",
-        "id": "ONB-7",
-        "url": "https://example.atlassian.net/browse/ONB-7"
-      },
-      "position": 74,
-      "lastMovedAt": "2026-06-07T07:30:00.000Z",
-      "forces": [
-        {
-          "id": "f_demo_p2_owner",
-          "direction": "up",
-          "label": "Owner",
-          "owner": "Riley Chen",
-          "isPrimary": true,
-          "status": "active",
-          "createdAt": "2026-05-10T08:00:00.000Z",
-          "resolvedAt": null,
-          "resolutionReason": null
-        },
-        {
-          "id": "f_demo_p2_block",
-          "direction": "down",
-          "label": "CRM sync latency",
-          "owner": null,
-          "isPrimary": false,
-          "status": "active",
-          "createdAt": "2026-06-01T08:00:00.000Z",
-          "resolvedAt": null,
-          "resolutionReason": null
-        },
-        {
-          "id": "f_demo_p2_resolved",
-          "direction": "down",
-          "label": "Legal review of new copy",
-          "owner": null,
-          "isPrimary": false,
-          "status": "resolved",
-          "createdAt": "2026-05-18T08:00:00.000Z",
-          "resolvedAt": "2026-06-02T16:00:00.000Z",
-          "resolutionReason": "Approved with minor edits"
-        }
-      ],
-      "snapshots": [
-        { "date": "2026-06-01", "position": 52 },
-        { "date": "2026-06-02", "position": 58 },
-        { "date": "2026-06-03", "position": 64 },
-        { "date": "2026-06-04", "position": 68 },
-        { "date": "2026-06-05", "position": 72 },
-        { "date": "2026-06-06", "position": 74 }
-      ],
-      "tasks": [
-        {
-          "id": "task_demo_checklist",
-          "name": "Progressive disclosure checklist",
-          "position": 0,
-          "lastMovedAt": "2026-05-27T08:00:00.000Z",
-          "forces": [
-            {
-              "id": "f_demo_t3_owner",
-              "direction": "up",
-              "label": "Owner",
-              "owner": "Riley Chen",
-              "isPrimary": true,
-              "status": "active",
-              "createdAt": "2026-05-25T08:00:00.000Z",
+              "createdAt": "2026-06-22T08:00:00.000Z",
               "resolvedAt": null,
               "resolutionReason": null
             }
@@ -225,19 +102,216 @@
       ]
     },
     {
-      "id": "proj_demo_github",
-      "name": "Observability rollout",
+      "id": "proj_demo_peak",
+      "name": "At the peak — resolve blocker to continue",
+      "color": "olive",
+      "source": {
+        "system": "linear",
+        "id": "ENG-42",
+        "url": "https://linear.app/example/issue/ENG-42"
+      },
+      "position": 50,
+      "lastMovedAt": "2026-06-21T09:00:00.000Z",
+      "forces": [
+        {
+          "id": "f_peak_owner",
+          "direction": "up",
+          "label": "Owner",
+          "owner": "Priya Nair",
+          "isPrimary": true,
+          "status": "active",
+          "createdAt": "2026-05-18T09:00:00.000Z",
+          "resolvedAt": null,
+          "resolutionReason": null
+        },
+        {
+          "id": "f_peak_block",
+          "direction": "down",
+          "label": "Security review pending",
+          "owner": "Sam Okoro",
+          "isPrimary": false,
+          "status": "active",
+          "createdAt": "2026-06-15T09:00:00.000Z",
+          "resolvedAt": null,
+          "resolutionReason": null
+        }
+      ],
+      "snapshots": [
+        { "date": "2026-06-21", "position": 50 },
+        { "date": "2026-06-20", "position": 48 },
+        { "date": "2026-06-19", "position": 42 },
+        { "date": "2026-06-18", "position": 36 }
+      ],
+      "tasks": [
+        {
+          "id": "task_demo_peak_block",
+          "name": "Subtask — at the peak with a blocker (50)",
+          "position": 50,
+          "lastMovedAt": "2026-06-21T08:00:00.000Z",
+          "forces": [
+            {
+              "id": "f_peak_task_owner",
+              "direction": "up",
+              "label": "Owner",
+              "owner": "Priya Nair",
+              "isPrimary": true,
+              "status": "active",
+              "createdAt": "2026-05-22T09:00:00.000Z",
+              "resolvedAt": null,
+              "resolutionReason": null
+            },
+            {
+              "id": "f_peak_task_block",
+              "direction": "down",
+              "label": "IdP certificate rotation",
+              "owner": null,
+              "isPrimary": false,
+              "status": "active",
+              "createdAt": "2026-06-16T09:00:00.000Z",
+              "resolvedAt": null,
+              "resolutionReason": null
+            }
+          ],
+          "snapshots": [
+            { "date": "2026-06-21", "position": 50 },
+            { "date": "2026-06-20", "position": 44 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proj_demo_downhill",
+      "name": "Downhill — executing, no blockers",
       "color": "rust",
       "source": {
         "system": "github",
         "id": "acme/platform#512",
         "url": "https://github.com/acme/platform/issues/512"
       },
-      "position": 100,
-      "lastMovedAt": "2026-05-25T10:00:00.000Z",
+      "position": 76,
+      "lastMovedAt": "2026-06-22T07:30:00.000Z",
       "forces": [
         {
-          "id": "f_demo_p3_owner",
+          "id": "f_downhill_owner",
+          "direction": "up",
+          "label": "Owner",
+          "owner": "Casey Ng",
+          "isPrimary": true,
+          "status": "active",
+          "createdAt": "2026-05-10T08:00:00.000Z",
+          "resolvedAt": null,
+          "resolutionReason": null
+        },
+        {
+          "id": "f_downhill_past_down",
+          "direction": "down",
+          "label": "CRM sync latency (past blocker)",
+          "owner": null,
+          "isPrimary": false,
+          "status": "resolved",
+          "createdAt": "2026-05-25T08:00:00.000Z",
+          "resolvedAt": "2026-06-10T16:00:00.000Z",
+          "resolutionReason": "Cleared the peak once latency was fixed"
+        }
+      ],
+      "snapshots": [
+        { "date": "2026-06-22", "position": 76 },
+        { "date": "2026-06-21", "position": 70 },
+        { "date": "2026-06-20", "position": 62 },
+        { "date": "2026-06-19", "position": 54 },
+        { "date": "2026-06-18", "position": 46 }
+      ],
+      "tasks": []
+    },
+    {
+      "id": "proj_demo_clamped",
+      "name": "Almost done — clamped until task completes",
+      "color": "warm-pink",
+      "source": {
+        "system": "gitlab",
+        "id": "acme/api!318",
+        "url": "https://gitlab.com/acme/api/-/merge_requests/318"
+      },
+      "position": 99,
+      "lastMovedAt": "2026-06-22T06:00:00.000Z",
+      "forces": [
+        {
+          "id": "f_clamped_owner",
+          "direction": "up",
+          "label": "Owner",
+          "owner": "Riley Chen",
+          "isPrimary": true,
+          "status": "active",
+          "createdAt": "2026-05-08T08:00:00.000Z",
+          "resolvedAt": null,
+          "resolutionReason": null
+        }
+      ],
+      "snapshots": [
+        { "date": "2026-06-22", "position": 99 },
+        { "date": "2026-06-21", "position": 96 },
+        { "date": "2026-06-20", "position": 90 }
+      ],
+      "tasks": [
+        {
+          "id": "task_demo_clamped_done",
+          "name": "Subtask — complete (100)",
+          "position": 100,
+          "lastMovedAt": "2026-06-20T08:00:00.000Z",
+          "forces": [
+            {
+              "id": "f_clamped_done_owner",
+              "direction": "up",
+              "label": "Owner",
+              "owner": "Riley Chen",
+              "isPrimary": true,
+              "status": "active",
+              "createdAt": "2026-05-24T08:00:00.000Z",
+              "resolvedAt": null,
+              "resolutionReason": null
+            }
+          ],
+          "snapshots": [{ "date": "2026-06-20", "position": 100 }]
+        },
+        {
+          "id": "task_demo_clamped_open",
+          "name": "Subtask — still open, blocks project done (55)",
+          "position": 55,
+          "lastMovedAt": "2026-06-22T06:00:00.000Z",
+          "forces": [
+            {
+              "id": "f_clamped_open_owner",
+              "direction": "up",
+              "label": "Owner",
+              "owner": "Lena Brooks",
+              "isPrimary": true,
+              "status": "active",
+              "createdAt": "2026-05-26T08:00:00.000Z",
+              "resolvedAt": null,
+              "resolutionReason": null
+            }
+          ],
+          "snapshots": [
+            { "date": "2026-06-22", "position": 55 },
+            { "date": "2026-06-21", "position": 50 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proj_demo_done",
+      "name": "Done — all work complete (100)",
+      "color": "sage",
+      "source": {
+        "system": "trello",
+        "id": "aBcD1234",
+        "url": "https://trello.com/c/aBcD1234"
+      },
+      "position": 100,
+      "lastMovedAt": "2026-06-19T10:00:00.000Z",
+      "forces": [
+        {
+          "id": "f_done_owner",
           "direction": "up",
           "label": "Owner",
           "owner": "Casey Ng",
@@ -249,11 +323,203 @@
         }
       ],
       "snapshots": [
-        { "date": "2026-05-20", "position": 80 },
-        { "date": "2026-05-21", "position": 86 },
-        { "date": "2026-05-22", "position": 92 },
-        { "date": "2026-05-23", "position": 96 },
-        { "date": "2026-05-24", "position": 100 }
+        { "date": "2026-06-19", "position": 100 },
+        { "date": "2026-06-18", "position": 92 },
+        { "date": "2026-06-17", "position": 84 }
+      ],
+      "tasks": [
+        {
+          "id": "task_demo_done_a",
+          "name": "Subtask — done (100)",
+          "position": 100,
+          "lastMovedAt": "2026-06-17T08:00:00.000Z",
+          "forces": [
+            {
+              "id": "f_done_a_owner",
+              "direction": "up",
+              "label": "Owner",
+              "owner": "Casey Ng",
+              "isPrimary": true,
+              "status": "active",
+              "createdAt": "2026-05-01T08:00:00.000Z",
+              "resolvedAt": null,
+              "resolutionReason": null
+            }
+          ],
+          "snapshots": [{ "date": "2026-06-17", "position": 100 }]
+        },
+        {
+          "id": "task_demo_done_b",
+          "name": "Subtask — done (100)",
+          "position": 100,
+          "lastMovedAt": "2026-06-18T08:00:00.000Z",
+          "forces": [
+            {
+              "id": "f_done_b_owner",
+              "direction": "up",
+              "label": "Owner",
+              "owner": "Dana Ortiz",
+              "isPrimary": true,
+              "status": "active",
+              "createdAt": "2026-05-03T08:00:00.000Z",
+              "resolvedAt": null,
+              "resolutionReason": null
+            }
+          ],
+          "snapshots": [{ "date": "2026-06-18", "position": 100 }]
+        }
+      ]
+    },
+    {
+      "id": "proj_demo_internal",
+      "name": "Internal item — no tracker link, unassigned owner",
+      "color": "plum",
+      "position": 12,
+      "lastMovedAt": "2026-06-20T10:00:00.000Z",
+      "forces": [
+        {
+          "id": "f_internal_owner",
+          "direction": "up",
+          "label": "Owner",
+          "owner": null,
+          "isPrimary": true,
+          "status": "active",
+          "createdAt": "2026-06-14T10:00:00.000Z",
+          "resolvedAt": null,
+          "resolutionReason": null
+        }
+      ],
+      "snapshots": [
+        { "date": "2026-06-20", "position": 12 },
+        { "date": "2026-06-19", "position": 8 }
+      ],
+      "tasks": []
+    },
+    {
+      "id": "proj_demo_backlog",
+      "name": "Backlog — not started (0)",
+      "color": "mustard",
+      "source": {
+        "system": "clickup",
+        "id": "86yq1abcd",
+        "url": "https://app.clickup.com/t/86yq1abcd"
+      },
+      "position": 0,
+      "lastMovedAt": "2026-06-12T10:00:00.000Z",
+      "forces": [
+        {
+          "id": "f_backlog_owner",
+          "direction": "up",
+          "label": "Owner",
+          "owner": "Omar Haddad",
+          "isPrimary": true,
+          "status": "active",
+          "createdAt": "2026-06-12T10:00:00.000Z",
+          "resolvedAt": null,
+          "resolutionReason": null
+        }
+      ],
+      "snapshots": [],
+      "tasks": []
+    },
+    {
+      "id": "proj_demo_blocked",
+      "name": "Blocked early on the uphill",
+      "color": "dusty-blue",
+      "source": {
+        "system": "asana",
+        "id": "1207894",
+        "url": "https://app.asana.com/0/1207894/list"
+      },
+      "position": 18,
+      "lastMovedAt": "2026-06-21T10:00:00.000Z",
+      "forces": [
+        {
+          "id": "f_blocked_owner",
+          "direction": "up",
+          "label": "Owner",
+          "owner": "Dana Ortiz",
+          "isPrimary": true,
+          "status": "active",
+          "createdAt": "2026-06-05T10:00:00.000Z",
+          "resolvedAt": null,
+          "resolutionReason": null
+        },
+        {
+          "id": "f_blocked_block",
+          "direction": "down",
+          "label": "Vendor API is flaky",
+          "owner": null,
+          "isPrimary": false,
+          "status": "active",
+          "createdAt": "2026-06-17T10:00:00.000Z",
+          "resolvedAt": null,
+          "resolutionReason": null
+        }
+      ],
+      "snapshots": [
+        { "date": "2026-06-21", "position": 18 },
+        { "date": "2026-06-20", "position": 14 }
+      ],
+      "tasks": []
+    },
+    {
+      "id": "proj_demo_wrapping",
+      "name": "Wrapping up — late downhill",
+      "color": "terracotta",
+      "source": {
+        "system": "monday",
+        "id": "4827193",
+        "url": "https://acme.monday.com/boards/4827193"
+      },
+      "position": 88,
+      "lastMovedAt": "2026-06-22T05:00:00.000Z",
+      "forces": [
+        {
+          "id": "f_wrapping_owner",
+          "direction": "up",
+          "label": "Owner",
+          "owner": "Riley Chen",
+          "isPrimary": true,
+          "status": "active",
+          "createdAt": "2026-05-02T08:00:00.000Z",
+          "resolvedAt": null,
+          "resolutionReason": null
+        }
+      ],
+      "snapshots": [
+        { "date": "2026-06-22", "position": 88 },
+        { "date": "2026-06-21", "position": 82 },
+        { "date": "2026-06-20", "position": 74 }
+      ],
+      "tasks": []
+    },
+    {
+      "id": "proj_demo_generic",
+      "name": "Unknown tracker — generic link icon",
+      "color": "olive",
+      "source": {
+        "url": "https://tickets.acme.dev/ROAD-9"
+      },
+      "position": 64,
+      "lastMovedAt": "2026-06-22T04:00:00.000Z",
+      "forces": [
+        {
+          "id": "f_generic_owner",
+          "direction": "up",
+          "label": "Owner",
+          "owner": "Omar Haddad",
+          "isPrimary": true,
+          "status": "active",
+          "createdAt": "2026-05-06T08:00:00.000Z",
+          "resolvedAt": null,
+          "resolutionReason": null
+        }
+      ],
+      "snapshots": [
+        { "date": "2026-06-22", "position": 64 },
+        { "date": "2026-06-21", "position": 58 },
+        { "date": "2026-06-20", "position": 52 }
       ],
       "tasks": []
     }

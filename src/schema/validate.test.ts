@@ -90,10 +90,10 @@ describe('validateHillChartJson', () => {
     const r = validateHillChartJson(raw)
     expect(r.ok).toBe(true)
     if (!r.ok) return
-    expect(r.state.projects).toHaveLength(3)
-    expect(r.state.projects[0].name).toBe('Platform API migration')
-    expect(r.state.projects[0].position).toBe(50)
-    expect(r.state.projects[2].position).toBe(100)
+    expect(r.state.projects).toHaveLength(10)
+    expect(r.state.projects[0].name).toBe('Uphill — boosters outweigh a blocker')
+    expect(r.state.projects[0].position).toBe(32)
+    expect(r.state.projects[4].position).toBe(100)
   })
 
   it('defaults missing dailyNoteDraft and notes on import', () => {
