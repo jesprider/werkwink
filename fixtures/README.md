@@ -3,20 +3,35 @@
 ## `hill-chart-import-demo.json`
 
 Comprehensive **tracker-import** shaped JSON for manual testing of **Import** on `/projects`.
-Distinct from the built-in `sample.ts` seed (different project names and ids).
 
-**Showcases (iterations 1–17)**
+This file mirrors the built-in `src/data/sample.ts` seed: **the same ten scenarios,
+positions, forces, and tasks**. The only differences are that this file uses static
+ISO/calendar dates (so it can live as a checked-in `.json`) and its own `proj_demo_*`
+ids, so you can tell an imported chart apart from the demo seed.
+
+**Layout** — projects are evenly spread across the hill (positions `0, 12, 18, 32, 50,
+64, 76, 88, 99, 100`).
+
+**Showcases**
 
 | Feature | Where in file |
 |---------|----------------|
-| External sources (Linear, Jira, GitHub) | All three projects |
-| Active up/down forces + resolved past forces | Platform API, Customer onboarding |
-| Peak at 50 with active blockers | Platform API migration (`position: 50`) |
-| Downhill with active downs | Webhook retry task at 58 |
-| Snapshot history / ghost trails | All projects (select a dot after import) |
-| Staleness satellites | Varied `lastMovedAt` (grace day, 1–4 red satellites on upper arc) |
-| Done dot at 100 | Observability rollout |
-| Tasks under projects | Platform API, Customer onboarding |
+| External sources (Jira, GitLab, GitHub, Linear, Trello, ClickUp, Asana, Monday) | One per project |
+| Unknown tracker (generic link icon) | `proj_demo_generic` |
+| No source (internal only) | `proj_demo_internal` |
+| Active up/down forces + resolved past forces | `proj_demo_uphill`, `proj_demo_downhill` |
+| Peak at 50 with active blockers | `proj_demo_peak` |
+| Downhill with no active blockers | `proj_demo_downhill` |
+| Project clamped at 99 by an open task | `proj_demo_clamped` |
+| Done dot at 100 (satellites suppressed) | `proj_demo_done` |
+| Tasks under projects | `proj_demo_uphill`, `proj_demo_clamped`, `proj_demo_done` |
+| Snapshot history / ghost trails | Most projects (select a dot after import) |
+| Notes history (export-only) | `proj_demo_downhill` |
+| Staleness satellites (1 / 2 / 4) | `proj_demo_backlog` (1), `proj_demo_internal` (2), `proj_demo_blocked` (4) |
+
+**Staleness** is intentionally limited to **three** dots so the overview stays clean:
+backlog (2 days → 1 satellite), internal item (3 days → 2 satellites), and the blocked
+item (5+ days → 4 = max). Every other dot moved today or yesterday.
 
 **How to use**
 
@@ -27,6 +42,8 @@ Distinct from the built-in `sample.ts` seed (different project names and ids).
 
 The file is validated in CI via `src/schema/validate.test.ts`.
 
-**Note:** `lastMovedAt` and snapshot dates are static ISO/calendar values. Staleness
-satellites shift as real calendar time passes; the built-in `sample.ts` seed uses
-relative dates and always demos staleness on first load.
+**Note:** `lastMovedAt` and snapshot dates are static (anchored around the
+`exportedAt` date). Staleness satellites shift as real calendar time passes, so the
+"three stale dots" picture is exact only near that date — re-anchor the dates if you
+need a pristine import demo later. The built-in `sample.ts` seed uses relative dates
+and always shows exactly those three stale dots on first load.

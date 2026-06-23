@@ -2,26 +2,34 @@ import { localDateString } from '../lib/localDate'
 import type { HillChartState, Snapshot } from '../schema/types'
 
 /**
- * Demo chart (`demo: true`). Every project and task is named after the exact case
- * it demonstrates so the showcase is self-documenting. Dates are relative to the
- * day the app is opened, so staleness satellites and "days without movement" copy
- * stay accurate over time.
+ * Demo chart (`demo: true`). The project lineup is evenly spread across the hill
+ * (positions 0, 12, 18, 32, 50, 64, 76, 88, 99, 100) so the overview reads clearly
+ * for demos. Dates are relative to the day the app is opened, so staleness
+ * satellites and "days without movement" copy stay accurate over time.
+ *
+ * Staleness is shown on exactly three project dots so the mechanic is obvious
+ * without cluttering the overview:
+ * - Backlog (position 0): 2 days without movement → 1 satellite.
+ * - Internal item (position 12): 3 days → 2 satellites.
+ * - Blocked early (position 18): 5+ days → 4 satellites (max).
+ * Every other dot moved today or yesterday (0 satellites); done dots at 100 never
+ * show satellites.
  *
  * Cases covered:
  * - Positions: start (0), uphill, exactly at the peak (50), downhill, project
  *   clamped at 99 (open task), done (100).
  * - Peak rule: at the peak with active blockers (panel hint); crossed cleanly with
  *   no active blockers.
- * - Staleness satellites: moved today (0), 1-day grace (0 + copy), 2 days (1),
- *   3 days (2), 4 days (3, on a task), 5+ days (4 = max), done suppresses satellites.
  * - Forces: named owner, unassigned owner, extra up boosters (↑ badge), active
  *   blockers with and without an owner (↓ badge), resolved past booster and past
  *   blocker with resolution reasons.
  * - Trails: long (7 ghosts), short, flat/stalled, none.
- * - Sources: jira, linear, github, gitlab, asana, clickup, monday, trello, an
+ * - Sources: jira, gitlab, github, linear, trello, asana, clickup, monday, an
  *   unknown tracker (generic link icon), and no source (internal only).
  * - Notes history (export-only) on one item.
- * - Done panel with more than one completed project.
+ *
+ * Kept in sync with `fixtures/hill-chart-import-demo.json` (same scenarios and
+ * layout); that file uses static dates and its own ids for import testing.
  */
 
 /** ISO timestamp for N local calendar days before today. */
@@ -53,14 +61,14 @@ export const sampleState: HillChartState = {
   projects: [
     {
       id: 'proj_1',
-      name: 'Uphill — boosters vs a blocker',
+      name: 'Uphill — boosters outweigh a blocker',
       color: 'terracotta',
       source: {
         system: 'jira',
         id: 'MOB-101',
         url: 'https://example.atlassian.net/browse/MOB-101',
       },
-      position: 34,
+      position: 32,
       lastMovedAt: isoDaysAgo(0),
       forces: [
         {
@@ -120,9 +128,8 @@ export const sampleState: HillChartState = {
         },
       ],
       snapshots: trail([
-        [7, 8],
-        [6, 12],
-        [5, 16],
+        [6, 8],
+        [5, 14],
         [4, 20],
         [3, 24],
         [2, 28],
@@ -171,9 +178,9 @@ export const sampleState: HillChartState = {
         },
         {
           id: 'task_1b',
-          name: 'Task — no movement for 4 days (3 satellites)',
+          name: 'Task — executing, no blockers (26)',
           position: 26,
-          lastMovedAt: isoDaysAgo(4),
+          lastMovedAt: isoDaysAgo(1),
           forces: [
             {
               id: 'f_1b_owner',
@@ -188,9 +195,9 @@ export const sampleState: HillChartState = {
             },
           ],
           snapshots: trail([
-            [6, 26],
-            [5, 26],
-            [4, 26],
+            [3, 18],
+            [2, 22],
+            [1, 26],
           ]),
           dailyNoteDraft: '',
           notes: [],
@@ -199,12 +206,12 @@ export const sampleState: HillChartState = {
     },
     {
       id: 'proj_2',
-      name: 'Almost done — clamped at 99 until tasks finish',
+      name: 'Almost done — clamped until a task completes',
       color: 'warm-pink',
       source: {
-        system: 'monday',
-        id: '4827193',
-        url: 'https://acme.monday.com/boards/4827193',
+        system: 'gitlab',
+        id: 'acme/api!318',
+        url: 'https://gitlab.com/acme/api/-/merge_requests/318',
       },
       position: 99,
       lastMovedAt: isoDaysAgo(0),
@@ -235,7 +242,7 @@ export const sampleState: HillChartState = {
           id: 'task_2a',
           name: 'Task — done (100)',
           position: 100,
-          lastMovedAt: isoDaysAgo(2),
+          lastMovedAt: isoDaysAgo(1),
           forces: [
             {
               id: 'f_2a_owner',
@@ -250,18 +257,18 @@ export const sampleState: HillChartState = {
             },
           ],
           snapshots: trail([
-            [4, 70],
-            [3, 84],
-            [2, 100],
+            [3, 70],
+            [2, 90],
+            [1, 100],
           ]),
           dailyNoteDraft: '',
           notes: [],
         },
         {
           id: 'task_2b',
-          name: 'Task — still open, blocks project done (60)',
-          position: 60,
-          lastMovedAt: isoDaysAgo(1),
+          name: 'Task — still open, blocks project done (55)',
+          position: 55,
+          lastMovedAt: isoDaysAgo(0),
           forces: [
             {
               id: 'f_2b_owner',
@@ -276,9 +283,8 @@ export const sampleState: HillChartState = {
             },
           ],
           snapshots: trail([
-            [3, 50],
-            [2, 56],
-            [1, 60],
+            [2, 46],
+            [1, 52],
           ]),
           dailyNoteDraft: '',
           notes: [],
@@ -294,7 +300,7 @@ export const sampleState: HillChartState = {
         id: 'acme/platform#512',
         url: 'https://github.com/acme/platform/issues/512',
       },
-      position: 78,
+      position: 76,
       lastMovedAt: isoDaysAgo(1),
       forces: [
         {
@@ -324,10 +330,10 @@ export const sampleState: HillChartState = {
         [7, 40],
         [6, 48],
         [5, 55],
-        [4, 64],
-        [3, 70],
-        [2, 74],
-        [1, 78],
+        [4, 62],
+        [3, 68],
+        [2, 72],
+        [1, 76],
       ]),
       dailyNoteDraft: '',
       notes: [
@@ -383,10 +389,9 @@ export const sampleState: HillChartState = {
         },
       ],
       snapshots: trail([
-        [5, 40],
-        [4, 45],
-        [3, 48],
-        [2, 50],
+        [4, 40],
+        [3, 46],
+        [2, 49],
         [1, 50],
       ]),
       dailyNoteDraft: '',
@@ -395,165 +400,8 @@ export const sampleState: HillChartState = {
     },
     {
       id: 'proj_5',
-      name: 'No movement for 2 days (1 satellite)',
-      color: 'dusty-blue',
-      source: {
-        system: 'gitlab',
-        id: 'acme/api!318',
-        url: 'https://gitlab.com/acme/api/-/merge_requests/318',
-      },
-      position: 40,
-      lastMovedAt: isoDaysAgo(2),
-      forces: [
-        {
-          id: 'f_5a',
-          direction: 'up',
-          label: 'Owner',
-          owner: 'Morgan',
-          isPrimary: true,
-          status: 'active',
-          createdAt: isoDaysAgo(20),
-          resolvedAt: null,
-          resolutionReason: null,
-        },
-        {
-          id: 'f_5b',
-          direction: 'down',
-          label: 'Waiting on data contract',
-          owner: null,
-          isPrimary: false,
-          status: 'active',
-          createdAt: isoDaysAgo(4),
-          resolvedAt: null,
-          resolutionReason: null,
-        },
-      ],
-      snapshots: trail([
-        [4, 36],
-        [3, 39],
-        [2, 40],
-      ]),
-      dailyNoteDraft: '',
-      notes: [],
-      tasks: [],
-    },
-    {
-      id: 'proj_6',
-      name: 'No movement for 3 days (2 satellites)',
+      name: 'Done — all work complete (100)',
       color: 'sage',
-      source: {
-        system: 'asana',
-        id: '1207894',
-        url: 'https://app.asana.com/0/1207894/list',
-      },
-      position: 46,
-      lastMovedAt: isoDaysAgo(3),
-      forces: [
-        {
-          id: 'f_6a',
-          direction: 'up',
-          label: 'Owner',
-          owner: 'Dana',
-          isPrimary: true,
-          status: 'active',
-          createdAt: isoDaysAgo(24),
-          resolvedAt: null,
-          resolutionReason: null,
-        },
-        {
-          id: 'f_6b',
-          direction: 'down',
-          label: 'Vendor API is flaky',
-          owner: null,
-          isPrimary: false,
-          status: 'active',
-          createdAt: isoDaysAgo(7),
-          resolvedAt: null,
-          resolutionReason: null,
-        },
-      ],
-      snapshots: trail([
-        [5, 44],
-        [4, 45],
-        [3, 46],
-      ]),
-      dailyNoteDraft: '',
-      notes: [],
-      tasks: [],
-    },
-    {
-      id: 'proj_7',
-      name: 'No movement for 5 days (max satellites)',
-      color: 'plum',
-      source: {
-        system: 'clickup',
-        id: '86yq1abcd',
-        url: 'https://app.clickup.com/t/86yq1abcd',
-      },
-      position: 28,
-      lastMovedAt: isoDaysAgo(5),
-      forces: [
-        {
-          id: 'f_7a',
-          direction: 'up',
-          label: 'Owner',
-          owner: 'Omar',
-          isPrimary: true,
-          status: 'active',
-          createdAt: isoDaysAgo(50),
-          resolvedAt: null,
-          resolutionReason: null,
-        },
-        {
-          id: 'f_7b',
-          direction: 'down',
-          label: 'Blocked on legal sign-off',
-          owner: null,
-          isPrimary: false,
-          status: 'active',
-          createdAt: isoDaysAgo(14),
-          resolvedAt: null,
-          resolutionReason: null,
-        },
-      ],
-      snapshots: trail([
-        [8, 28],
-        [7, 28],
-        [6, 28],
-        [5, 28],
-      ]),
-      dailyNoteDraft: '',
-      notes: [],
-      tasks: [],
-    },
-    {
-      id: 'proj_8',
-      name: 'Just started — position 0, unassigned, no tracker',
-      color: 'mustard',
-      position: 0,
-      lastMovedAt: isoDaysAgo(0),
-      forces: [
-        {
-          id: 'f_8a',
-          direction: 'up',
-          label: 'Owner',
-          owner: null,
-          isPrimary: true,
-          status: 'active',
-          createdAt: isoDaysAgo(0),
-          resolvedAt: null,
-          resolutionReason: null,
-        },
-      ],
-      snapshots: [],
-      dailyNoteDraft: '',
-      notes: [],
-      tasks: [],
-    },
-    {
-      id: 'proj_9',
-      name: 'Done — all tasks complete (100)',
-      color: 'terracotta',
       source: {
         system: 'trello',
         id: 'aBcD1234',
@@ -563,10 +411,10 @@ export const sampleState: HillChartState = {
       lastMovedAt: isoDaysAgo(2),
       forces: [
         {
-          id: 'f_9a',
+          id: 'f_5a',
           direction: 'up',
           label: 'Owner',
-          owner: 'Lena',
+          owner: 'Casey',
           isPrimary: true,
           status: 'active',
           createdAt: isoDaysAgo(30),
@@ -584,16 +432,16 @@ export const sampleState: HillChartState = {
       notes: [],
       tasks: [
         {
-          id: 'task_9a',
+          id: 'task_5a',
           name: 'Task — done (100)',
           position: 100,
-          lastMovedAt: isoDaysAgo(5),
+          lastMovedAt: isoDaysAgo(4),
           forces: [
             {
-              id: 'f_9a_owner',
+              id: 'f_5a_owner',
               direction: 'up',
               label: 'Owner',
-              owner: 'Lena',
+              owner: 'Casey',
               isPrimary: true,
               status: 'active',
               createdAt: isoDaysAgo(15),
@@ -610,13 +458,13 @@ export const sampleState: HillChartState = {
           notes: [],
         },
         {
-          id: 'task_9b',
+          id: 'task_5b',
           name: 'Task — done (100)',
           position: 100,
           lastMovedAt: isoDaysAgo(3),
           forces: [
             {
-              id: 'f_9b_owner',
+              id: 'f_5b_owner',
               direction: 'up',
               label: 'Owner',
               owner: 'Dana',
@@ -638,14 +486,151 @@ export const sampleState: HillChartState = {
       ],
     },
     {
+      id: 'proj_6',
+      name: 'Internal item — no tracker link, unassigned owner',
+      color: 'plum',
+      position: 12,
+      lastMovedAt: isoDaysAgo(3),
+      forces: [
+        {
+          id: 'f_6a',
+          direction: 'up',
+          label: 'Owner',
+          owner: null,
+          isPrimary: true,
+          status: 'active',
+          createdAt: isoDaysAgo(14),
+          resolvedAt: null,
+          resolutionReason: null,
+        },
+      ],
+      snapshots: trail([
+        [5, 6],
+        [4, 9],
+        [3, 12],
+      ]),
+      dailyNoteDraft: '',
+      notes: [],
+      tasks: [],
+    },
+    {
+      id: 'proj_7',
+      name: 'Backlog — not started (0)',
+      color: 'mustard',
+      source: {
+        system: 'clickup',
+        id: '86yq1abcd',
+        url: 'https://app.clickup.com/t/86yq1abcd',
+      },
+      position: 0,
+      lastMovedAt: isoDaysAgo(2),
+      forces: [
+        {
+          id: 'f_7a',
+          direction: 'up',
+          label: 'Owner',
+          owner: 'Omar',
+          isPrimary: true,
+          status: 'active',
+          createdAt: isoDaysAgo(2),
+          resolvedAt: null,
+          resolutionReason: null,
+        },
+      ],
+      snapshots: [],
+      dailyNoteDraft: '',
+      notes: [],
+      tasks: [],
+    },
+    {
+      id: 'proj_8',
+      name: 'Blocked early on the uphill',
+      color: 'dusty-blue',
+      source: {
+        system: 'asana',
+        id: '1207894',
+        url: 'https://app.asana.com/0/1207894/list',
+      },
+      position: 18,
+      lastMovedAt: isoDaysAgo(5),
+      forces: [
+        {
+          id: 'f_8a',
+          direction: 'up',
+          label: 'Owner',
+          owner: 'Dana',
+          isPrimary: true,
+          status: 'active',
+          createdAt: isoDaysAgo(24),
+          resolvedAt: null,
+          resolutionReason: null,
+        },
+        {
+          id: 'f_8b',
+          direction: 'down',
+          label: 'Vendor API is flaky',
+          owner: null,
+          isPrimary: false,
+          status: 'active',
+          createdAt: isoDaysAgo(14),
+          resolvedAt: null,
+          resolutionReason: null,
+        },
+      ],
+      snapshots: trail([
+        [8, 10],
+        [7, 14],
+        [6, 18],
+        [5, 18],
+      ]),
+      dailyNoteDraft: '',
+      notes: [],
+      tasks: [],
+    },
+    {
+      id: 'proj_9',
+      name: 'Wrapping up — late downhill',
+      color: 'terracotta',
+      source: {
+        system: 'monday',
+        id: '4827193',
+        url: 'https://acme.monday.com/boards/4827193',
+      },
+      position: 88,
+      lastMovedAt: isoDaysAgo(0),
+      forces: [
+        {
+          id: 'f_9a',
+          direction: 'up',
+          label: 'Owner',
+          owner: 'Riley',
+          isPrimary: true,
+          status: 'active',
+          createdAt: isoDaysAgo(50),
+          resolvedAt: null,
+          resolutionReason: null,
+        },
+      ],
+      snapshots: trail([
+        [5, 66],
+        [4, 74],
+        [3, 80],
+        [2, 84],
+        [1, 88],
+      ]),
+      dailyNoteDraft: '',
+      notes: [],
+      tasks: [],
+    },
+    {
       id: 'proj_10',
-      name: 'Done — shipped, unknown tracker (generic link)',
+      name: 'Unknown tracker — generic link icon',
       color: 'olive',
       source: {
         url: 'https://tickets.acme.dev/ROAD-9',
       },
-      position: 100,
-      lastMovedAt: isoDaysAgo(8),
+      position: 64,
+      lastMovedAt: isoDaysAgo(1),
       forces: [
         {
           id: 'f_10a',
@@ -660,10 +645,11 @@ export const sampleState: HillChartState = {
         },
       ],
       snapshots: trail([
-        [11, 75],
-        [10, 85],
-        [9, 95],
-        [8, 100],
+        [5, 40],
+        [4, 48],
+        [3, 54],
+        [2, 58],
+        [1, 64],
       ]),
       dailyNoteDraft: '',
       notes: [],
