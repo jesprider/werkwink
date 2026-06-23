@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useHillChartStore } from '../stores/hillChart'
 import { overviewMarkers, partitionMarkers } from '../domain/chartMarkers'
+import { PEAK_POSITION } from '../domain/forceRules'
 import AppHeader from '../components/AppHeader.vue'
 import StateControls from '../components/StateControls.vue'
 import ChartWorkspace from '../components/ChartWorkspace.vue'
@@ -66,6 +67,10 @@ function onOpen(id: string) {
 function onAddProject() {
   const id = store.addProject()
   selectedTrackableId.value = id
+}
+
+function onRestore(id: string) {
+  store.setPosition(id, PEAK_POSITION)
 }
 
 function onExportClick() {
@@ -175,6 +180,7 @@ function onEndDailyClick() {
         @open="onOpen"
         @close-panel="clearSelection"
         @add="onAddProject"
+        @restore="onRestore"
       />
     </div>
   </section>
